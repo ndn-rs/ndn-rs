@@ -1,8 +1,11 @@
 [package]
-name = "ndn"
-version = "0.0.0"
 authors = ["Cyril Plisko <cyril.plisko@mountall.com>"]
 description = "[SOON] NDN - Named Data Networking in Rust"
+homepage = "https://github.com/imp/ndn-rs"
+keywords = ["ndn", "named", "data", "networking"]
+license = "Apache-2.0/MIT"
+name = "ndn"
 repository = "https://github.com/imp/ndn-rs.git"
+version = "0.0.0"
 
 [dependencies]
