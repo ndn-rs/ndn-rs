@@ -20,21 +20,21 @@ impl Into<Vec<u8>> for VarNumber {
                 let bytes: [u8; 2] = unsafe { mem::transmute(u16::to_be(x as u16)) };
                 result.extend_from_slice(&bytes);
                 result
-            },
+            }
             x @ 0x1_0000 ... 0xFFFF_FFFF => {
                 let mut result = Vec::with_capacity(5);
                 result.push(254u8);
                 let bytes: [u8; 4] = unsafe { mem::transmute(u32::to_be(x as u32)) };
                 result.extend_from_slice(&bytes);
                 result
-            },
+            }
             x @ 0x1_0000_0000 ... 0xFFFF_FFFF_FFFF_FFFF => {
                 let mut result = Vec::with_capacity(9);
                 result.push(255u8);
                 let bytes: [u8; 8] = unsafe { mem::transmute(u64::to_be(x)) };
                 result.extend_from_slice(&bytes);
                 result
-            },
+            }
             _ => unreachable!(),
         }
     }
