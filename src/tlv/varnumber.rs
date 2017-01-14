@@ -99,25 +99,25 @@ mod tests {
     #[test]
     fn one_byte0() {
         let bytes: Vec<u8> = VarNumber(0).into();
-        assert_eq!(bytes, vec![0u8]);
+        assert_eq!(bytes, vec![0]);
     }
 
     #[test]
     fn one_byte128() {
         let bytes: Vec<u8> = VarNumber(128).into();
-        assert_eq!(bytes, vec![128u8]);
+        assert_eq!(bytes, vec![128]);
     }
 
     #[test]
     fn one_byte252() {
         let bytes: Vec<u8> = VarNumber(252).into();
-        assert_eq!(bytes, vec![252u8]);
+        assert_eq!(bytes, vec![252]);
     }
 
     #[test]
     fn two_bytes65530() {
         let bytes: Vec<u8> = VarNumber(65530).into();
-        assert_eq!(bytes, vec![253u8, 255u8, 250u8]);
+        assert_eq!(bytes, vec![253, 255, 250]);
     }
 
     #[test]
