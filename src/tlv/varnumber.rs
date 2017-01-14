@@ -13,22 +13,22 @@ impl fmt::Display for VarNumber {
 impl Into<Vec<u8>> for VarNumber {
     fn into(self) -> Vec<u8> {
         match self.0 {
-            x @ 0 ... 252 => vec![x as u8],
-            x @ 253 ... 0xFFFF => {
+            x @ 0...252 => vec![x as u8],
+            x @ 253...0xFFFF => {
                 let mut result = Vec::with_capacity(3);
                 result.push(253u8);
                 let bytes: [u8; 2] = unsafe { mem::transmute(u16::to_be(x as u16)) };
                 result.extend_from_slice(&bytes);
                 result
             }
-            x @ 0x1_0000 ... 0xFFFF_FFFF => {
+            x @ 0x1_0000...0xFFFF_FFFF => {
                 let mut result = Vec::with_capacity(5);
                 result.push(254u8);
                 let bytes: [u8; 4] = unsafe { mem::transmute(u32::to_be(x as u32)) };
                 result.extend_from_slice(&bytes);
                 result
             }
-            x @ 0x1_0000_0000 ... 0xFFFF_FFFF_FFFF_FFFF => {
+            x @ 0x1_0000_0000...0xFFFF_FFFF_FFFF_FFFF => {
                 let mut result = Vec::with_capacity(9);
                 result.push(255u8);
                 let bytes: [u8; 8] = unsafe { mem::transmute(u64::to_be(x)) };
