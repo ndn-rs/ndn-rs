@@ -10,9 +10,9 @@ impl fmt::Display for VarNumber {
     }
 }
 
-impl Into<Vec<u8>> for VarNumber {
-    fn into(self) -> Vec<u8> {
-        match self.0 {
+impl From<VarNumber> for Vec<u8> {
+    fn from(v: VarNumber) -> Self {
+        match v.0 {
             x @ 0...252 => vec![x as u8],
             x @ 253...0xFFFF => {
                 let mut result = Vec::with_capacity(3);
