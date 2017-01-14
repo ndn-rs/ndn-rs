@@ -1,3 +1,4 @@
+#![feature(try_from)]
 pub mod tlv;
 
 #[cfg(test)]

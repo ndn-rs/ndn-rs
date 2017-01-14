@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 use std::fmt;
 use std::mem;
 
@@ -40,13 +41,53 @@ impl From<VarNumber> for Vec<u8> {
     }
 }
 
-impl<'a> From<&'a [u8]> for VarNumber {
-    fn from(s: &'a [u8]) -> Self {
+impl<'a> TryFrom<&'a [u8; 1]> for VarNumber {
+    type Err = ();
+    fn try_from(s: &'a [u8; 1]) -> Result<Self, ()> {
         match s[0] {
-            255 => VarNumber(0),
-            254 => VarNumber(0),
-            253 => VarNumber(0),
-            x @ _ => VarNumber(x as u64),
+            253...255 => Err(()),
+            x => Ok(VarNumber(x as u64)),
+        }
+    }
+}
+
+impl<'a> TryFrom<&'a [u8; 3]> for VarNumber {
+    type Err = ();
+    fn try_from(s: &'a [u8; 3]) -> Result<Self, ()> {
+        if s[0] == 253 {
+            Ok(VarNumber(((s[1] as u64) << 8) + s[2] as u64))
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl<'a> TryFrom<&'a [u8; 5]> for VarNumber {
+    type Err = ();
+    fn try_from(s: &'a [u8; 5]) -> Result<Self, ()> {
+        if s[0] == 254 {
+            Ok(VarNumber(((s[1] as u64) << 24) + ((s[2] as u64) << 16) + ((s[3] as u64) << 8) +
+                         (s[4] as u64)))
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl<'a> TryFrom<&'a [u8; 9]> for VarNumber {
+    type Err = ();
+    fn try_from(s: &'a [u8; 9]) -> Result<Self, ()> {
+        if s[0] == 255 {
+            Ok(VarNumber(((s[1] as u64) << 56) +
+                         ((s[2] as u64) << 48) +
+                         ((s[3] as u64) << 40) +
+                         ((s[4] as u64) << 32) +
+                         ((s[5] as u64) << 24) +
+                         ((s[6] as u64) << 16) +
+                         ((s[7] as u64) << 8) +
+                         (s[8] as u64)))
+        } else {
+            Err(())
         }
     }
 }
@@ -85,9 +126,9 @@ mod tests {
         assert_eq!(bytes, vec![254u8, 0xffu8, 0x34u8, 0x56u8, 0xdau8]);
     }
 
-    // #[test]
-    // fn varnumber_00() {
-    //     let val = VarNumber::from(&[0u8]);
-    //     assert_eq!(VarNumber(0), val);
-    // }
+    #[test]
+    fn varnumber_00() {
+        let val = VarNumber::try_from(&[0u8]).unwrap();
+        assert_eq!(VarNumber(0), val);
+    }
 }
