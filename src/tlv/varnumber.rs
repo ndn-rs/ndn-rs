@@ -123,12 +123,48 @@ mod tests {
     #[test]
     fn four_bytes_0xff_34_56_da() {
         let bytes: Vec<u8> = VarNumber(0xff_34_56_da).into();
-        assert_eq!(bytes, vec![254u8, 0xffu8, 0x34u8, 0x56u8, 0xdau8]);
+        assert_eq!(bytes, vec![254, 0xff, 0x34, 0x56, 0xda]);
+    }
+
+    #[test]
+    fn eight_bytes_0x12_34_56_78_9a_bc_de_f0() {
+        let bytes: Vec<u8> = VarNumber(0x12_34_56_78_9a_bc_de_f0).into();
+        assert_eq!(bytes, vec![255, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0]);
     }
 
     #[test]
     fn varnumber_00() {
         let val = VarNumber::try_from(&[0u8]).unwrap();
         assert_eq!(VarNumber(0), val);
+    }
+
+    #[test]
+    fn varnumber_128() {
+        let val = VarNumber::try_from(&[128u8]).unwrap();
+        assert_eq!(VarNumber(128), val);
+    }
+
+    #[test]
+    fn varnumber_252() {
+        let val = VarNumber::try_from(&[252u8]).unwrap();
+        assert_eq!(VarNumber(252), val);
+    }
+
+    #[test]
+    fn varnumber_65530() {
+        let val = VarNumber::try_from(&[253u8, 255u8, 250u8]).unwrap();
+        assert_eq!(VarNumber(65530), val);
+    }
+
+    #[test]
+    fn varnumber_1234567890() {
+        let val = VarNumber::try_from(&[254, 0x49, 0x96, 0x02, 0xd2]).unwrap();
+        assert_eq!(VarNumber(1234567890), val);
+    }
+
+    #[test]
+    fn varnumber_12345678901234567890() {
+        let val = VarNumber::try_from(&[255, 171, 84, 169, 140, 235, 31, 10, 210]).unwrap();
+        assert_eq!(VarNumber(12345678901234567890), val);
     }
 }
