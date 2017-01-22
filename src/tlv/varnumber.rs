@@ -79,7 +79,8 @@ impl<'a> TryFrom<&'a [u8; 9]> for VarNumber {
     fn try_from(s: &'a [u8; 9]) -> Result<Self, ()> {
         if s[0] == 255 {
             Ok(VarNumber(((s[1] as u64) << 56) + ((s[2] as u64) << 48) + ((s[3] as u64) << 40) +
-                         ((s[4] as u64) << 32) + ((s[5] as u64) << 24) +
+                         ((s[4] as u64) << 32) +
+                         ((s[5] as u64) << 24) +
                          ((s[6] as u64) << 16) +
                          ((s[7] as u64) << 8) +
                          (s[8] as u64)))
@@ -126,7 +127,8 @@ mod tests {
     #[test]
     fn eight_bytes_0x12_34_56_78_9a_bc_de_f0() {
         let bytes: Vec<u8> = VarNumber(0x12_34_56_78_9a_bc_de_f0).into();
-        assert_eq!(bytes, vec![255, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0]);
+        assert_eq!(bytes,
+                   vec![255, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0]);
     }
 
     #[test]
