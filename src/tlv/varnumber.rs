@@ -42,7 +42,7 @@ impl From<VarNumber> for Vec<u8> {
 }
 
 impl<'a> TryFrom<&'a [u8; 1]> for VarNumber {
-    type Err = ();
+    type Error = ();
     fn try_from(s: &'a [u8; 1]) -> Result<Self, ()> {
         match s[0] {
             253...255 => Err(()),
@@ -52,7 +52,7 @@ impl<'a> TryFrom<&'a [u8; 1]> for VarNumber {
 }
 
 impl<'a> TryFrom<&'a [u8; 3]> for VarNumber {
-    type Err = ();
+    type Error = ();
     fn try_from(s: &'a [u8; 3]) -> Result<Self, ()> {
         if s[0] == 253 {
             Ok(VarNumber(((s[1] as u64) << 8) + s[2] as u64))
@@ -63,7 +63,7 @@ impl<'a> TryFrom<&'a [u8; 3]> for VarNumber {
 }
 
 impl<'a> TryFrom<&'a [u8; 5]> for VarNumber {
-    type Err = ();
+    type Error = ();
     fn try_from(s: &'a [u8; 5]) -> Result<Self, ()> {
         if s[0] == 254 {
             Ok(VarNumber(((s[1] as u64) << 24) + ((s[2] as u64) << 16) + ((s[3] as u64) << 8) +
@@ -75,7 +75,7 @@ impl<'a> TryFrom<&'a [u8; 5]> for VarNumber {
 }
 
 impl<'a> TryFrom<&'a [u8; 9]> for VarNumber {
-    type Err = ();
+    type Error = ();
     fn try_from(s: &'a [u8; 9]) -> Result<Self, ()> {
         if s[0] == 255 {
             Ok(VarNumber(((s[1] as u64) << 56) + ((s[2] as u64) << 48) + ((s[3] as u64) << 40) +
