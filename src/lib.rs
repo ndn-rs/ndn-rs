@@ -2,6 +2,7 @@
 
 extern crate bytes;
 
+pub mod error;
 pub mod tlv;
 
 #[cfg(test)]
