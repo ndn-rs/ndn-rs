@@ -1,8 +1,9 @@
 use bytes::Bytes;
 
 mod varnumber;
+mod implicit_sha256_digest_component;
 
-use self::varnumber::VarNumber;
+pub use tlv::varnumber::VarNumber;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Type {
