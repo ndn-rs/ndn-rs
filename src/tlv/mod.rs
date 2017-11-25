@@ -39,13 +39,20 @@ pub enum Type {
 }
 
 pub trait Tlv {
-    const TYPE: u8;
+    /// Each TLV type has its assigned TLV-TYPE number defined as a constant of type u64
+    const TYPE: u64;
 
+    /// report this TLV-TYPE as a `VarNumber`
     fn ty(&self) -> VarNumber {
         Self::TYPE.into()
     }
 
+    /// Report TLV-LENGTH as a `VarNumber`
     fn length(&self) -> VarNumber;
 
+    /// Report TLV-VALUE as `Bytes` buffer (if value is present)
     fn value(&self) -> Option<Bytes>;
+
+    /// Report the total size of the packet or TLV element, including the TLV-TYPE and TLV-LENGTH
+    fn size(&self) -> usize;
 }

@@ -1,9 +1,27 @@
 use std::fmt;
+use std::ops;
+
 use bytes::{BigEndian, Buf, BufMut, Bytes, BytesMut, IntoBuf};
 use bytes::buf::FromBuf;
 
 #[derive(Debug, Copy, Clone, PartialEq, Hash)]
 pub struct VarNumber(u64);
+
+impl ops::Add for VarNumber {
+    type Output = VarNumber;
+
+    fn add(self, rhs: VarNumber) -> Self::Output {
+        VarNumber(self.0 + rhs.0)
+    }
+}
+
+impl ops::Add<u64> for VarNumber {
+    type Output = VarNumber;
+
+    fn add(self, rhs: u64) -> Self::Output {
+        VarNumber(self.0 + rhs)
+    }
+}
 
 impl From<u8> for VarNumber {
     #[inline]

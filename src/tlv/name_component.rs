@@ -10,7 +10,7 @@ pub struct NameComponent {
 }
 
 impl Tlv for NameComponent {
-    const TYPE: u8 = 0x08;
+    const TYPE: u64 = 0x08;
 
     fn length(&self) -> VarNumber {
         self.bytes.len().into()
@@ -18,6 +18,10 @@ impl Tlv for NameComponent {
 
     fn value(&self) -> Option<Bytes> {
         Some(self.bytes.clone())
+    }
+
+    fn size(&self) -> usize {
+        unimplemented!()
     }
 }
 
