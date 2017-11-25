@@ -117,25 +117,31 @@ mod tests {
     use super::*;
 
     #[test]
-    fn zero() {
-        let zero: VarNumber = 0.into();
-        assert_eq!(zero, VarNumber(0));
+    fn number_conversion() {
+        let vn: VarNumber = 2u8.into();
+        assert_eq!(vn, VarNumber(2));
+
+        let vn: VarNumber = 255u8.into();
+        assert_eq!(vn, VarNumber(255));
+
+        let vn: VarNumber = 55678u16.into();
+        assert_eq!(vn, VarNumber(55678));
+
+        let vn: VarNumber = 345345344u32.into();
+        assert_eq!(vn, VarNumber(345345344));
+
+        let vn: VarNumber = 87234298734844u64.into();
+        assert_eq!(vn, VarNumber(87234298734844));
     }
 
     #[test]
-    fn one_byte0() {
+    fn one_byte() {
         let bytes: Bytes = VarNumber(0).into();
         assert_eq!(bytes, vec![0]);
-    }
 
-    #[test]
-    fn one_byte128() {
         let bytes: Bytes = VarNumber(128).into();
         assert_eq!(bytes, vec![128]);
-    }
 
-    #[test]
-    fn one_byte252() {
         let bytes: Bytes = VarNumber(252).into();
         assert_eq!(bytes, vec![252]);
     }
@@ -163,37 +169,37 @@ mod tests {
 
     #[test]
     fn varnumber_00() {
-        let bytes = Bytes::from_static(&[0u8]);
-        assert_eq!(VarNumber(0), bytes.into());
+        let bytes = Bytes::from_static(&[0u8]).into_buf();
+        assert_eq!(VarNumber(0), bytes.collect());
     }
 
     #[test]
     fn varnumber_128() {
-        let bytes = Bytes::from_static(&[128u8]);
-        assert_eq!(VarNumber(128), bytes.into());
+        let bytes = Bytes::from_static(&[128u8]).into_buf().into_buf();
+        assert_eq!(VarNumber(128), bytes.collect());
     }
 
     #[test]
     fn varnumber_252() {
-        let bytes = Bytes::from_static(&[252u8]);
-        assert_eq!(VarNumber(252), bytes.into());
+        let bytes = Bytes::from_static(&[252u8]).into_buf();
+        assert_eq!(VarNumber(252), bytes.collect());
     }
 
     #[test]
     fn varnumber_65530() {
-        let bytes = Bytes::from_static(&[253u8, 255u8, 250u8]);
-        assert_eq!(VarNumber(65530), bytes.into());
+        let bytes = Bytes::from_static(&[253u8, 255u8, 250u8]).into_buf();
+        assert_eq!(VarNumber(65530), bytes.collect());
     }
 
     #[test]
     fn varnumber_1234567890() {
-        let bytes = Bytes::from_static(&[254, 0x49, 0x96, 0x02, 0xd2]);
-        assert_eq!(VarNumber(1234567890), bytes.into());
+        let bytes = Bytes::from_static(&[254, 0x49, 0x96, 0x02, 0xd2]).into_buf();
+        assert_eq!(VarNumber(1234567890), bytes.collect());
     }
 
     #[test]
     fn varnumber_12345678901234567890() {
-        let bytes = Bytes::from_static(&[255, 171, 84, 169, 140, 235, 31, 10, 210]);
-        assert_eq!(VarNumber(12345678901234567890), bytes.into());
+        let bytes = Bytes::from_static(&[255, 171, 84, 169, 140, 235, 31, 10, 210]).into_buf();
+        assert_eq!(VarNumber(12345678901234567890), bytes.collect());
     }
 }
