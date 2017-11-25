@@ -2,6 +2,7 @@ use bytes::Bytes;
 
 mod varnumber;
 mod implicit_sha256_digest_component;
+mod name_component;
 
 pub use tlv::varnumber::VarNumber;
 
