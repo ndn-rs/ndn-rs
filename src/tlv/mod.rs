@@ -38,7 +38,13 @@ pub enum Type {
 }
 
 pub trait Tlv {
-    fn ty(&self) -> VarNumber;
+    const TYPE: u8;
+
+    fn ty(&self) -> VarNumber {
+        Self::TYPE.into()
+    }
+
     fn length(&self) -> VarNumber;
+
     fn value(&self) -> Option<Bytes>;
 }

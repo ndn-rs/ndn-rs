@@ -10,12 +10,12 @@ pub struct ImplicitSha256DigestComponent {
 }
 
 impl Tlv for ImplicitSha256DigestComponent {
-    fn ty(&self) -> VarNumber {
-        1u8.into()
-    }
+    const TYPE: u8 = 0x01;
+
     fn length(&self) -> VarNumber {
         32u8.into()
     }
+
     fn value(&self) -> Option<Bytes> {
         Some(Bytes::from(&self.value[..]))
     }

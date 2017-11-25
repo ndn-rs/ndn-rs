@@ -1,20 +1,50 @@
 use std::fmt;
 use bytes::{BigEndian, Buf, BufMut, Bytes, BytesMut, IntoBuf};
+use bytes::buf::FromBuf;
 
 #[derive(Debug, Copy, Clone, PartialEq, Hash)]
 pub struct VarNumber(u64);
+
+impl From<u8> for VarNumber {
+    #[inline]
+    fn from(u: u8) -> Self {
+        VarNumber(u64::from(u))
+    }
+}
+
+impl From<u16> for VarNumber {
+    #[inline]
+    fn from(u: u16) -> Self {
+        VarNumber(u64::from(u))
+    }
+}
+
+impl From<u32> for VarNumber {
+    #[inline]
+    fn from(u: u32) -> Self {
+        VarNumber(u64::from(u))
+    }
+}
+
+impl From<u64> for VarNumber {
+    #[inline]
+    fn from(u: u64) -> Self {
+        VarNumber(u)
+    }
+}
+
+impl From<usize> for VarNumber {
+    #[inline]
+    fn from(u: usize) -> Self {
+        VarNumber(u as u64)
+    }
+}
 
 impl fmt::Display for VarNumber {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "{}", self.0)
     }
 }
-
-// impl From<u64> for VarNumber {
-//     fn from(u: u64) -> Self {
-//         VarNumber(u)
-//     }
-// }
 
 impl From<VarNumber> for Bytes {
     fn from(v: VarNumber) -> Self {
@@ -48,8 +78,11 @@ impl From<VarNumber> for Bytes {
     }
 }
 
-impl<B: IntoBuf> From<B> for VarNumber {
-    fn from(buf: B) -> Self {
+impl FromBuf for VarNumber {
+    fn from_buf<B>(buf: B) -> Self
+    where
+        B: IntoBuf,
+    {
         let mut buf = buf.into_buf();
         let n = match buf.get_u8() {
             x @ 0...252 => u64::from(x),
@@ -62,9 +95,32 @@ impl<B: IntoBuf> From<B> for VarNumber {
     }
 }
 
+// impl<B> From<B> for VarNumber
+// where
+//     B: IntoBuf,
+// {
+//     fn from(buf: B) -> Self {
+//         let mut buf = buf.into_buf();
+//         let n = match buf.get_u8() {
+//             x @ 0...252 => u64::from(x),
+//             253 => u64::from(buf.get_u16::<BigEndian>()),
+//             254 => u64::from(buf.get_u32::<BigEndian>()),
+//             255 => buf.get_u64::<BigEndian>(),
+//             _ => unreachable!(),
+//         };
+//         VarNumber(n)
+//     }
+// }
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn zero() {
+        let zero: VarNumber = 0.into();
+        assert_eq!(zero, VarNumber(0));
+    }
 
     #[test]
     fn one_byte0() {
