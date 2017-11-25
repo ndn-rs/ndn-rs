@@ -2,9 +2,14 @@ use bytes::Bytes;
 
 mod varnumber;
 mod implicit_sha256_digest_component;
+mod name;
 mod name_component;
 
 pub use tlv::varnumber::VarNumber;
+
+pub use tlv::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
+pub use tlv::name_component::NameComponent;
+pub use tlv::name::Name;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Type {
@@ -13,7 +18,7 @@ pub enum Type {
     // 2 - 4 Unassigned
     Interest = 0x05,
     Data = 0x06,
-    Name = 0x07,
+    // Name = 0x07,
     // NameComponent = 0x08,
     Selectors = 0x09,
     Nonce = 0x0a,
