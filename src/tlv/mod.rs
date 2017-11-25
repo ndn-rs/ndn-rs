@@ -1,3 +1,5 @@
+use bytes::Bytes;
+
 mod varnumber;
 
 use self::varnumber::VarNumber;
@@ -34,9 +36,8 @@ pub enum Type {
     KeyDigest = 0x1d,
 }
 
-#[derive(Debug, PartialEq)]
-pub struct Tlv {
-    pub Type: VarNumber,
-    pub Length: VarNumber,
-    pub Value: Option<Vec<u8>>,
+pub trait Tlv {
+    fn ty(&self) -> VarNumber;
+    fn length(&self) -> VarNumber;
+    fn value(&self) -> Option<Bytes>;
 }
