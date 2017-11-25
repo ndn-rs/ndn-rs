@@ -9,3 +9,4 @@ repository = "https://github.com/imp/ndn-rs.git"
 version = "0.0.0"
 
 [dependencies]
+bytes = "0.4"

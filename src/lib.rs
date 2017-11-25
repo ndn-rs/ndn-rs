@@ -1,4 +1,7 @@
 #![feature(try_from)]
+
+extern crate bytes;
+
 pub mod tlv;
 
 #[cfg(test)]

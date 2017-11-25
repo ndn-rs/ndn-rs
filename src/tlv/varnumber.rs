@@ -1,6 +1,7 @@
 use std::convert::TryFrom;
 use std::fmt;
 use std::mem;
+use bytes::{BigEndian, BufMut, Bytes, BytesMut};
 
 #[derive(Debug, Copy, Clone, PartialEq, Hash)]
 pub struct VarNumber(u64);
@@ -8,6 +9,38 @@ pub struct VarNumber(u64);
 impl fmt::Display for VarNumber {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "{}", self.0)
+    }
+}
+
+impl From<VarNumber> for Bytes {
+    fn from(v: VarNumber) -> Self {
+        let bytes = match v.0 {
+            x @ 0...252 => {
+                let mut bytes = BytesMut::with_capacity(1);
+                bytes.put_u8(x as u8);
+                bytes
+            }
+            x @ 253...0xFFFF => {
+                let mut bytes = BytesMut::with_capacity(3);
+                bytes.put_u8(253);
+                bytes.put_u16::<BigEndian>(x as u16);
+                bytes
+            }
+            x @ 0x1_0000...0xFFFF_FFFF => {
+                let mut bytes = BytesMut::with_capacity(5);
+                bytes.put_u8(254);
+                bytes.put_u32::<BigEndian>(x as u32);
+                bytes
+            }
+            x @ 0x1_0000_0000...0xFFFF_FFFF_FFFF_FFFF => {
+                let mut bytes = BytesMut::with_capacity(9);
+                bytes.put_u8(255);
+                bytes.put_u64::<BigEndian>(x);
+                bytes
+            }
+            _ => unreachable!(),
+        };
+        bytes.freeze()
     }
 }
 
