@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 use std::fmt;
 use std::mem;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Hash)]
 pub struct VarNumber(u64);
 
 impl fmt::Display for VarNumber {
