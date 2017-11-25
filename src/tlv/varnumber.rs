@@ -12,6 +12,12 @@ impl fmt::Display for VarNumber {
     }
 }
 
+impl From<u64> for VarNumber {
+    fn from(u: u64) -> Self {
+        VarNumber(u)
+    }
+}
+
 impl From<VarNumber> for Bytes {
     fn from(v: VarNumber) -> Self {
         let bytes = match v.0 {
