@@ -9,12 +9,12 @@ pub use tlv::varnumber::VarNumber;
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Type {
     // 0 Unassigned
-    ImplicitSha256DigestComponent = 0x01,
+    // ImplicitSha256DigestComponent = 0x01,
     // 2 - 4 Unassigned
     Interest = 0x05,
     Data = 0x06,
     Name = 0x07,
-    NameComponent = 0x08,
+    // NameComponent = 0x08,
     Selectors = 0x09,
     Nonce = 0x0a,
     // 11 (0x0b) Reserved (formely Scope)
