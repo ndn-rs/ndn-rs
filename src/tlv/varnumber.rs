@@ -113,38 +113,6 @@ impl From<VarNumber> for Bytes {
     }
 }
 
-// impl From<VarNumber> for Bytes {
-//     fn from(v: VarNumber) -> Self {
-//         let bytes = match v.0 {
-//             x @ 0...252 => {
-//                 let mut bytes = BytesMut::with_capacity(1);
-//                 bytes.put_u8(x as u8);
-//                 bytes
-//             }
-//             x @ 253...0xFFFF => {
-//                 let mut bytes = BytesMut::with_capacity(3);
-//                 bytes.put_u8(253);
-//                 bytes.put_u16::<BigEndian>(x as u16);
-//                 bytes
-//             }
-//             x @ 0x1_0000...0xFFFF_FFFF => {
-//                 let mut bytes = BytesMut::with_capacity(5);
-//                 bytes.put_u8(254);
-//                 bytes.put_u32::<BigEndian>(x as u32);
-//                 bytes
-//             }
-//             x @ 0x1_0000_0000...0xFFFF_FFFF_FFFF_FFFF => {
-//                 let mut bytes = BytesMut::with_capacity(9);
-//                 bytes.put_u8(255);
-//                 bytes.put_u64::<BigEndian>(x);
-//                 bytes
-//             }
-//             _ => unreachable!(),
-//         };
-//         bytes.freeze()
-//     }
-// }
-
 impl FromBuf for VarNumber {
     fn from_buf<B>(buf: B) -> Self
     where
@@ -161,23 +129,6 @@ impl FromBuf for VarNumber {
         VarNumber::from_u64(n)
     }
 }
-
-// impl<B> From<B> for VarNumber
-// where
-//     B: IntoBuf,
-// {
-//     fn from(buf: B) -> Self {
-//         let mut buf = buf.into_buf();
-//         let n = match buf.get_u8() {
-//             x @ 0...252 => u64::from(x),
-//             253 => u64::from(buf.get_u16::<BigEndian>()),
-//             254 => u64::from(buf.get_u32::<BigEndian>()),
-//             255 => buf.get_u64::<BigEndian>(),
-//             _ => unreachable!(),
-//         };
-//         VarNumber(n)
-//     }
-// }
 
 #[cfg(test)]
 mod tests {
