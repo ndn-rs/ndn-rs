@@ -31,7 +31,7 @@ impl Tlv for Name {
     const TYPE: u64 = 0x07;
 
     fn length(&self) -> VarNumber {
-        self.length
+        self.length.clone()
     }
 
     fn value(&self) -> Option<Bytes> {
