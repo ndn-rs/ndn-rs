@@ -2,6 +2,7 @@ use bytes::Bytes;
 
 mod varnumber;
 mod implicit_sha256_digest_component;
+mod must_be_fresh;
 mod name;
 mod name_component;
 mod nonce;
@@ -9,6 +10,7 @@ mod nonce;
 pub use tlv::varnumber::VarNumber;
 
 pub use tlv::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
+pub use tlv::must_be_fresh::MustBeFresh;
 pub use tlv::name_component::NameComponent;
 pub use tlv::name::Name;
 pub use tlv::nonce::Nonce;
@@ -31,7 +33,7 @@ pub enum Type {
     PublisherPublicKeyLocator = 0x0f,
     Exclude = 0x10,
     ChildSelector = 0x11,
-    MustBeFresh = 0x12,
+    // MustBeFresh = 0x12,
     Any = 0x13,
     MetaInfo = 0x14,
     Content = 0x15,
