@@ -4,12 +4,14 @@ mod varnumber;
 mod implicit_sha256_digest_component;
 mod name;
 mod name_component;
+mod nonce;
 
 pub use tlv::varnumber::VarNumber;
 
 pub use tlv::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
 pub use tlv::name_component::NameComponent;
 pub use tlv::name::Name;
+pub use tlv::nonce::Nonce;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Type {
@@ -21,7 +23,7 @@ pub enum Type {
     // Name = 0x07,
     // NameComponent = 0x08,
     Selectors = 0x09,
-    Nonce = 0x0a,
+    // Nonce = 0x0a,
     // 11 (0x0b) Reserved (formely Scope)
     InterestLifetime = 0x0c,
     MinSuffixComponents = 0x0d,
