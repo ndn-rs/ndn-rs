@@ -42,7 +42,10 @@ impl VarNumber {
             }
             _ => unreachable!(),
         };
-        Self { inner: bytes.freeze(), value: u }
+        Self {
+            inner: bytes.freeze(),
+            value: u,
+        }
     }
 
     fn as_u64(&self) -> u64 {
