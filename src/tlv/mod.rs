@@ -6,6 +6,8 @@ mod content;
 mod freshness_period;
 mod implicit_sha256_digest_component;
 mod interest_lifetime;
+mod max_suffix_components;
+mod min_suffix_components;
 mod must_be_fresh;
 mod name;
 mod name_component;
@@ -18,6 +20,8 @@ pub use tlv::content::Content;
 pub use tlv::freshness_period::FreshnessPeriod;
 pub use tlv::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
 pub use tlv::interest_lifetime::InterestLifetime;
+pub use tlv::max_suffix_components::MaxSuffixComponents;
+pub use tlv::min_suffix_components::MinSuffixComponents;
 pub use tlv::must_be_fresh::MustBeFresh;
 pub use tlv::name_component::NameComponent;
 pub use tlv::name::Name;
@@ -36,8 +40,8 @@ pub enum Type {
     // Nonce = 0x0a,
     // 11 (0x0b) Reserved (formely Scope)
     // InterestLifetime = 0x0c,
-    MinSuffixComponents = 0x0d,
-    MaxSuffixComponents = 0x0e,
+    // MinSuffixComponents = 0x0d,
+    // MaxSuffixComponents = 0x0e,
     PublisherPublicKeyLocator = 0x0f,
     Exclude = 0x10,
     ChildSelector = 0x11,
