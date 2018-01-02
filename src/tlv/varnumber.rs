@@ -51,6 +51,12 @@ impl VarNumber {
     fn as_u64(&self) -> u64 {
         self.value
     }
+
+    // Cloning `Bytes` should be simple and relatively inexpansive, as it just creates another
+    // reference to the original data.
+    pub fn as_bytes(&self) -> Bytes {
+        self.inner.clone()
+    }
 }
 
 impl ops::Add for VarNumber {
@@ -112,7 +118,7 @@ impl fmt::Display for VarNumber {
 
 impl From<VarNumber> for Bytes {
     fn from(v: VarNumber) -> Self {
-        v.inner.clone()
+        v.inner
     }
 }
 

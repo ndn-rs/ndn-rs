@@ -2,6 +2,7 @@ use bytes::Bytes;
 
 mod varnumber;
 mod implicit_sha256_digest_component;
+mod interest_lifetime;
 mod must_be_fresh;
 mod name;
 mod name_component;
@@ -10,6 +11,7 @@ mod nonce;
 pub use tlv::varnumber::VarNumber;
 
 pub use tlv::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
+pub use tlv::interest_lifetime::InterestLifetime;
 pub use tlv::must_be_fresh::MustBeFresh;
 pub use tlv::name_component::NameComponent;
 pub use tlv::name::Name;
@@ -27,7 +29,7 @@ pub enum Type {
     Selectors = 0x09,
     // Nonce = 0x0a,
     // 11 (0x0b) Reserved (formely Scope)
-    InterestLifetime = 0x0c,
+    // InterestLifetime = 0x0c,
     MinSuffixComponents = 0x0d,
     MaxSuffixComponents = 0x0e,
     PublisherPublicKeyLocator = 0x0f,
