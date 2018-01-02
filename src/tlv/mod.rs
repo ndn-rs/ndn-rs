@@ -1,5 +1,6 @@
 use bytes::Bytes;
 
+mod any;
 mod varnumber;
 mod implicit_sha256_digest_component;
 mod interest_lifetime;
@@ -10,6 +11,7 @@ mod nonce;
 
 pub use tlv::varnumber::VarNumber;
 
+pub use tlv::any::Any;
 pub use tlv::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
 pub use tlv::interest_lifetime::InterestLifetime;
 pub use tlv::must_be_fresh::MustBeFresh;
@@ -36,7 +38,7 @@ pub enum Type {
     Exclude = 0x10,
     ChildSelector = 0x11,
     // MustBeFresh = 0x12,
-    Any = 0x13,
+    // Any = 0x13,
     MetaInfo = 0x14,
     Content = 0x15,
     SignatureInfo = 0x16,
