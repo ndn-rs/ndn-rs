@@ -51,6 +51,8 @@ pub enum Type {
     SignatureType = 0x1b,
     KeyLocator = 0x1c,
     KeyDigest = 0x1d,
+    Preference = 0x1e,
+    Delegation = 0x1f,
 }
 
 pub trait Tlv {
