@@ -1,8 +1,8 @@
 use std::fmt;
 
 use bytes::Bytes;
-use tlv::Tlv;
-use tlv::VarNumber;
+
+use crate::tlv::{Tlv, VarNumber};
 
 #[derive(Debug, PartialEq)]
 pub struct Any;
@@ -24,7 +24,7 @@ impl Tlv for Any {
 }
 
 impl fmt::Display for Any {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(fmt, "Any")
     }
 }

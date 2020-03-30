@@ -2,24 +2,21 @@ use std::fmt;
 
 use bytes::Bytes;
 
-use super::ImplicitSha256DigestComponent;
-use super::NameComponent as GenericNameComponent;
-use super::Tlv;
-use super::VarNumber;
+use super::{
+    ForwardingHint, ImplicitSha256DigestComponent, InterestLifetime, Name, NameComponent, Nonce,
+    Selectors, Tlv, VarNumber,
+};
 
 #[derive(Debug, PartialEq)]
-enum NameComponent {
-    GenericNameComponent(GenericNameComponent),
-    ImplicitSha256DigestComponent(ImplicitSha256DigestComponent),
+pub struct Interest {
+    name: Name,
+    selectors: Option<Selectors>,
+    nonce: Nonce,
+    interestlifetime: Option<InterestLifetime>,
+    forwardinghint: Option<ForwardingHint>,
 }
 
-#[derive(Debug, PartialEq)]
-pub struct Name {
-    components: Vec<NameComponent>,
-    length: VarNumber,
-}
-
-impl Name {
+impl Interest {
     pub fn with_digest() -> Self {
         let digest = ImplicitSha256DigestComponent::new();
         let length = digest.length() + 1 + 1;
@@ -28,8 +25,8 @@ impl Name {
     }
 }
 
-impl Tlv for Name {
-    const TYPE: u64 = 0x07;
+impl Tlv for Interest {
+    const TYPE: u64 = 0x05;
 
     fn length(&self) -> VarNumber {
         self.length.clone()
@@ -44,7 +41,7 @@ impl Tlv for Name {
     }
 }
 
-impl fmt::Display for Name {
+impl fmt::Display for Interest {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(fmt, "{:?}", self.components)
     }

@@ -1,8 +1,9 @@
 use std::fmt;
 
 use bytes::Bytes;
-use tlv::Tlv;
-use tlv::VarNumber;
+
+use super::Tlv;
+use super::VarNumber;
 
 #[derive(Debug, PartialEq)]
 pub struct Content {
@@ -26,7 +27,7 @@ impl Tlv for Content {
 }
 
 impl fmt::Display for Content {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(fmt, "Content({} bytes) <...>", self.bytes.len())
     }
 }

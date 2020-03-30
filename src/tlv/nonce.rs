@@ -1,8 +1,8 @@
 use std::fmt;
 
 use bytes::Bytes;
-use tlv::Tlv;
-use tlv::VarNumber;
+
+use super::{Tlv, VarNumber};
 
 #[derive(Debug, PartialEq)]
 pub struct Nonce {
@@ -17,7 +17,8 @@ impl Tlv for Nonce {
     }
 
     fn value(&self) -> Option<Bytes> {
-        Some(self.bytes.as_ref().into())
+        let bytes = Bytes::copy_from_slice(&self.bytes);
+        Some(bytes)
     }
 
     fn size(&self) -> usize {
@@ -26,7 +27,7 @@ impl Tlv for Nonce {
 }
 
 impl fmt::Display for Nonce {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             fmt,
             "Nonce <{}:{}:{}:{}>",

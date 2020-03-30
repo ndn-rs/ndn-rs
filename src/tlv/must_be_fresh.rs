@@ -1,8 +1,9 @@
 use std::fmt;
 
 use bytes::Bytes;
-use tlv::Tlv;
-use tlv::VarNumber;
+
+use super::Tlv;
+use super::VarNumber;
 
 #[derive(Debug, PartialEq)]
 pub struct MustBeFresh;
@@ -24,7 +25,7 @@ impl Tlv for MustBeFresh {
 }
 
 impl fmt::Display for MustBeFresh {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(fmt, "MustBeFresh")
     }
 }

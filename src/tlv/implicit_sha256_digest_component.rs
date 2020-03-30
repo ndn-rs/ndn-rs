@@ -1,8 +1,9 @@
 use std::fmt;
 
 use bytes::Bytes;
-use tlv::Tlv;
-use tlv::VarNumber;
+
+use super::Tlv;
+use super::VarNumber;
 
 #[derive(Debug, Default, PartialEq)]
 pub struct ImplicitSha256DigestComponent {
@@ -11,7 +12,7 @@ pub struct ImplicitSha256DigestComponent {
 
 impl ImplicitSha256DigestComponent {
     pub fn new() -> Self {
-        Default::default()
+        Self::default()
     }
 }
 
@@ -19,11 +20,12 @@ impl Tlv for ImplicitSha256DigestComponent {
     const TYPE: u64 = 0x01;
 
     fn length(&self) -> VarNumber {
-        32u64.into()
+        self.value.len().into()
     }
 
     fn value(&self) -> Option<Bytes> {
-        Some(Bytes::from(&self.value[..]))
+        let bytes = Bytes::copy_from_slice(&self.value);
+        Some(bytes)
     }
 
     fn size(&self) -> usize {
@@ -32,7 +34,7 @@ impl Tlv for ImplicitSha256DigestComponent {
 }
 
 impl fmt::Display for ImplicitSha256DigestComponent {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(fmt, "sha256digest={:?}", self.value)
     }
 }

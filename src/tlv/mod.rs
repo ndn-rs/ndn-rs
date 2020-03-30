@@ -1,10 +1,10 @@
 use bytes::Bytes;
 
-mod varnumber;
 mod any;
 mod content;
 mod freshness_period;
 mod implicit_sha256_digest_component;
+// mod interest;
 mod interest_lifetime;
 mod max_suffix_components;
 mod min_suffix_components;
@@ -12,20 +12,22 @@ mod must_be_fresh;
 mod name;
 mod name_component;
 mod nonce;
+mod varnumber;
 
-pub use tlv::varnumber::VarNumber;
+pub use self::varnumber::VarNumber;
 
-pub use tlv::any::Any;
-pub use tlv::content::Content;
-pub use tlv::freshness_period::FreshnessPeriod;
-pub use tlv::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
-pub use tlv::interest_lifetime::InterestLifetime;
-pub use tlv::max_suffix_components::MaxSuffixComponents;
-pub use tlv::min_suffix_components::MinSuffixComponents;
-pub use tlv::must_be_fresh::MustBeFresh;
-pub use tlv::name_component::NameComponent;
-pub use tlv::name::Name;
-pub use tlv::nonce::Nonce;
+pub use self::any::Any;
+pub use self::content::Content;
+pub use self::freshness_period::FreshnessPeriod;
+pub use self::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
+// pub use self::interest::Interest;
+pub use self::interest_lifetime::InterestLifetime;
+pub use self::max_suffix_components::MaxSuffixComponents;
+pub use self::min_suffix_components::MinSuffixComponents;
+pub use self::must_be_fresh::MustBeFresh;
+pub use self::name::Name;
+pub use self::name_component::NameComponent;
+pub use self::nonce::Nonce;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Type {
@@ -38,7 +40,7 @@ pub enum Type {
     // NameComponent = 0x08,
     Selectors = 0x09,
     // Nonce = 0x0a,
-    // 11 (0x0b) Reserved (formely Scope)
+    // 11 (0x0b) Reserved (formerly Scope)
     // InterestLifetime = 0x0c,
     // MinSuffixComponents = 0x0d,
     // MaxSuffixComponents = 0x0e,
@@ -66,7 +68,7 @@ pub trait Tlv {
     const TYPE: u64;
 
     /// report this TLV-TYPE as a `VarNumber`
-    fn ty(&self) -> VarNumber {
+    fn r#type(&self) -> VarNumber {
         Self::TYPE.into()
     }
 
