@@ -4,7 +4,7 @@ use bytes::Bytes;
 
 use super::{
     ForwardingHint, ImplicitSha256DigestComponent, InterestLifetime, Name, NameComponent, Nonce,
-    Selectors, Tlv, VarNumber,
+    Tlv, VarNumber,
 };
 
 #[derive(Debug, PartialEq)]
@@ -20,7 +20,7 @@ impl Interest {
     pub fn with_digest() -> Self {
         let digest = ImplicitSha256DigestComponent::new();
         let length = digest.length() + 1 + 1;
-        let components = vec![NameComponent::ImplicitSha256DigestComponent(digest)];
+        let components = vec![ImplicitSha256DigestComponent(digest)];
         Self { components, length }
     }
 }
