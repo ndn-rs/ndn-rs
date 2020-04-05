@@ -38,8 +38,8 @@ pub enum Type {
     Data = 0x06,
     // Name = 0x07,
     // NameComponent = 0x08,
-    Selectors = 0x09,
-    // Nonce = 0x0a,
+    // 9 (0x09) Reserved (formerly Selectors)
+    Nonce = 0x0a,
     // 11 (0x0b) Reserved (formerly Scope)
     // InterestLifetime = 0x0c,
     // MinSuffixComponents = 0x0d,
