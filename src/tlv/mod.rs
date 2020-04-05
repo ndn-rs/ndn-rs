@@ -1,14 +1,11 @@
 use bytes::Bytes;
 
-mod any;
 mod content;
 mod freshness_period;
 mod hoplimit;
 mod implicit_sha256_digest_component;
 // mod interest;
 mod interest_lifetime;
-mod max_suffix_components;
-mod min_suffix_components;
 mod must_be_fresh;
 mod name;
 mod name_component;
@@ -17,15 +14,12 @@ mod varnumber;
 
 pub use self::varnumber::VarNumber;
 
-pub use self::any::Any;
 pub use self::content::Content;
 pub use self::freshness_period::FreshnessPeriod;
 pub use self::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
 // pub use self::interest::Interest;
 pub use self::hoplimit::HopLimit;
 pub use self::interest_lifetime::InterestLifetime;
-pub use self::max_suffix_components::MaxSuffixComponents;
-pub use self::min_suffix_components::MinSuffixComponents;
 pub use self::must_be_fresh::MustBeFresh;
 pub use self::name::Name;
 pub use self::name_component::NameComponent;
@@ -44,13 +38,13 @@ pub enum Type {
     Nonce = 0x0a,
     // 11 (0x0b) Reserved (formerly Scope)
     // InterestLifetime = 0x0c,
-    // MinSuffixComponents = 0x0d,
-    // MaxSuffixComponents = 0x0e,
-    PublisherPublicKeyLocator = 0x0f,
-    Exclude = 0x10,
-    ChildSelector = 0x11,
+    // 13 (0x0d) Reserved (formerly MinSuffixComponents)
+    // 14 (0x0e) Reserved (formerly MaxSuffixComponents)
+    // 15 (0x0f) Reserved (formerly PublisherPublicKeyLocator)
+    // 16 (0x10) Reserved (formerly Exclude)
+    // 17 (0x11) Reserved (formerly ChildSelector)
     // MustBeFresh = 0x12,
-    // Any = 0x13,
+    // 19 (0x13) Reserved (formerly Any)
     MetaInfo = 0x14,
     // Content = 0x15,
     SignatureInfo = 0x16,
@@ -63,7 +57,14 @@ pub enum Type {
     KeyDigest = 0x1d,
     Preference = 0x1e,
     Delegation = 0x1f,
+    // CanBePrefix = 0x21,
     HopLimit = 0x22,
+    // ApplicationParameters = 0x24,
+    // SignatureNonce = 0x26,
+    // SignatureTime = 0x28,
+    // SignatureSeqNum = 0x2a,
+    // InterestSignatureInfo = 0x2c,
+    // InterestSignatureValue = 0x2e,
 }
 
 pub trait Tlv {
