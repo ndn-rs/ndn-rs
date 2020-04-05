@@ -3,6 +3,7 @@ use bytes::Bytes;
 mod any;
 mod content;
 mod freshness_period;
+mod hoplimit;
 mod implicit_sha256_digest_component;
 // mod interest;
 mod interest_lifetime;
@@ -21,6 +22,7 @@ pub use self::content::Content;
 pub use self::freshness_period::FreshnessPeriod;
 pub use self::implicit_sha256_digest_component::ImplicitSha256DigestComponent;
 // pub use self::interest::Interest;
+pub use self::hoplimit::HopLimit;
 pub use self::interest_lifetime::InterestLifetime;
 pub use self::max_suffix_components::MaxSuffixComponents;
 pub use self::min_suffix_components::MinSuffixComponents;
@@ -61,6 +63,7 @@ pub enum Type {
     KeyDigest = 0x1d,
     Preference = 0x1e,
     Delegation = 0x1f,
+    HopLimit = 0x22,
 }
 
 pub trait Tlv {
