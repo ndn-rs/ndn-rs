@@ -9,7 +9,7 @@ keywords = ["ndn", "named", "data", "networking"]
 license = "Apache-2.0/MIT"
 repository = "https://gitlab.com/imp/ndn-rs"
 categories = ["network-programming"]
-edition = "2018"
+edition = "2021"
 
 [badges]
 travis-ci = { repository = "imp/ndn-rs" }
