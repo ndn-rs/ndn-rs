@@ -1,22 +1,35 @@
-[package]
-name = "ndn"
-version = "0.0.1" # remember to update html_root_url
-description = "[WIP] NDN - Named Data Networking in Rust"
-documentation = "https://docs.rs/ndn"
+[workspace]
+resolver = "2"
+members = ["ndn", "tlv"]
+
+
+[workspace.package]
+version = "0.1.0"
 authors = ["Cyril Plisko <cyril.plisko@mountall.com>"]
-homepage = "https://gitlab.com/imp/ndn-rs"
-keywords = ["ndn", "named", "data", "networking"]
-license = "Apache-2.0/MIT"
-repository = "https://gitlab.com/imp/ndn-rs"
-categories = ["network-programming"]
 edition = "2021"
+license = "Apache-2.0/MIT"
+repository = "https://github.com/imp/ndn-rs"
 
-[badges]
-travis-ci = { repository = "imp/ndn-rs" }
-gitlab = { repository = "imp/ndn-rs" }
 
-[dependencies]
-bytes = "0.5"
+[workspace.dependencies]
+ndn-tlv = { path = "./tlv" }
 
-[features]
-pedantic = []
+
+[workspace.lints.clippy]
+use_self = "warn"
+map_flatten = "warn"
+map_unwrap_or = "warn"
+
+
+[workspace.lints.rust]
+deprecated_in_future = "warn"
+future_incompatible = "warn"
+noop_method_call = "warn"
+unreachable_pub = "warn"
+missing_debug_implementations = "warn"
+rust_2018_compatibility = "warn"
+rust_2021_compatibility = "warn"
+rust_2018_idioms = "warn"
+trivial_casts = "warn"
+unused = "warn"
+warnings = "deny"

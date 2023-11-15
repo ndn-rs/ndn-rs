@@ -1,0 +1,16 @@
+[package]
+name = "ndn"
+description = "Named Data Networking - top level crate"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+
+[dependencies]
+ndn-tlv.workspace = true
+
+
+[lints]
+workspace = true

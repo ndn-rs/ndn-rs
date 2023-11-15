@@ -1,19 +1,13 @@
-use std::fmt;
+use super::*;
 
-use bytes::Bytes;
-
-use super::{Tlv, VarNumber};
-
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Nonce {
     bytes: [u8; 4],
 }
 
 impl Tlv for Nonce {
-    const TYPE: u64 = 0x0a;
-
-    fn length(&self) -> VarNumber {
-        self.bytes.len().into()
+    fn r#type(&self) -> Type {
+        Type::Nonce
     }
 
     fn value(&self) -> Option<Bytes> {
@@ -21,17 +15,17 @@ impl Tlv for Nonce {
         Some(bytes)
     }
 
-    fn size(&self) -> usize {
-        unimplemented!()
+    fn payload_size(&self) -> usize {
+        self.bytes.len()
     }
 }
 
 impl fmt::Display for Nonce {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            fmt,
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        format!(
             "Nonce <{}:{}:{}:{}>",
             self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3]
         )
+        .fmt(f)
     }
 }
