@@ -1,18 +1,16 @@
 [package]
-name = "ndn-tlv"
-description = "Named Data Networking - TLV"
+name = "ndn-lpv2"
 version.workspace = true
+authors.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
-authors.workspace = true
 
 
 [dependencies]
 bytes.workspace = true
-generic-array.workspace = true
 
-ndn-varnumber.workspace = true
+ndn-tlv.workspace = true
 
 
 [lints]

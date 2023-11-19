@@ -1,7 +1,7 @@
 use std::fmt;
-use std::ops;
 
 use bytes::Bytes;
+use ndn_varnumber::VarNumber;
 
 pub use application::ApplicationParameters;
 pub use canbeprefix::CanBePrefix;
@@ -23,13 +23,13 @@ pub use metainfo::MetaInfo;
 pub use name::FinalBlockId;
 pub use name::Name;
 pub use nonce::Nonce;
+pub use packet::Packet;
 pub use signature::DataSignature;
 pub use signature::InterestSignature;
 pub use signature::InterestSignatureInfo;
 pub use signature::InterestSignatureValue;
 pub use signature::SignatureInfo;
 pub use signature::SignatureValue;
-pub use varnumber::VarNumber;
 
 mod application;
 mod canbeprefix;
@@ -43,8 +43,8 @@ mod interest;
 mod metainfo;
 mod name;
 mod nonce;
+mod packet;
 mod signature;
-mod varnumber;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Type {
@@ -91,6 +91,26 @@ pub enum Type {
     SignatureSeqNum = 0x2a,
     InterestSignatureInfo = 0x2c,
     InterestSignatureValue = 0x2e,
+    Fragment = 0x50,
+    Sequence = 0x51,
+    FragIndex = 0x52,
+    FragCount = 0x53,
+    HopCount = 0x54,
+    GeoTag = 0x55,
+    PitToken = 0x62,
+    LpPacket = 0x64,
+    Nack = 0x0320,
+    NackReason = 0x0321,
+    IncomingFaceId = 0x032c,
+    NextHopFaceId = 0x0330,
+    // 821 0x0331 Reserved, formerly IncomingFaceId
+    CachePolicy = 0x0334,
+    CachePolicyType = 0x0335,
+    CongestionMark = 0x0340,
+    Ack = 0x0344,
+    TxSequence = 0x0348,
+    NonDiscovery = 0x034c,
+    PrefixAnnouncement = 0x0350,
     ValidityPeriod = 0xfd,
     NotBefore = 0xfe,
     NotAfter = 0xff,

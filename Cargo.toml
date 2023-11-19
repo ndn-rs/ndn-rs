@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["ndn", "tlv"]
+members = ["lpv2", "ndn", "tlv", "varnumber"]
 
 
 [workspace.package]
@@ -12,7 +12,13 @@ repository = "https://github.com/imp/ndn-rs"
 
 
 [workspace.dependencies]
+bytes = "1.5"
+generic-array = "1.0"
+
+
 ndn-tlv = { path = "./tlv" }
+ndn-lpv2 = { path = "./lpv2" }
+ndn-varnumber = { path = "./varnumber" }
 
 
 [workspace.lints.clippy]

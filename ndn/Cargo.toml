@@ -10,6 +10,8 @@ repository.workspace = true
 
 [dependencies]
 ndn-tlv.workspace = true
+ndn-lpv2.workspace = true
+ndn-varnumber.workspace = true
 
 
 [lints]

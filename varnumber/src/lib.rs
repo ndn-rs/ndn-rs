@@ -1,6 +1,7 @@
-use bytes::{Buf, BufMut, BytesMut};
+use std::fmt;
+use std::ops;
 
-use super::*;
+use bytes::{Buf, BufMut, Bytes, BytesMut};
 
 #[derive(Clone, Debug, PartialEq, Hash)]
 pub struct VarNumber {
@@ -54,7 +55,7 @@ impl VarNumber {
         Self { bytes, value }
     }
 
-    fn as_u64(&self) -> u64 {
+    fn to_u64(&self) -> u64 {
         self.value
     }
 
@@ -73,7 +74,7 @@ impl ops::Add for VarNumber {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Self::from_u64(self.as_u64() + rhs.as_u64())
+        Self::from_u64(self.to_u64() + rhs.to_u64())
     }
 }
 
@@ -81,7 +82,7 @@ impl ops::Add<u64> for VarNumber {
     type Output = Self;
 
     fn add(self, rhs: u64) -> Self::Output {
-        Self::from_u64(self.as_u64() + rhs)
+        Self::from_u64(self.to_u64() + rhs)
     }
 }
 
@@ -120,9 +121,15 @@ impl From<usize> for VarNumber {
     }
 }
 
+impl From<VarNumber> for u64 {
+    fn from(value: VarNumber) -> Self {
+        value.to_u64()
+    }
+}
+
 impl fmt::Display for VarNumber {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(fmt, "{}", self.as_u64())
+        write!(fmt, "{}", self.to_u64())
     }
 }
 
@@ -135,10 +142,10 @@ impl From<VarNumber> for Bytes {
 impl From<Bytes> for VarNumber {
     fn from(mut buf: Bytes) -> Self {
         let n = match buf.get_u8() {
-            x @ 0..=252 => u64::from(x),
-            253 => u64::from(buf.get_u16()),
-            254 => u64::from(buf.get_u32()),
-            255 => buf.get_u64(),
+            x @ 0..=0xfc => u64::from(x),
+            0xfd => u64::from(buf.get_u16()),
+            0xfe => u64::from(buf.get_u32()),
+            0xff => buf.get_u64(),
         };
         Self::from(n)
     }
