@@ -4,7 +4,7 @@ pub use block::FinalBlockId;
 
 mod block;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Name {
     components: Vec<NameComponent>,
     length: VarNumber,

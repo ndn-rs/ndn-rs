@@ -1,6 +1,6 @@
 use std::fmt;
 
-use bytes::Bytes;
+use bytes::{Bytes, BytesMut};
 use ndn_varnumber::VarNumber;
 
 pub use application::ApplicationParameters;
@@ -146,4 +146,15 @@ pub trait Tlv {
 
     /// Report the size of the payload if any
     fn payload_size(&self) -> usize;
+
+    /// Convert this TLV to `Bytes`
+    fn bytes(&self) -> Bytes {
+        let r#type = self.type_as_varnumber().bytes();
+        let length = self.length().bytes();
+        let payload = self.value().unwrap_or_default();
+        let size = r#type.len() + length.len() + payload.len();
+        let mut bytes = BytesMut::with_capacity(size);
+        bytes.extend([r#type, length, payload]);
+        bytes.freeze()
+    }
 }

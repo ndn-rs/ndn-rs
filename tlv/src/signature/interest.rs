@@ -1,15 +1,15 @@
 use super::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct InterestSignature {
     info: InterestSignatureInfo,
     value: InterestSignatureValue,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct InterestSignatureInfo;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct InterestSignatureValue;
 
 impl Tlv for InterestSignatureInfo {

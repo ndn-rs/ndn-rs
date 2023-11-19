@@ -1,10 +1,12 @@
+use std::cmp;
 use std::fmt;
+use std::hash;
 use std::ops;
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 
 #[allow(clippy::len_without_is_empty)]
-#[derive(Clone, Debug, PartialEq, Hash)]
+#[derive(Clone, Debug)]
 pub struct VarNumber {
     bytes: Bytes,
     value: u64,
@@ -151,22 +153,20 @@ impl From<Bytes> for VarNumber {
         Self::from(n)
     }
 }
-// impl FromBuf for VarNumber {
-//     fn from_buf<B>(buf: B) -> Self
-//     where
-//         B: IntoBuf,
-//     {
-//         let mut buf = buf.into_buf();
-//         let n = match buf.get_u8() {
-//             x @ 0..=252 => u64::from(x),
-//             253 => u64::from(buf.get_u16::<BigEndian>()),
-//             254 => u64::from(buf.get_u32::<BigEndian>()),
-//             255 => buf.get_u64::<BigEndian>(),
-//             _ => unreachable!(),
-//         };
-//         VarNumber::from_u64(n)
-//     }
-// }
+
+impl cmp::PartialEq for VarNumber {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
+    }
+}
+
+impl cmp::Eq for VarNumber {}
+
+impl hash::Hash for VarNumber {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+        self.value.hash(state);
+    }
+}
 
 impl Extend<VarNumber> for BytesMut {
     fn extend<T>(&mut self, iter: T)

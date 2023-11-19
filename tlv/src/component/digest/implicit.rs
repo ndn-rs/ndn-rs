@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct ImplicitSha256DigestComponent {
     digest: GenericArray<u8, U32>,
 }

@@ -4,7 +4,7 @@ pub use lifetime::InterestLifetime;
 
 mod lifetime;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Interest {
     name: Name,
     can_be_prefix: Option<CanBePrefix>,

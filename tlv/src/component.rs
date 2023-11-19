@@ -9,7 +9,7 @@ mod digest;
 mod name;
 mod other;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum NameComponent {
     GenericName(GenericNameComponent),
     ImplicitSha256Digest(ImplicitSha256DigestComponent),

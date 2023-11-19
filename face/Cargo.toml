@@ -1,6 +1,6 @@
 [package]
-name = "ndn"
-description = "Named Data Networking - top level crate"
+name = "ndn-face"
+description = "Named Data Networking - Face"
 
 version.workspace = true
 authors.workspace = true
@@ -10,11 +10,11 @@ repository.workspace = true
 
 
 [dependencies]
-ndn-lpv2.workspace = true
-ndn-packet.workspace = true
-ndn-router.workspace = true
+bytes.workspace = true
+thiserror.workspace = true
+
 ndn-tlv.workspace = true
-ndn-varnumber.workspace = true
+ndn-packet.workspace = true
 
 
 [lints]
