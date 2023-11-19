@@ -1,6 +1,7 @@
 [package]
 name = "ndn"
 description = "Named Data Networking - top level crate"
+
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -9,8 +10,9 @@ repository.workspace = true
 
 
 [dependencies]
-ndn-tlv.workspace = true
 ndn-lpv2.workspace = true
+ndn-packet.workspace = true
+ndn-tlv.workspace = true
 ndn-varnumber.workspace = true
 
 

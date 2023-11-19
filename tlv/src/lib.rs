@@ -141,7 +141,7 @@ pub trait Tlv {
 
     /// Report the total size of the packet or TLV element, including the TLV-TYPE and TLV-LENGTH
     fn size(&self) -> usize {
-        self.payload_size() + self.type_as_varnumber().length() + self.length().length()
+        self.payload_size() + self.type_as_varnumber().len() + self.length().len()
     }
 
     /// Report the size of the payload if any

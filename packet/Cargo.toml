@@ -1,6 +1,6 @@
 [package]
-name = "ndn-lpv2"
-description = "Named Data Networking - Link Protocol v2"
+name = "ndn-packet"
+description = "Named Data Networking - Packet wrapper"
 
 version.workspace = true
 authors.workspace = true

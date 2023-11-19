@@ -3,6 +3,7 @@ use std::ops;
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 
+#[allow(clippy::len_without_is_empty)]
 #[derive(Clone, Debug, PartialEq, Hash)]
 pub struct VarNumber {
     bytes: Bytes,
@@ -22,7 +23,7 @@ impl VarNumber {
         Self { bytes, value }
     }
 
-    pub fn length(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.bytes.len()
     }
 
@@ -61,7 +62,7 @@ impl VarNumber {
 
     // Cloning `Bytes` should be simple and relatively inexpensive, as it just creates another
     // reference to the original data.
-    pub fn to_bytes(&self) -> Bytes {
+    pub fn bytes(&self) -> Bytes {
         self.bytes.clone()
     }
 
@@ -166,6 +167,17 @@ impl From<Bytes> for VarNumber {
 //         VarNumber::from_u64(n)
 //     }
 // }
+
+impl Extend<VarNumber> for BytesMut {
+    fn extend<T>(&mut self, iter: T)
+    where
+        T: IntoIterator<Item = VarNumber>,
+    {
+        for item in iter {
+            self.extend_from_slice(&item.bytes)
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {

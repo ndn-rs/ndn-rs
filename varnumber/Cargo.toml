@@ -1,5 +1,7 @@
 [package]
 name = "ndn-varnumber"
+description = "Named Data Networking - VarNumber implementation"
+
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
