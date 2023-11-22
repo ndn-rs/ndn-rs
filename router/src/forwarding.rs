@@ -4,7 +4,7 @@ use super::*;
 pub struct ForwardingInformationBase;
 
 impl ForwardingInformationBase {
-    pub async fn lookup(&self, interest: &Interest) -> FaceRef {
+    pub async fn lookup(&self, interest: &Interest) -> face::FaceId {
         println!("Looking up forward face for {:?}", interest);
         todo!()
     }
