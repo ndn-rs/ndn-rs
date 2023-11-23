@@ -15,6 +15,7 @@ pub use control::ControlParameters;
 pub use error::InvalidFaceUri;
 pub use faceid::FaceId;
 pub use persistency::FacePersistency;
+pub use uri::LocalUri;
 pub use uri::Uri;
 
 use addrs::lookup_addr;

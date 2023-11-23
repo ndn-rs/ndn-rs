@@ -1,6 +1,15 @@
 [workspace]
 resolver = "2"
-members = ["face", "lpv2", "ndn", "packet", "router", "tlv", "varnumber"]
+members = [
+    "face",
+    "lpv2",
+    "management",
+    "ndn",
+    "packet",
+    "router",
+    "tlv",
+    "varnumber",
+]
 
 
 [workspace.package]
@@ -20,6 +29,7 @@ tracing = "0.1"
 
 ndn-face = { path = "./face" }
 ndn-lpv2 = { path = "./lpv2" }
+ndn-management = { path = "./management" }
 ndn-packet = { path = "./packet" }
 ndn-router = { path = "./router" }
 ndn-tlv = { path = "./tlv" }

@@ -1,6 +1,6 @@
 [package]
-name = "ndn"
-description = "Named Data Networking - top level crate"
+name = "ndn-management"
+description = "Named Data Networking - NFD Management Protocol"
 
 version.workspace = true
 authors.workspace = true
@@ -10,11 +10,8 @@ repository.workspace = true
 
 
 [dependencies]
+bytes.workspace = true
 ndn-face.workspace = true
-ndn-lpv2.workspace = true
-ndn-management.workspace = true
-ndn-packet.workspace = true
-ndn-router.workspace = true
 ndn-tlv.workspace = true
 ndn-varnumber.workspace = true
 

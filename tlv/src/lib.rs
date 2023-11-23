@@ -43,6 +43,7 @@ mod interest;
 mod metainfo;
 mod name;
 mod nonce;
+mod number;
 mod packet;
 mod signature;
 
@@ -115,10 +116,10 @@ pub enum Type {
     FaceStatus = 0x80,
     LocalUri = 0x81,
     ChannelStatus = 0x82,
-    UriScheme = 0x83, // conflicts with Capacity
-    // Capacity = 0x83,
-    FaceScope = 0x84, // conflicts with Count
-    // Count = 0x84,
+    Capacity = 0x83,
+    // UriScheme = 0x83, // conflicts with Capacity, defined as const
+    Count = 0x84,
+    // FaceScope = 0x84, // conflicts with Count, defined as const
     FacePersistency = 0x85,
     LinkType = 0x86,
     BaseCongestionMarkingInterval = 0x87,
@@ -157,6 +158,12 @@ pub enum Type {
     DescriptionValue = 0x0202,
 }
 
+#[allow(non_upper_case_globals)]
+impl Type {
+    pub const UriScheme: Self = Self::Capacity;
+    pub const FaceScope: Self = Self::Count;
+}
+
 pub trait Tlv {
     // /// Each TLV type has its assigned TLV-TYPE number defined as a constant of type u64
     // const TYPE: Type;
@@ -193,5 +200,40 @@ pub trait Tlv {
         let mut bytes = BytesMut::with_capacity(size);
         bytes.extend([r#type, length, payload]);
         bytes.freeze()
+    }
+}
+
+impl<T: Tlv> Tlv for Option<T> {
+    fn r#type(&self) -> Type {
+        self.as_ref()
+            .expect("Cannot call .r#type() on None")
+            .r#type()
+
+        // self.as_ref()
+        //     .map(|t| t.r#type())
+        //     .expect("Cannot call .r#type() on None")
+    }
+
+    fn value(&self) -> Option<Bytes> {
+        self.as_ref().and_then(|t| t.value())
+    }
+
+    fn payload_size(&self) -> usize {
+        self.as_ref().map(|t| t.payload_size()).unwrap_or_default()
+    }
+}
+
+pub fn collect_to_bytes<I, O>(items: I) -> Option<Bytes>
+where
+    I: IntoIterator<Item = O>,
+    O: Into<Option<Bytes>>,
+{
+    let items = items.into_iter().filter_map(|item| item.into());
+    let mut bytes = BytesMut::new();
+    bytes.extend(items);
+    if bytes.is_empty() {
+        None
+    } else {
+        Some(bytes.freeze())
     }
 }

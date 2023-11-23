@@ -80,6 +80,14 @@ impl VarNumber {
     }
 }
 
+impl ops::Deref for VarNumber {
+    type Target = u64;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
+    }
+}
+
 impl ops::Add for VarNumber {
     type Output = Self;
 
@@ -168,6 +176,18 @@ impl cmp::PartialEq for VarNumber {
 }
 
 impl cmp::Eq for VarNumber {}
+
+impl cmp::PartialOrd for VarNumber {
+    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl cmp::Ord for VarNumber {
+    fn cmp(&self, other: &Self) -> cmp::Ordering {
+        self.value.cmp(&other.value)
+    }
+}
 
 impl hash::Hash for VarNumber {
     fn hash<H: hash::Hasher>(&self, state: &mut H) {
