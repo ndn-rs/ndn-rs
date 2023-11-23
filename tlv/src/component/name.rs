@@ -1,7 +1,7 @@
 use super::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct GenericNameComponent;
+pub struct GenericNameComponent(Vec<u8>);
 
 impl Tlv for GenericNameComponent {
     fn r#type(&self) -> Type {
@@ -9,10 +9,10 @@ impl Tlv for GenericNameComponent {
     }
 
     fn value(&self) -> Option<Bytes> {
-        todo!()
+        Some(Bytes::copy_from_slice(&self.0))
     }
 
     fn payload_size(&self) -> usize {
-        todo!()
+        self.0.len()
     }
 }

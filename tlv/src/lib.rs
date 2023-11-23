@@ -46,6 +46,7 @@ mod nonce;
 mod number;
 mod packet;
 mod signature;
+mod string;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Type {
@@ -164,7 +165,7 @@ impl Type {
     pub const FaceScope: Self = Self::Count;
 }
 
-pub trait Tlv {
+pub trait Tlv: fmt::Debug {
     // /// Each TLV type has its assigned TLV-TYPE number defined as a constant of type u64
     // const TYPE: Type;
 

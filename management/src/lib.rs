@@ -14,6 +14,9 @@ pub use flags::Flags;
 pub use flags::Mask;
 pub use mtu::Mtu;
 pub use origin::Origin;
+pub use response::ControlResponse;
+pub use status::StatusCode;
+pub use status::StatusText;
 pub use strategy::Strategy;
 
 mod capacity;
@@ -25,4 +28,6 @@ mod expiration;
 mod flags;
 mod mtu;
 mod origin;
+mod response;
+mod status;
 mod strategy;
