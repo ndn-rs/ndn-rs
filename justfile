@@ -3,7 +3,7 @@ build:
     cargo build --workspace
 alias t := test
 test:
-    cargo test --workspace
+    cargo nextest r --workspace || cargo test --workspace
 alias c:=clippy
 clippy:
     cargo clippy --workspace --all-targets
