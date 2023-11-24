@@ -39,8 +39,8 @@ impl Face {
     #[tracing::instrument]
     pub(crate) async fn update_congestion(
         &self,
-        base_congestion_marking_interval: Option<mgmt::BaseCongestionMarkingInterval>,
-        default_congestion_threshold: Option<mgmt::DefaultCongestionThreshold>,
+        base_congestion_marking_interval: Option<face::BaseCongestionMarkingInterval>,
+        default_congestion_threshold: Option<face::DefaultCongestionThreshold>,
     ) -> io::Result<()> {
         todo!()
     }

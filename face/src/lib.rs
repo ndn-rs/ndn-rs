@@ -11,6 +11,8 @@ use ndn_tlv as tlv;
 use ndn_varnumber::VarNumber;
 // use tokio::net;
 
+pub use congestion::BaseCongestionMarkingInterval;
+pub use congestion::DefaultCongestionThreshold;
 pub use error::InvalidFaceUri;
 pub use expiration::ExpirationPeriod;
 pub use faceid::FaceId;
@@ -26,6 +28,7 @@ pub use tcp::Tcp;
 pub use udp::Udp;
 
 mod addrs;
+mod congestion;
 mod error;
 mod expiration;
 mod faceid;

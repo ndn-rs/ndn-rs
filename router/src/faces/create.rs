@@ -19,8 +19,8 @@ pub(super) struct CreateRequest {
     local_uri: Option<face::LocalUri>,
     /// either persistent or permanent; creating on-demand faces is not permitted. The default is persistent. See "face properties" for more information.
     face_persistency: Option<face::FacePersistency>,
-    base_congestion_marking_interval: Option<mgmt::BaseCongestionMarkingInterval>,
-    default_congestion_threshold: Option<mgmt::DefaultCongestionThreshold>,
+    base_congestion_marking_interval: Option<face::BaseCongestionMarkingInterval>,
+    default_congestion_threshold: Option<face::DefaultCongestionThreshold>,
     mtu: Option<face::Mtu>,
     flags_and_mask: Option<(mgmt::Flags, mgmt::Mask)>,
 }
@@ -31,8 +31,8 @@ pub(super) struct CreateResponse {
     uri: face::Uri,
     local_uri: face::LocalUri,
     face_persistency: face::FacePersistency,
-    base_congestion_marking_interval: Option<mgmt::BaseCongestionMarkingInterval>,
-    default_congestion_threshold: Option<mgmt::DefaultCongestionThreshold>,
+    base_congestion_marking_interval: Option<face::BaseCongestionMarkingInterval>,
+    default_congestion_threshold: Option<face::DefaultCongestionThreshold>,
     mtu: Option<face::Mtu>,
     flags: mgmt::Flags,
 }
