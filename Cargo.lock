@@ -130,7 +130,7 @@ dependencies = [
 
 [[package]]
 name = "ndn"
-version = "0.0.3-alpha.1"
+version = "0.0.3-alpha.2"
 dependencies = [
  "ndn-face",
  "ndn-lpv2",
@@ -143,7 +143,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-face"
-version = "0.0.3-alpha.1"
+version = "0.0.3-alpha.2"
 dependencies = [
  "bytes",
  "ndn-packet",
@@ -155,7 +155,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-lpv2"
-version = "0.0.3-alpha.1"
+version = "0.0.3-alpha.2"
 dependencies = [
  "bytes",
  "ndn-tlv",
@@ -163,7 +163,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-management"
-version = "0.0.3-alpha.1"
+version = "0.0.3-alpha.2"
 dependencies = [
  "bytes",
  "ndn-face",
@@ -173,7 +173,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-packet"
-version = "0.0.3-alpha.1"
+version = "0.0.3-alpha.2"
 dependencies = [
  "bytes",
  "ndn-tlv",
@@ -181,7 +181,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-router"
-version = "0.0.3-alpha.1"
+version = "0.0.3-alpha.2"
 dependencies = [
  "bytes",
  "ndn-face",
@@ -195,7 +195,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-tlv"
-version = "0.0.3-alpha.1"
+version = "0.0.3-alpha.2"
 dependencies = [
  "bytes",
  "generic-array",
@@ -204,7 +204,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-varnumber"
-version = "0.0.3-alpha.1"
+version = "0.0.3-alpha.2"
 dependencies = [
  "bytes",
 ]
