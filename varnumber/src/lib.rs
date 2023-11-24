@@ -35,7 +35,7 @@ impl VarNumber {
         self.bytes.len()
     }
 
-    fn from_u64(value: u64) -> Self {
+    pub fn from_u64(value: u64) -> Self {
         let bytes =
             match value {
                 x @ 0..=0xFC => {
@@ -65,7 +65,7 @@ impl VarNumber {
         Self { bytes, value }
     }
 
-    fn to_u64(&self) -> u64 {
+    pub fn to_u64(&self) -> u64 {
         self.value
     }
 

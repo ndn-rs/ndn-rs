@@ -27,4 +27,8 @@ impl StatusCode {
     pub fn service_not_available() -> Self {
         503.into()
     }
+
+    pub fn socket_error() -> Self {
+        504.into()
+    }
 }

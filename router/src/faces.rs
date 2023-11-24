@@ -1,13 +1,28 @@
+use slotmap::Key;
+use slotmap::KeyData;
+use slotmap::SlotMap;
+use tokio::sync::RwLock;
+use tokio::sync::RwLockReadGuard;
+
 use super::*;
+
+use inner::Face;
+
+mod create;
+mod inner;
+
+slotmap::new_key_type! { struct FaceKey; }
+
+impl From<&face::FaceId> for FaceKey {
+    fn from(face: &face::FaceId) -> Self {
+        let value = face.to_u64();
+        KeyData::from_ffi(value).into()
+    }
+}
 
 #[derive(Debug, Default)]
 pub struct FaceManegement {
-    faces: HashMap<face::FaceId, Inner>,
-}
-
-#[derive(Debug)]
-struct Inner {
-    _socket: net::SocketAddr,
+    faces: RwLock<SlotMap<FaceKey, Face>>,
 }
 
 impl FaceManegement {
@@ -16,31 +31,56 @@ impl FaceManegement {
     }
 
     #[tracing::instrument]
-    pub async fn create(&self, params: face::ControlParameters) -> io::Result<()> {
-        Ok(())
+    pub async fn create(&self, params: mgmt::ControlParameters) -> mgmt::ControlResponse {
+        match params.try_into() {
+            Ok(create) => self.create_impl(create).await.map_or_else(
+                mgmt::ControlResponse::socket_error,
+                mgmt::ControlResponse::from,
+            ),
+
+            Err(reason) => mgmt::ControlResponse::incorrect_control_parameters(reason),
+        }
     }
 
     #[tracing::instrument]
-    pub async fn send(&self, face: face::FaceId, data: Bytes) -> io::Result<()> {
-        Ok(())
+    pub async fn send(&self, face: &face::FaceId, data: Bytes) -> io::Result<()> {
+        self.get_face_io(face).await?.send(data).await
     }
 
     #[tracing::instrument]
-    pub async fn recv(&self, face: face::FaceId) -> io::Result<Bytes> {
-        Ok(Bytes::new())
+    pub async fn recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
+        self.get_face_io(face).await?.recv().await
     }
-    pub fn get_faces(&self) -> Vec<face::FaceId> {
-        self.faces.keys().copied().collect()
+
+    pub async fn get_faces(&self) -> Vec<face::FaceId> {
+        self.faces
+            .read()
+            .await
+            .values()
+            .map(|face| face.face_id())
+            .cloned()
+            .collect()
+    }
+
+    pub(crate) async fn get_face(&self, face: &face::FaceId) -> Option<RwLockReadGuard<'_, Face>> {
+        let key = face.into();
+        let faces = self.faces.read().await;
+        RwLockReadGuard::try_map(faces, |faces| faces.get(key)).ok()
+    }
+
+    async fn insert(&self, face: Face) -> face::FaceId {
+        let key = self.faces.write().await.insert_with_key(|key| {
+            let id = key.data().as_ffi();
+            let face_id = face::FaceId::from(id);
+            face.update_face_id(face_id)
+        });
+        let id = key.data().as_ffi();
+        face::FaceId::from(id)
+    }
+
+    async fn get_face_io(&self, face: &face::FaceId) -> io::Result<RwLockReadGuard<'_, Face>> {
+        self.get_face(face)
+            .await
+            .ok_or_else(|| io::Error::other("FaceId not found"))
     }
 }
-
-// struct Create {
-//     face_id: face::FaceId,
-//     uri: face::Uri,
-//     // local_uri: Option<LocalUri>,
-//     persistency: face::FacePersistency,
-//     // base_congestion_marking_interval: Option<BaseCongestionMarkingInterval>,
-//     // default_congestion_threshold: Option<DefaultCongestionThreshold>,
-//     // mtu: Option<Mtu>,
-//     // flags_and_mask: Option<(Flags, Mask)>,
-// }

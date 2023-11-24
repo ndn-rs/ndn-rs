@@ -2,22 +2,22 @@ use super::*;
 
 #[derive(Debug)]
 pub struct ControlParameters {
-    name: Option<tlv::Name>,
-    face_id: Option<face::FaceId>,
-    uri: Option<face::Uri>,
-    local_uri: Option<face::LocalUri>,
-    origin: Option<Origin>,
-    cost: Option<Cost>,
-    capacity: Option<Capacity>,
-    count: Option<Count>,
-    base_congestion_marking_interval: Option<BaseCongestionMarkingInterval>,
-    default_congestion_threshold: Option<DefaultCongestionThreshold>,
-    mtu: Option<Mtu>,
-    flags: Option<Flags>,
-    mask: Option<Mask>,
-    strategy: Option<Strategy>,
-    expiration_period: Option<ExpirationPeriod>,
-    face_prsistency: Option<face::FacePersistency>,
+    pub name: Option<tlv::Name>,
+    pub face_id: Option<face::FaceId>,
+    pub uri: Option<face::Uri>,
+    pub local_uri: Option<face::LocalUri>,
+    pub origin: Option<Origin>,
+    pub cost: Option<Cost>,
+    pub capacity: Option<Capacity>,
+    pub count: Option<Count>,
+    pub base_congestion_marking_interval: Option<BaseCongestionMarkingInterval>,
+    pub default_congestion_threshold: Option<DefaultCongestionThreshold>,
+    pub mtu: Option<face::Mtu>,
+    pub flags: Option<Flags>,
+    pub mask: Option<Mask>,
+    pub strategy: Option<Strategy>,
+    pub expiration_period: Option<face::ExpirationPeriod>,
+    pub face_persistency: Option<face::FacePersistency>,
 }
 
 impl ControlParameters {}
@@ -44,7 +44,7 @@ impl tlv::Tlv for ControlParameters {
             self.mask.value(),
             self.strategy.value(),
             self.expiration_period.value(),
-            self.face_prsistency.value(),
+            self.face_persistency.value(),
         ];
         tlv::collect_to_bytes(items)
     }

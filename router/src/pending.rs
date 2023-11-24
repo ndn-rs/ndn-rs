@@ -6,13 +6,13 @@ pub struct PendingInterestTable {
 }
 
 impl PendingInterestTable {
-    pub async fn register(&self, interest: &Interest, downstream: face::FaceId) {
+    pub async fn register(&self, interest: &Interest, downstream: &face::FaceId) {
         let interest = interest.clone();
         self.pit
             .write()
             .await
             .entry(interest)
             .or_default()
-            .insert(downstream);
+            .insert(downstream.clone());
     }
 }

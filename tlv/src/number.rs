@@ -4,6 +4,12 @@ macro_rules! non_negative_number {
         #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $name(VarNumber);
 
+        impl $name {
+            pub fn to_u64(&self) -> u64 {
+                self.0.to_u64()
+            }
+        }
+
         impl tlv::Tlv for $name {
             fn r#type(&self) -> tlv::Type {
                 $tlv

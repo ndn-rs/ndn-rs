@@ -2,9 +2,35 @@ use super::*;
 
 #[derive(Debug)]
 pub struct ControlResponse {
-    status_code: StatusCode,
-    status_text: StatusText,
-    body: Vec<Box<dyn tlv::Tlv>>,
+    pub status_code: StatusCode,
+    pub status_text: StatusText,
+    pub body: Vec<Box<dyn tlv::Tlv>>,
+}
+
+impl ControlResponse {
+    pub fn incorrect_control_parameters(reason: impl Into<String>) -> Self {
+        let status_code = StatusCode::incorrect_control_parameters();
+        let status_text = StatusText::from(reason);
+        let body = Vec::new();
+
+        Self {
+            status_code,
+            status_text,
+            body,
+        }
+    }
+
+    pub fn socket_error(reason: impl ToString) -> Self {
+        let status_code = StatusCode::socket_error();
+        let status_text = StatusText::from(reason.to_string());
+        let body = Vec::new();
+
+        Self {
+            status_code,
+            status_text,
+            body,
+        }
+    }
 }
 
 impl tlv::Tlv for ControlResponse {

@@ -8,13 +8,15 @@ use bytes::Bytes;
 
 use ndn_packet as packet;
 use ndn_tlv as tlv;
-// use ndn_varnumber::VarNumber;
+use ndn_varnumber::VarNumber;
 // use tokio::net;
 
-pub use control::ControlParameters;
 pub use error::InvalidFaceUri;
+pub use expiration::ExpirationPeriod;
 pub use faceid::FaceId;
+pub use mtu::Mtu;
 pub use persistency::FacePersistency;
+pub use status::FaceStatus;
 pub use uri::LocalUri;
 pub use uri::Uri;
 
@@ -24,10 +26,12 @@ pub use tcp::Tcp;
 pub use udp::Udp;
 
 mod addrs;
-mod control;
 mod error;
+mod expiration;
 mod faceid;
+mod mtu;
 mod persistency;
+mod status;
 mod tcp;
 mod udp;
 mod uri;

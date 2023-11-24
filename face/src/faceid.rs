@@ -1,19 +1,9 @@
 use super::*;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub struct FaceId(u64);
+tlv::non_negative_number!(FaceId => tlv::Type::FaceId);
 
-impl tlv::Tlv for FaceId {
-    fn r#type(&self) -> tlv::Type {
-        tlv::Type::FaceId
-    }
-
-    fn value(&self) -> Option<Bytes> {
-        let data = self.0.to_be_bytes();
-        Some(Bytes::copy_from_slice(&data))
-    }
-
-    fn payload_size(&self) -> usize {
-        8
+impl FaceId {
+    pub fn null() -> Self {
+        Self::from(0)
     }
 }

@@ -1,12 +1,13 @@
 use std::collections::{HashMap, HashSet};
 use std::io;
-use std::net;
+// use std::net;
 
 use bytes::Bytes;
 
 use tokio::sync::{RwLock, RwLockReadGuard};
 
 use ndn_face as face;
+use ndn_management as mgmt;
 use ndn_tlv as tlv;
 
 use tlv::Interest;
@@ -37,10 +38,25 @@ impl Router {
         Self::default()
     }
 
+    pub async fn handle_create_face(
+        &self,
+        params: mgmt::ControlParameters,
+    ) -> mgmt::ControlResponse {
+        self.faces.create(params).await
+    }
+
+    pub async fn handle_face_status(&self, face: face::FaceId) -> face::FaceStatus {
+        self.faces
+            .get_face(&face)
+            .await
+            .map(|face| face.to_face_status())
+            .unwrap()
+    }
+
     pub async fn handle_interest(
         &self,
         interest: Interest,
-        downstream: face::FaceId,
+        downstream: &face::FaceId,
     ) -> io::Result<()> {
         if let Some(data) = self.content_store.lookup(&interest).await {
             // TODO Check freshness
@@ -52,7 +68,7 @@ impl Router {
                 .await;
             let upstream = self.forwarding_information_base.lookup(&interest).await;
             let data = interest.bytes();
-            self.faces.send(upstream, data).await?;
+            self.faces.send(&upstream, data).await?;
         }
 
         Ok(())

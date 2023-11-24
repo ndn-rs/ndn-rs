@@ -11,12 +11,14 @@ repository.workspace = true
 
 [dependencies]
 bytes.workspace = true
+slotmap.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 
 ndn-tlv.workspace = true
 ndn-face.workspace = true
+ndn-management.workspace = true
 
 
 [lints]
