@@ -48,7 +48,7 @@ impl Face {
     #[tracing::instrument]
     pub(crate) async fn update_flags(
         &self,
-        flags_and_mask: Option<(mgmt::Flags, mgmt::Mask)>,
+        flags_and_mask: Option<(face::Flags, face::Mask)>,
     ) -> io::Result<()> {
         todo!()
     }

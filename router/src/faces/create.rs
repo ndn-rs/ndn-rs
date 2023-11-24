@@ -22,7 +22,7 @@ pub(super) struct CreateRequest {
     base_congestion_marking_interval: Option<face::BaseCongestionMarkingInterval>,
     default_congestion_threshold: Option<face::DefaultCongestionThreshold>,
     mtu: Option<face::Mtu>,
-    flags_and_mask: Option<(mgmt::Flags, mgmt::Mask)>,
+    flags_and_mask: Option<(face::Flags, face::Mask)>,
 }
 
 #[derive(Debug)]
@@ -34,7 +34,7 @@ pub(super) struct CreateResponse {
     base_congestion_marking_interval: Option<face::BaseCongestionMarkingInterval>,
     default_congestion_threshold: Option<face::DefaultCongestionThreshold>,
     mtu: Option<face::Mtu>,
-    flags: mgmt::Flags,
+    flags: face::Flags,
 }
 
 impl FaceManegement {
@@ -117,7 +117,7 @@ impl CreateResponse {
         let local_uri = face.local_uri().clone();
         let face_persistency = face.persistency();
         let mtu = Some(face.mtu().clone());
-        let flags = mgmt::Flags::from(0); // FIXME
+        let flags = face::Flags::from(0); // FIXME
 
         Self {
             face_id,
