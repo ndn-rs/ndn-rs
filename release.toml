@@ -1,1 +1,8 @@
-consolidate-commits = true
+allow-branch = ["main", "release"]
+push = true
+tag = true
+publish = false
+verify = true
+pre-release-commit-message = "Bump version to {{version}}"
+tag-message = "{{version}}"
+tag-name = "{{version}}"
