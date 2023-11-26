@@ -23,7 +23,14 @@ impl Face {
         mtu: Option<face::Mtu>,
     ) -> io::Result<Self> {
         let face_id = face::FaceId::null(); // To be updated with actual FaceId later
-        let socket = Socket::new(&uri).await?;
+        let remote = uri.to_addr().await?;
+        let local = if let Some(uri) = local_uri {
+            uri.to_addr().await?
+        } else {
+            remote.any()
+        };
+
+        let socket = Socket::new(local, remote).await?;
         let local_uri = socket.local();
         let mtu = socket.mtu();
         Ok(Self {

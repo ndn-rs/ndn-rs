@@ -13,7 +13,6 @@ use ndn_varnumber::VarNumber;
 
 pub use congestion::BaseCongestionMarkingInterval;
 pub use congestion::DefaultCongestionThreshold;
-pub use error::InvalidFaceUri;
 pub use expiration::ExpirationPeriod;
 pub use faceid::FaceId;
 pub use flags::Flags;
@@ -21,25 +20,20 @@ pub use flags::Mask;
 pub use mtu::Mtu;
 pub use persistency::FacePersistency;
 pub use status::FaceStatus;
+pub use uri::Addr;
 pub use uri::LocalUri;
+pub use uri::Tcp;
+pub use uri::Udp;
 pub use uri::Uri;
+pub use uri::URI_DELIMITER;
 
-use addrs::lookup_addr;
-use addrs::NeedIp;
-pub use tcp::Tcp;
-pub use udp::Udp;
-
-mod addrs;
 mod congestion;
-mod error;
 mod expiration;
 mod faceid;
 mod flags;
 mod mtu;
 mod persistency;
 mod status;
-mod tcp;
-mod udp;
 mod uri;
 
 // #[derive(Debug)]
@@ -113,9 +107,4 @@ pub trait FaceUri: fmt::Debug {
         packet: packet::Packet,
     ) -> impl std::future::Future<Output = io::Result<()>> + Send;
     fn recv(&self) -> impl std::future::Future<Output = io::Result<packet::Packet>> + Send;
-}
-
-pub(crate) fn split_face_uri(uri: &str) -> Result<(&str, &str), InvalidFaceUri> {
-    uri.split_once("://")
-        .ok_or_else(|| InvalidFaceUri::new(uri, "missing '://' delimiter"))
 }
