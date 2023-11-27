@@ -36,32 +36,31 @@ impl VarNumber {
     }
 
     pub fn from_u64(value: u64) -> Self {
-        let bytes =
-            match value {
-                x @ 0..=0xFC => {
-                    let mut bytes = BytesMut::with_capacity(1);
-                    bytes.put_u8(x as u8);
-                    bytes.freeze()
-                }
-                x @ 0xFD..=0xFFFF => {
-                    let mut bytes = BytesMut::with_capacity(3);
-                    bytes.put_u8(0xFD);
-                    bytes.put_u16(x as u16);
-                    bytes.freeze()
-                }
-                x @ 0x1_0000..=0xFFFF_FFFF => {
-                    let mut bytes = BytesMut::with_capacity(5);
-                    bytes.put_u8(0xFE);
-                    bytes.put_u32(x as u32);
-                    bytes.freeze()
-                }
-                x @ 0x1_0000_0000..=0xFFFF_FFFF_FFFF_FFFF => {
-                    let mut bytes = BytesMut::with_capacity(9);
-                    bytes.put_u8(0xFF);
-                    bytes.put_u64(x);
-                    bytes.freeze()
-                }
-            };
+        let bytes = match value {
+            x @ 0..=0xFC => {
+                let mut bytes = BytesMut::with_capacity(1);
+                bytes.put_u8(x as u8);
+                bytes.freeze()
+            }
+            x @ 0xFD..=0xFFFF => {
+                let mut bytes = BytesMut::with_capacity(3);
+                bytes.put_u8(0xFD);
+                bytes.put_u16(x as u16);
+                bytes.freeze()
+            }
+            x @ 0x1_0000..=0xFFFF_FFFF => {
+                let mut bytes = BytesMut::with_capacity(5);
+                bytes.put_u8(0xFE);
+                bytes.put_u32(x as u32);
+                bytes.freeze()
+            }
+            x @ 0x1_0000_0000..=0xFFFF_FFFF_FFFF_FFFF => {
+                let mut bytes = BytesMut::with_capacity(9);
+                bytes.put_u8(0xFF);
+                bytes.put_u64(x);
+                bytes.freeze()
+            }
+        };
         Self { bytes, value }
     }
 
