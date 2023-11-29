@@ -18,3 +18,9 @@ impl Tlv for FinalBlockId {
         todo!()
     }
 }
+
+impl fmt::Display for FinalBlockId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        format_args!("<FinalBlockId>[{}]", self.name).fmt(f)
+    }
+}

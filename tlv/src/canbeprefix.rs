@@ -22,6 +22,6 @@ impl Tlv for CanBePrefix {
 
 impl fmt::Display for CanBePrefix {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        "CanBePrefix".fmt(f)
+        "<CanBePrefix>".fmt(f)
     }
 }

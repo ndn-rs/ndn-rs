@@ -16,3 +16,9 @@ impl Tlv for ApplicationParameters {
         todo!()
     }
 }
+
+impl fmt::Display for ApplicationParameters {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<ApplicationParameters>".fmt(f)
+    }
+}

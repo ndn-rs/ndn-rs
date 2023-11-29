@@ -20,3 +20,9 @@ impl Tlv for MetaInfo {
         todo!()
     }
 }
+
+impl fmt::Display for MetaInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.content_type.as_ref().ok_or(fmt::Error)?.fmt(f)
+    }
+}

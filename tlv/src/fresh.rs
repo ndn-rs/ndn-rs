@@ -23,7 +23,7 @@ impl Tlv for MustBeFresh {
 
 impl fmt::Display for MustBeFresh {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        "MustBeFresh".fmt(f)
+        "<MustBeFresh>".fmt(f)
     }
 }
 
@@ -43,5 +43,11 @@ impl Tlv for FreshnessPeriod {
 
     fn payload_size(&self) -> usize {
         todo!()
+    }
+}
+
+impl fmt::Display for FreshnessPeriod {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        format_args!("FreshnessPeriod<{} ms>", self.millis).fmt(f)
     }
 }

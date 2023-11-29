@@ -19,6 +19,16 @@ impl Tlv for Content {
     }
 }
 
+impl fmt::Display for Content {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if f.alternate() {
+            format_args!("<Content>[{:?}]", self.bytes()).fmt(f)
+        } else {
+            "<Content>[..]".fmt(f)
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct ContentType;
 
@@ -33,5 +43,11 @@ impl Tlv for ContentType {
 
     fn payload_size(&self) -> usize {
         todo!()
+    }
+}
+
+impl fmt::Display for ContentType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "ContentType".fmt(f)
     }
 }

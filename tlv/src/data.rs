@@ -21,3 +21,19 @@ impl Tlv for Data {
         todo!()
     }
 }
+
+impl fmt::Display for Data {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<Data>[".fmt(f)?;
+        if let Some(metainfo) = &self.metainfo {
+            metainfo.fmt(f).ok();
+            " ".fmt(f).ok();
+        }
+        if let Some(content) = &self.content {
+            content.fmt(f).ok();
+            " ".fmt(f).ok();
+        }
+        self.data_signature.fmt(f).ok();
+        "]".fmt(f)
+    }
+}

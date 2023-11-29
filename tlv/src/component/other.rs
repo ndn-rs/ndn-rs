@@ -16,3 +16,9 @@ impl Tlv for OtherTypeComponent {
         todo!()
     }
 }
+
+impl fmt::Display for OtherTypeComponent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<OtherTypeComponent>".fmt(f)
+    }
+}

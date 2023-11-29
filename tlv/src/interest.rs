@@ -50,6 +50,6 @@ impl Tlv for Interest {
 
 impl fmt::Display for Interest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        format!("Interest<{}>", self.name).fmt(f)
+        format!("<Interest>[{}]", self.name).fmt(f)
     }
 }

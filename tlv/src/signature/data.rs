@@ -6,6 +6,12 @@ pub struct DataSignature {
     value: SignatureValue,
 }
 
+impl fmt::Display for DataSignature {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        format_args!("DataSignature<{} {}>", self.info, self.value).fmt(f)
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct SignatureInfo {}
 
@@ -26,6 +32,12 @@ impl Tlv for SignatureInfo {
     }
 }
 
+impl fmt::Display for SignatureInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<SignatureInfo>".fmt(f)
+    }
+}
+
 impl Tlv for SignatureValue {
     fn r#type(&self) -> Type {
         Type::SignatureValue
@@ -37,5 +49,11 @@ impl Tlv for SignatureValue {
 
     fn payload_size(&self) -> usize {
         todo!()
+    }
+}
+
+impl fmt::Display for SignatureValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<SignatureValue>".fmt(f)
     }
 }

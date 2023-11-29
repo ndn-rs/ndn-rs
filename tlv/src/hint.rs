@@ -16,3 +16,9 @@ impl Tlv for ForwardingHint {
         todo!()
     }
 }
+
+impl fmt::Display for ForwardingHint {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<ForwardingHint>".fmt(f)
+    }
+}

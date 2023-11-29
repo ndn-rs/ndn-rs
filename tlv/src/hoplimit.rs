@@ -32,6 +32,6 @@ impl Tlv for HopLimit {
 
 impl fmt::Display for HopLimit {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        format!("HopLimit <{}>", self.limit).fmt(f)
+        format!("<HopLimit>[{}]", self.limit).fmt(f)
     }
 }

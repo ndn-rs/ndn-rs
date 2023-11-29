@@ -16,3 +16,13 @@ impl Tlv for GenericNameComponent {
         self.0.len()
     }
 }
+
+impl fmt::Display for GenericNameComponent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        format_args!(
+            "<GenericNameComponent>[{}]",
+            String::from_utf8_lossy(&self.0)
+        )
+        .fmt(f)
+    }
+}

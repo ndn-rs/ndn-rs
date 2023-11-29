@@ -23,7 +23,7 @@ impl Tlv for Nonce {
 impl fmt::Display for Nonce {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         format!(
-            "Nonce <{}:{}:{}:{}>",
+            "<Nonce>[{}:{}:{}:{}]",
             self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3]
         )
         .fmt(f)

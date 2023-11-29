@@ -16,3 +16,9 @@ impl Tlv for InterestLifetime {
         todo!()
     }
 }
+
+impl fmt::Display for InterestLifetime {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<InterestLifetime>".fmt(f)
+    }
+}

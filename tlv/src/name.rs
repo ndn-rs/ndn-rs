@@ -39,6 +39,6 @@ impl Tlv for Name {
 
 impl fmt::Display for Name {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        "Name".fmt(f)
+        "<Name>".fmt(f)
     }
 }

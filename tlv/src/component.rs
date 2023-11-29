@@ -40,3 +40,9 @@ impl From<OtherTypeComponent> for NameComponent {
         Self::OtherType(value)
     }
 }
+
+impl fmt::Display for NameComponent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<NameComponent>".fmt(f)
+    }
+}

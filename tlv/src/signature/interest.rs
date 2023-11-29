@@ -26,6 +26,12 @@ impl Tlv for InterestSignatureInfo {
     }
 }
 
+impl fmt::Display for InterestSignatureInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<InterestSignatureInfo>".fmt(f)
+    }
+}
+
 impl Tlv for InterestSignatureValue {
     fn r#type(&self) -> Type {
         Type::InterestSignatureValue
@@ -37,5 +43,11 @@ impl Tlv for InterestSignatureValue {
 
     fn payload_size(&self) -> usize {
         todo!()
+    }
+}
+
+impl fmt::Display for InterestSignatureValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<InterestSignatureValue>".fmt(f)
     }
 }
