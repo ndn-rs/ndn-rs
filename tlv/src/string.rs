@@ -29,12 +29,6 @@ macro_rules! utf8_string {
             }
         }
 
-        impl ToString for $name {
-            fn to_string(&self) -> String {
-                self.0.clone()
-            }
-        }
-
         impl std::ops::Deref for $name {
             type Target = str;
 
@@ -46,6 +40,12 @@ macro_rules! utf8_string {
         impl std::convert::AsRef<str> for $name {
             fn as_ref(&self) -> &str {
                 self.0.as_ref()
+            }
+        }
+
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.0.fmt(f)
             }
         }
 

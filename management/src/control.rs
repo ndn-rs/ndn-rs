@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct ControlParameters {
     pub name: Option<tlv::Name>,
     pub face_id: Option<face::FaceId>,
@@ -20,7 +20,25 @@ pub struct ControlParameters {
     pub face_persistency: Option<face::FacePersistency>,
 }
 
-impl ControlParameters {}
+impl ControlParameters {
+    // CREATE ControlParameters fields:
+    //  Uri (required): canonical remote FaceUri of the face to create.
+    //  LocalUri (optional): canonical local FaceUri of the face to create; e.g., FaceUri of the local interface for an Ethernet unicast face.
+    //  FacePersistency (optional): either persistent or permanent; creating on-demand faces is not permitted. The default is persistent. See "face properties" for more information.
+    //  BaseCongestionMarkingInterval (optional): see "face properties".
+    //  DefaultCongestionThreshold (optional): see "face properties".
+    //  Mtu (optional): see "face properties".
+    //  Flags (optional): see "face properties".
+    //  Mask (optional): MUST be specified if Flags is present, and omitted if Flags is omitted.
+    // This command allows the creation of UDP unicast, Ethernet unicast, and TCP faces only.
+
+    pub fn create_face(uri: impl Into<face::Uri>) -> Self {
+        Self {
+            uri: Some(uri.into()),
+            ..Self::default()
+        }
+    }
+}
 
 impl tlv::Tlv for ControlParameters {
     fn r#type(&self) -> tlv::Type {

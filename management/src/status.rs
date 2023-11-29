@@ -31,4 +31,8 @@ impl StatusCode {
     pub fn socket_error() -> Self {
         504.into()
     }
+
+    pub fn is_ok(&self) -> bool {
+        self.0.to_u64() == 200
+    }
 }

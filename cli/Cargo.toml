@@ -1,0 +1,20 @@
+[package]
+name = "ndn-cli"
+description = "Named Data Network - CLI tool"
+
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+ndn.workspace = true
+tokio.workspace = true
+
+[lints]
+workspace = true
