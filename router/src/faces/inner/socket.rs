@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 use tokio::net;
 
 use super::*;
@@ -22,8 +24,12 @@ impl Socket {
         }
     }
 
-    pub(super) fn local(&self) -> face::LocalUri {
-        todo!()
+    pub(super) fn local(&self) -> io::Result<face::LocalUri> {
+        let text = match self {
+            Self::Tcp(tcp) => format!("tcp://{}", tcp.local()?),
+            Self::Udp(udp) => format!("udp://{}", udp.local()?),
+        };
+        Ok(text.into())
     }
 
     pub(super) fn mtu(&self) -> face::Mtu {
@@ -59,6 +65,10 @@ impl Udp {
         Ok(Self { socket })
     }
 
+    fn local(&self) -> io::Result<SocketAddr> {
+        self.socket.local_addr()
+    }
+
     async fn send(&self, bytes: Bytes) -> io::Result<()> {
         if self.socket.send(&bytes).await? == bytes.len() {
             Ok(())
@@ -81,6 +91,10 @@ impl Tcp {
         tracing::info!("Ignoring local for now");
         let socket = net::TcpStream::connect(remote).await?;
         Ok(Self { socket })
+    }
+
+    fn local(&self) -> io::Result<SocketAddr> {
+        self.socket.local_addr()
     }
 
     async fn send(&self, bytes: Bytes) -> io::Result<()> {

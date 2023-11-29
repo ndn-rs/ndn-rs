@@ -31,7 +31,7 @@ impl Face {
         };
 
         let socket = Socket::new(local, remote).await?;
-        let local_uri = socket.local();
+        let local_uri = socket.local()?;
         let mtu = socket.mtu();
         Ok(Self {
             face_id,
@@ -49,7 +49,8 @@ impl Face {
         base_congestion_marking_interval: Option<face::BaseCongestionMarkingInterval>,
         default_congestion_threshold: Option<face::DefaultCongestionThreshold>,
     ) -> io::Result<()> {
-        todo!()
+        tracing::warn!("Not implemented yet");
+        Ok(())
     }
 
     #[tracing::instrument]
@@ -57,7 +58,8 @@ impl Face {
         &self,
         flags_and_mask: Option<(face::Flags, face::Mask)>,
     ) -> io::Result<()> {
-        todo!()
+        tracing::warn!("Not implemented yet");
+        Ok(())
     }
 
     pub(crate) fn face_id(&self) -> &face::FaceId {
