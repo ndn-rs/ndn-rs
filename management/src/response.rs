@@ -8,9 +8,9 @@ pub struct ControlResponse {
 }
 
 impl ControlResponse {
-    pub fn incorrect_control_parameters(reason: impl Into<String>) -> Self {
+    pub fn incorrect_control_parameters(reason: impl ToString) -> Self {
         let status_code = StatusCode::incorrect_control_parameters();
-        let status_text = StatusText::from(reason);
+        let status_text = StatusText::new(reason);
         let body = Vec::new();
 
         Self {
@@ -22,7 +22,7 @@ impl ControlResponse {
 
     pub fn socket_error(reason: impl ToString) -> Self {
         let status_code = StatusCode::socket_error();
-        let status_text = StatusText::from(reason.to_string());
+        let status_text = StatusText::new(reason);
         let body = Vec::new();
 
         Self {

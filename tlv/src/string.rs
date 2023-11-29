@@ -29,11 +29,11 @@ macro_rules! utf8_string {
             }
         }
 
-        // impl From<$name> for String {
-        //     fn from(s: $name) -> Self {
-        //         s.0
-        //     }
-        // }
+        impl ToString for $name {
+            fn to_string(&self) -> String {
+                self.0.clone()
+            }
+        }
 
         impl std::ops::Deref for $name {
             type Target = str;
@@ -50,6 +50,10 @@ macro_rules! utf8_string {
         }
 
         impl $name {
+            pub fn new(text: impl ToString) -> Self {
+                Self(text.to_string())
+            }
+
             pub fn into_string(self) -> String {
                 self.0
             }
