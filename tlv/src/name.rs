@@ -11,8 +11,14 @@ pub struct Name {
 
 impl Name {
     pub fn generic(name: impl Into<String>) -> Self {
-        let name = GenericNameComponent::from(name);
-        let components = vec![name.into()];
+        let components = name
+            .into()
+            .split('/')
+            .map(GenericNameComponent::from)
+            .map(NameComponent::from)
+            .collect();
+        // let name = GenericNameComponent::from(name);
+        // let components = vec![name.into()];
         Self { components }
     }
 
