@@ -14,7 +14,8 @@ impl Router {
         // let router = router::Router::new();
 
         for uri in [
-            "tcp4://anchor.local:6363",
+            "unix:///run/nfd.sock",
+            // "tcp4://anchor.local:6363",
             // "tcp4://anchor.local:6363",
             // "tcp4://anchor.local:6363",
             // "tcp4://anchor.local:6363",

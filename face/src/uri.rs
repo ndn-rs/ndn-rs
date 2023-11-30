@@ -4,6 +4,7 @@ pub use addr::Addr;
 pub use addr::Internal;
 pub use addr::Tcp;
 pub use addr::Udp;
+pub use addr::Unix;
 
 mod addr;
 

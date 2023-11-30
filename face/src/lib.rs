@@ -23,6 +23,7 @@ pub use uri::Internal;
 pub use uri::LocalUri;
 pub use uri::Tcp;
 pub use uri::Udp;
+pub use uri::Unix;
 pub use uri::Uri;
 pub use uri::URI_DELIMITER;
 

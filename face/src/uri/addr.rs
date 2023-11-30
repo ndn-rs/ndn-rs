@@ -3,16 +3,19 @@ use super::*;
 pub use internal::Internal;
 pub use tcp::Tcp;
 pub use udp::Udp;
+pub use unix::Unix;
 
 mod internal;
 mod tcp;
 mod udp;
+mod unix;
 
 #[derive(Debug)]
 pub enum Addr {
     Internal(Internal),
     Tcp(Tcp),
     Udp(Udp),
+    Unix(Unix),
 }
 
 impl Addr {
@@ -24,6 +27,8 @@ impl Addr {
             Tcp::from_uri(prefix, addr).await.map(Self::Tcp)
         } else if prefix.starts_with(Udp::PREFIX) {
             Udp::from_uri(prefix, addr).await.map(Self::Udp)
+        } else if prefix.starts_with(Unix::PREFIX) {
+            Unix::from_uri(prefix, addr).await.map(Self::Unix)
         } else {
             Err(io::Error::other(format!("unknown Uri prefix: {prefix}")))
         }
@@ -34,6 +39,7 @@ impl Addr {
             Self::Internal(_) => Self::Internal(Internal::any()),
             Self::Tcp(_) => Self::Tcp(Tcp::any()),
             Self::Udp(_) => Self::Udp(Udp::any()),
+            Self::Unix(unix) => Self::Unix(unix.clone()),
         }
     }
 }
