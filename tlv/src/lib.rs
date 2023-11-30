@@ -209,18 +209,22 @@ impl<T: Tlv> Tlv for Option<T> {
         self.as_ref()
             .expect("Cannot call .r#type() on None")
             .r#type()
-
-        // self.as_ref()
-        //     .map(|t| t.r#type())
-        //     .expect("Cannot call .r#type() on None")
     }
 
     fn value(&self) -> Option<Bytes> {
         self.as_ref().and_then(|t| t.value())
     }
 
+    fn size(&self) -> usize {
+        self.as_ref().map(|t| t.size()).unwrap_or_default()
+    }
+
     fn payload_size(&self) -> usize {
         self.as_ref().map(|t| t.payload_size()).unwrap_or_default()
+    }
+
+    fn bytes(&self) -> Bytes {
+        self.as_ref().map(|t| t.bytes()).unwrap_or_default()
     }
 }
 

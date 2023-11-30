@@ -174,6 +174,12 @@ impl cmp::PartialEq for VarNumber {
     }
 }
 
+impl cmp::PartialEq<u64> for VarNumber {
+    fn eq(&self, other: &u64) -> bool {
+        self.value == *other
+    }
+}
+
 impl cmp::Eq for VarNumber {}
 
 impl cmp::PartialOrd for VarNumber {
@@ -208,6 +214,10 @@ impl Extend<VarNumber> for BytesMut {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn varnumber(bytes: &'static [u8]) -> VarNumber {
+        Bytes::from_static(bytes).into()
+    }
 
     #[test]
     fn number_conversion() {
@@ -262,37 +272,37 @@ mod tests {
 
     #[test]
     fn varnumber_00() {
-        let bytes = Bytes::from_static(&[0_u8]).into();
+        let bytes = varnumber(&[0_u8]);
         assert_eq!(VarNumber::from_u64(0), bytes);
     }
 
     #[test]
     fn varnumber_128() {
-        let bytes = Bytes::from_static(&[128_u8]).into();
+        let bytes = varnumber(&[128_u8]);
         assert_eq!(VarNumber::from_u64(128), bytes);
     }
 
     #[test]
     fn varnumber_252() {
-        let bytes = Bytes::from_static(&[252u8]).into();
+        let bytes = varnumber(&[252u8]);
         assert_eq!(VarNumber::from_u64(252), bytes);
     }
 
     #[test]
     fn varnumber_65530() {
-        let bytes = Bytes::from_static(&[253u8, 255u8, 250u8]).into();
+        let bytes = varnumber(&[253u8, 255u8, 250u8]);
         assert_eq!(VarNumber::from_u64(65530), bytes);
     }
 
     #[test]
     fn varnumber_1234567890() {
-        let bytes = Bytes::from_static(&[254, 0x49, 0x96, 0x02, 0xd2]).into();
+        let bytes = varnumber(&[254, 0x49, 0x96, 0x02, 0xd2]);
         assert_eq!(VarNumber::from_u64(1_234_567_890), bytes);
     }
 
     #[test]
     fn varnumber_12345678901234567890() {
-        let bytes = Bytes::from_static(&[255, 171, 84, 169, 140, 235, 31, 10, 210]).into();
+        let bytes = varnumber(&[255, 171, 84, 169, 140, 235, 31, 10, 210]);
         assert_eq!(VarNumber::from_u64(12_345_678_901_234_567_890), bytes);
     }
 }

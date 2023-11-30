@@ -15,9 +15,9 @@ pub enum Addr {
 impl Addr {
     pub(super) async fn from_uri(uri: &str) -> io::Result<Self> {
         let (prefix, addr) = split_face_uri(uri)?;
-        if prefix.starts_with(tcp::PREFIX) {
+        if prefix.starts_with(Tcp::PREFIX) {
             Tcp::from_uri(prefix, addr).await.map(Self::Tcp)
-        } else if prefix.starts_with(udp::PREFIX) {
+        } else if prefix.starts_with(Udp::PREFIX) {
             Udp::from_uri(prefix, addr).await.map(Self::Udp)
         } else {
             Err(io::Error::other(format!("unknown Uri prefix: {prefix}")))

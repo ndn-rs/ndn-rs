@@ -1,18 +1,8 @@
 use super::*;
 
-use socket::Socket;
+pub(in crate::faces) use socket::Socket;
 
 mod socket;
-
-#[derive(Debug)]
-pub(crate) struct Face {
-    face_id: face::FaceId,
-    uri: face::Uri,
-    local_uri: face::LocalUri,
-    mtu: face::Mtu,
-    persistency: face::FacePersistency,
-    socket: Socket,
-}
 
 impl Face {
     #[tracing::instrument]
@@ -31,7 +21,7 @@ impl Face {
         };
 
         let socket = Socket::new(local, remote).await?;
-        let local_uri = socket.local()?;
+        let local_uri = socket.local_uri()?;
         let mtu = socket.mtu();
         Ok(Self {
             face_id,
@@ -91,7 +81,8 @@ impl Face {
     }
 
     pub(crate) async fn recv(&self) -> io::Result<Bytes> {
-        self.socket.recv().await
+        let bytes = BytesMut::with_capacity(self.mtu.to_usize());
+        self.socket.recv(bytes).await
     }
 
     pub(crate) fn to_face_status(&self) -> face::FaceStatus {

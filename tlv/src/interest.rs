@@ -40,11 +40,30 @@ impl Tlv for Interest {
     }
 
     fn value(&self) -> Option<Bytes> {
-        todo!()
+        let items = [
+            self.name.bytes(),
+            self.can_be_prefix.bytes(),
+            self.must_be_fresh.bytes(),
+            self.forwarding_hint.bytes(),
+            self.nonce.bytes(),
+            self.interest_lifetime.bytes(),
+            self.hop_limit.bytes(),
+            self.application_parameters.bytes(),
+            self.interest_signature.bytes(),
+        ];
+        collect_to_bytes(items)
     }
 
     fn payload_size(&self) -> usize {
-        todo!()
+        self.name.size()
+            + self.can_be_prefix.size()
+            + self.must_be_fresh.size()
+            + self.forwarding_hint.size()
+            + self.nonce.size()
+            + self.interest_lifetime.size()
+            + self.hop_limit.size()
+            + self.application_parameters.size()
+            + self.interest_signature.size()
     }
 }
 

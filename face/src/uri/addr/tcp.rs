@@ -1,13 +1,13 @@
 use super::*;
 
-pub(super) const PREFIX: &str = "tcp";
-
 #[derive(Debug)]
 pub struct Tcp {
     pub addr: net::SocketAddr,
 }
 
 impl Tcp {
+    pub const PREFIX: &'static str = "tcp";
+
     pub async fn from_uri(tcp: &str, addr: &str) -> io::Result<Self> {
         need_ip(tcp)?.lookup_addr(addr).await.map(Self::new)
     }

@@ -2,14 +2,12 @@ use std::fmt;
 use std::io;
 use std::net;
 use std::str;
-// use std::sync::Arc;
 
 use bytes::Bytes;
 
-use ndn_packet as packet;
+// use ndn_packet as packet;
 use ndn_tlv as tlv;
 use ndn_varnumber::VarNumber;
-// use tokio::net;
 
 pub use congestion::BaseCongestionMarkingInterval;
 pub use congestion::DefaultCongestionThreshold;
@@ -35,13 +33,6 @@ mod mtu;
 mod persistency;
 mod status;
 mod uri;
-
-// #[derive(Debug)]
-// pub struct Face {
-//     scope: FaceScope,
-//     local: Box<dyn FaceUri>,
-//     remote: Box<dyn FaceUri>,
-// }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum FaceScope {
@@ -99,12 +90,3 @@ pub enum FaceScope {
 //         Err(InvalidFaceUri::new(uri, "unknown scheme"))
 //     }
 // }
-
-pub trait FaceUri: fmt::Debug {
-    fn kick(&self) -> bool;
-    fn send(
-        &self,
-        packet: packet::Packet,
-    ) -> impl std::future::Future<Output = io::Result<()>> + Send;
-    fn recv(&self) -> impl std::future::Future<Output = io::Result<packet::Packet>> + Send;
-}

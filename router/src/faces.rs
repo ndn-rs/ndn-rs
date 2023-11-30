@@ -6,10 +6,20 @@ use tokio::sync::RwLockReadGuard;
 
 use super::*;
 
-use inner::Face;
+use inner::Socket;
 
 mod create;
 mod inner;
+
+#[derive(Debug)]
+pub struct Face {
+    face_id: face::FaceId,
+    uri: face::Uri,
+    local_uri: face::LocalUri,
+    mtu: face::Mtu,
+    persistency: face::FacePersistency,
+    socket: Socket,
+}
 
 slotmap::new_key_type! { struct FaceKey; }
 
@@ -44,12 +54,12 @@ impl FaceManegement {
 
     #[tracing::instrument]
     pub async fn send(&self, face: &face::FaceId, data: Bytes) -> io::Result<()> {
-        self.get_face_io(face).await?.send(data).await
+        self.get_face(face).await?.send(data).await
     }
 
     #[tracing::instrument]
     pub async fn recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
-        self.get_face_io(face).await?.recv().await
+        self.get_face(face).await?.recv().await
     }
 
     pub async fn get_faces(&self) -> Vec<face::FaceId> {
@@ -62,10 +72,11 @@ impl FaceManegement {
             .collect()
     }
 
-    pub(crate) async fn get_face(&self, face: &face::FaceId) -> Option<RwLockReadGuard<'_, Face>> {
+    pub async fn get_face(&self, face: &face::FaceId) -> io::Result<RwLockReadGuard<'_, Face>> {
         let key = face.into();
         let faces = self.faces.read().await;
-        RwLockReadGuard::try_map(faces, |faces| faces.get(key)).ok()
+        RwLockReadGuard::try_map(faces, |faces| faces.get(key))
+            .map_err(|_| io::Error::other("FaceId not found"))
     }
 
     async fn insert(&self, face: Face) -> face::FaceId {
@@ -78,9 +89,9 @@ impl FaceManegement {
         face::FaceId::from(id)
     }
 
-    async fn get_face_io(&self, face: &face::FaceId) -> io::Result<RwLockReadGuard<'_, Face>> {
-        self.get_face(face)
-            .await
-            .ok_or_else(|| io::Error::other("FaceId not found"))
-    }
+    // async fn get_face_io(&self, face: &face::FaceId) -> io::Result<RwLockReadGuard<'_, Face>> {
+    //     self.get_face_impl(face)
+    //         .await
+    //         .ok_or_else(|| io::Error::other("FaceId not found"))
+    // }
 }

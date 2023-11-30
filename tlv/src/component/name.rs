@@ -3,6 +3,12 @@ use super::*;
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct GenericNameComponent(Vec<u8>);
 
+impl GenericNameComponent {
+    pub fn new(text: impl Into<Vec<u8>>) -> Self {
+        Self(text.into().to_vec())
+    }
+}
+
 impl Tlv for GenericNameComponent {
     fn r#type(&self) -> Type {
         Type::GenericNameComponent
@@ -14,6 +20,13 @@ impl Tlv for GenericNameComponent {
 
     fn payload_size(&self) -> usize {
         self.0.len()
+    }
+}
+
+impl<T: Into<String>> From<T> for GenericNameComponent {
+    fn from(text: T) -> Self {
+        let text = text.into().into_bytes();
+        Self(text)
     }
 }
 

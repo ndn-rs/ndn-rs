@@ -57,7 +57,6 @@ impl FaceManegement {
         self.get_face(&id)
             .await
             .map(|face| CreateResponse::from_face(&face))
-            .ok_or_else(|| io::Error::other("failed to register"))
     }
 }
 

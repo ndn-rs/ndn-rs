@@ -1,9 +1,10 @@
+use bytes::Bytes;
 use clap::{Parser, Subcommand};
 
-// use ndn::face;
+use ndn::face;
 use ndn::management as mgmt;
 use ndn::router;
-// use ndn::tlv;
+use ndn::tlv;
 
 mod mini;
 
@@ -22,6 +23,16 @@ impl Command {
     async fn execute(self) -> anyhow::Result<()> {
         let router = mini::Router::new().await?;
         router.info();
+        let face = router.get_default_face().await;
+        println!("{face}");
+
+        let ping = tlv::Interest::new("/localhost/nfd/status");
+        println!("{ping}");
+        router.send(&face, ping).await?;
+        let data = router.recv(&face).await?;
+
+        println!("{data:#?}");
+
         Ok(())
     }
 }

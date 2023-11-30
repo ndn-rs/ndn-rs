@@ -8,6 +8,10 @@ macro_rules! non_negative_number {
             pub fn to_u64(&self) -> u64 {
                 self.0.to_u64()
             }
+
+            pub fn to_usize(&self) -> usize {
+                self.0.to_u64() as usize
+            }
         }
 
         impl tlv::Tlv for $name {

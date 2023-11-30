@@ -3,7 +3,7 @@ use std::io;
 // use std::net;
 
 use bytes::Bytes;
-
+use bytes::BytesMut;
 use tokio::sync::{RwLock, RwLockReadGuard};
 
 use ndn_face as face;
@@ -46,11 +46,7 @@ impl Router {
     }
 
     pub async fn handle_face_status(&self, face: face::FaceId) -> face::FaceStatus {
-        self.faces
-            .get_face(&face)
-            .await
-            .map(|face| face.to_face_status())
-            .unwrap()
+        self.faces.get_face(&face).await.unwrap().to_face_status()
     }
 
     pub async fn handle_interest(

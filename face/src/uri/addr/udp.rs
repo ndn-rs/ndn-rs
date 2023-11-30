@@ -1,13 +1,13 @@
 use super::*;
 
-pub(super) const PREFIX: &str = "udp";
-
 #[derive(Debug)]
 pub struct Udp {
     pub addr: net::SocketAddr,
 }
 
 impl Udp {
+    pub const PREFIX: &'static str = "udp";
+
     pub async fn from_uri(udp: &str, addr: &str) -> io::Result<Self> {
         need_ip(udp)?.lookup_addr(addr).await.map(Self::new)
     }

@@ -12,6 +12,7 @@ readme.workspace = true
 
 [dependencies]
 anyhow.workspace = true
+bytes.workspace = true
 clap.workspace = true
 ndn.workspace = true
 tokio.workspace = true

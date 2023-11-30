@@ -12,6 +12,16 @@ pub enum FacePersistency {
     Permanent = 2,
 }
 
+impl FacePersistency {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Persistent => "persistent",
+            Self::OnDemand => "on-demand",
+            Self::Permanent => "permanent",
+        }
+    }
+}
+
 impl tlv::Tlv for FacePersistency {
     fn r#type(&self) -> tlv::Type {
         tlv::Type::FacePersistency
@@ -23,6 +33,12 @@ impl tlv::Tlv for FacePersistency {
 
     fn payload_size(&self) -> usize {
         1
+    }
+}
+
+impl fmt::Display for FacePersistency {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.as_str().fmt(f)
     }
 }
 

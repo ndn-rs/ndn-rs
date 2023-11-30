@@ -252,6 +252,7 @@ name = "ndn-cli"
 version = "0.0.3-alpha.3"
 dependencies = [
  "anyhow",
+ "bytes",
  "clap",
  "ndn",
  "tokio",

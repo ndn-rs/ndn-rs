@@ -17,6 +17,35 @@ pub enum NameComponent {
     OtherType(OtherTypeComponent),
 }
 
+impl NameComponent {
+    pub fn size(&self) -> usize {
+        match self {
+            Self::GenericName(c) => c.size(),
+            Self::ImplicitSha256Digest(c) => c.size(),
+            Self::ParametersSha256Digest(c) => c.size(),
+            Self::OtherType(c) => c.size(),
+        }
+    }
+
+    pub fn payload_size(&self) -> usize {
+        match self {
+            Self::GenericName(c) => c.payload_size(),
+            Self::ImplicitSha256Digest(c) => c.payload_size(),
+            Self::ParametersSha256Digest(c) => c.payload_size(),
+            Self::OtherType(c) => c.payload_size(),
+        }
+    }
+
+    pub fn bytes(&self) -> Bytes {
+        match self {
+            Self::GenericName(c) => c.bytes(),
+            Self::ImplicitSha256Digest(c) => c.bytes(),
+            Self::ParametersSha256Digest(c) => c.bytes(),
+            Self::OtherType(c) => c.bytes(),
+        }
+    }
+}
+
 impl From<GenericNameComponent> for NameComponent {
     fn from(value: GenericNameComponent) -> Self {
         Self::GenericName(value)
@@ -43,6 +72,12 @@ impl From<OtherTypeComponent> for NameComponent {
 
 impl fmt::Display for NameComponent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        "<NameComponent>".fmt(f)
+        let component = match self {
+            Self::GenericName(c) => c.to_string(),
+            Self::ImplicitSha256Digest(c) => c.to_string(),
+            Self::ParametersSha256Digest(c) => c.to_string(),
+            Self::OtherType(c) => c.to_string(),
+        };
+        format_args!("<NameComponent>[{component}]",).fmt(f)
     }
 }

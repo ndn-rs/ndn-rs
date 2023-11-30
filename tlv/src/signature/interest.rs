@@ -2,8 +2,27 @@ use super::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct InterestSignature {
-    info: InterestSignatureInfo,
-    value: InterestSignatureValue,
+    pub info: InterestSignatureInfo,
+    pub value: InterestSignatureValue,
+}
+
+impl Tlv for InterestSignature {
+    fn r#type(&self) -> Type {
+        panic!("This object doesn't have its own TLV-TYPE")
+    }
+
+    fn value(&self) -> Option<Bytes> {
+        let items = [self.info.bytes(), self.value.bytes()];
+        collect_to_bytes(items)
+    }
+
+    fn size(&self) -> usize {
+        self.info.size() + self.value.size()
+    }
+
+    fn payload_size(&self) -> usize {
+        panic!("This object doesn't have its own payload")
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
