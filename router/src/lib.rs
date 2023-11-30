@@ -9,6 +9,7 @@ use tokio::sync::{RwLock, RwLockReadGuard};
 use ndn_face as face;
 use ndn_management as mgmt;
 use ndn_tlv as tlv;
+use ndn_transport as transport;
 
 use tlv::Interest;
 use tlv::{Data, Tlv};

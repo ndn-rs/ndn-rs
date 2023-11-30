@@ -1,7 +1,7 @@
 use super::*;
 
 #[derive(Debug)]
-pub(in crate::faces) struct Tcp {
+pub struct Tcp {
     socket: net::TcpStream,
 }
 

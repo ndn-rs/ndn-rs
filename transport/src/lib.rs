@@ -1,8 +1,12 @@
+use std::io;
 use std::net::SocketAddr;
 
+use bytes::Bytes;
+use bytes::BytesMut;
 use tokio::net;
 
-use super::*;
+use ndn_face as face;
+// use ndn_tlv as tlv;
 
 use internal::Internal;
 use tcp::Tcp;
@@ -13,15 +17,15 @@ mod tcp;
 mod udp;
 
 #[derive(Debug)]
-pub(in crate::faces) enum Socket {
+pub enum Transport {
     Internal(Internal),
     Tcp(Tcp),
     Udp(Udp),
 }
 
-impl Socket {
+impl Transport {
     #[tracing::instrument]
-    pub(super) async fn new(local: face::Addr, remote: face::Addr) -> io::Result<Self> {
+    pub async fn new(local: face::Addr, remote: face::Addr) -> io::Result<Self> {
         match (local, remote) {
             (face::Addr::Internal(_), face::Addr::Internal(_)) => {
                 Internal::new().await.map(Self::Internal)
@@ -36,7 +40,7 @@ impl Socket {
         }
     }
 
-    pub(super) fn local_uri(&self) -> io::Result<face::LocalUri> {
+    pub fn local_uri(&self) -> io::Result<face::LocalUri> {
         let text = match self {
             Self::Internal(internal) => internal.face_uri(),
             Self::Tcp(tcp) => tcp.face_uri(),
@@ -45,12 +49,12 @@ impl Socket {
         text.map(Into::into)
     }
 
-    pub(super) fn mtu(&self) -> face::Mtu {
+    pub fn mtu(&self) -> face::Mtu {
         face::Mtu::from(1500)
     }
 
     #[tracing::instrument]
-    pub(super) async fn send(&self, bytes: Bytes) -> io::Result<()> {
+    pub async fn send(&self, bytes: Bytes) -> io::Result<()> {
         match self {
             Self::Internal(internal) => internal.send(bytes).await,
             Self::Tcp(tcp) => tcp.send(bytes).await,
@@ -59,7 +63,7 @@ impl Socket {
     }
 
     #[tracing::instrument]
-    pub(super) async fn recv(&self, bytes: BytesMut) -> io::Result<Bytes> {
+    pub async fn recv(&self, bytes: BytesMut) -> io::Result<Bytes> {
         match self {
             Self::Internal(internal) => internal.recv(bytes).await,
             Self::Tcp(tcp) => tcp.recv(bytes).await,

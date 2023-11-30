@@ -9,6 +9,7 @@ members = [
     "packet",
     "router",
     "tlv",
+    "transport",
     "varnumber",
 ]
 
@@ -39,6 +40,7 @@ ndn-management = { path = "./management" }
 ndn-packet = { path = "./packet" }
 ndn-router = { path = "./router" }
 ndn-tlv = { path = "./tlv" }
+ndn-transport = { path = "./transport" }
 ndn-varnumber = { path = "./varnumber" }
 
 

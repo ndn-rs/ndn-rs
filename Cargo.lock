@@ -244,6 +244,7 @@ dependencies = [
  "ndn-packet",
  "ndn-router",
  "ndn-tlv",
+ "ndn-transport",
  "ndn-varnumber",
 ]
 
@@ -304,6 +305,7 @@ dependencies = [
  "ndn-face",
  "ndn-management",
  "ndn-tlv",
+ "ndn-transport",
  "slotmap",
  "thiserror",
  "tokio",
@@ -317,6 +319,17 @@ dependencies = [
  "bytes",
  "generic-array",
  "ndn-varnumber",
+]
+
+[[package]]
+name = "ndn-transport"
+version = "0.0.3-alpha.3"
+dependencies = [
+ "bytes",
+ "ndn-face",
+ "ndn-tlv",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

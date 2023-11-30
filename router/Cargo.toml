@@ -20,6 +20,7 @@ tracing.workspace = true
 ndn-tlv.workspace = true
 ndn-face.workspace = true
 ndn-management.workspace = true
+ndn-transport.workspace = true
 
 
 [lints]

@@ -4,7 +4,7 @@ use tokio::sync::Mutex;
 use super::*;
 
 #[derive(Debug)]
-pub(in crate::faces) struct Internal {
+pub struct Internal {
     tx: mpsc::Sender<Bytes>,
     rx: Mutex<mpsc::Receiver<Bytes>>,
 }

@@ -1,6 +1,6 @@
 [package]
-name = "ndn"
-description = "Named Data Networking - top level crate"
+name = "ndn-transport"
+description = "Named Data Networking - Transports"
 
 version.workspace = true
 authors.workspace = true
@@ -11,14 +11,12 @@ readme.workspace = true
 
 
 [dependencies]
+bytes.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
 ndn-face.workspace = true
-ndn-lpv2.workspace = true
-ndn-management.workspace = true
-ndn-packet.workspace = true
-ndn-router.workspace = true
 ndn-tlv.workspace = true
-ndn-transport.workspace = true
-ndn-varnumber.workspace = true
 
 
 [lints]

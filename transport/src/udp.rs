@@ -1,7 +1,7 @@
 use super::*;
 
 #[derive(Debug)]
-pub(in crate::faces) struct Udp {
+pub struct Udp {
     socket: net::UdpSocket,
 }
 
