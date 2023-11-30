@@ -57,7 +57,7 @@ impl Transport {
     }
 
     pub fn mtu(&self) -> face::Mtu {
-        face::Mtu::from(1500)
+        face::Mtu::from(8800)
     }
 
     #[tracing::instrument]
