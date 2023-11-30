@@ -26,7 +26,7 @@ impl Command {
         let face = router.get_default_face().await;
         println!("{face}");
 
-        let ping = tlv::Interest::new("/localhost/nfd/status");
+        let ping = tlv::Interest::new("/localhost/nfd/faces/list");
         println!("{ping}");
         router.send(&face, ping).await?;
         let data = router.recv(&face).await?;
