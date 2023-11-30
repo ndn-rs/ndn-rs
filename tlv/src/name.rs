@@ -14,6 +14,7 @@ impl Name {
         let components = name
             .into()
             .split('/')
+            .filter(|item| !item.is_empty())
             .map(GenericNameComponent::from)
             .map(NameComponent::from)
             .collect();
