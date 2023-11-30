@@ -12,9 +12,6 @@ impl Tcp {
     ) -> io::Result<Self> {
         tracing::info!("Ignoring local for now");
         let socket = net::TcpStream::connect(remote).await?;
-        println!("Local: {}", socket.local_addr().unwrap());
-        println!("Peer: {}", socket.peer_addr().unwrap());
-
         Ok(Self { socket })
     }
 
