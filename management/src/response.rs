@@ -31,6 +31,14 @@ impl ControlResponse {
             body,
         }
     }
+
+    pub fn into_result(self) -> io::Result<Self> {
+        if self.status_code.is_ok() {
+            Ok(self)
+        } else {
+            Err(io::Error::other(self.status_text.into_string()))
+        }
+    }
 }
 
 impl tlv::Tlv for ControlResponse {

@@ -38,6 +38,18 @@ impl Router {
         Self::default()
     }
 
+    pub async fn with_internal_face() -> io::Result<Self> {
+        let router = Self::new();
+        let response = router.add_internal_face().await.into_result()?;
+        tracing::debug!(?response, "add_internal_face");
+        Ok(router)
+    }
+
+    pub async fn add_internal_face(&self) -> mgmt::ControlResponse {
+        let params = mgmt::ControlParameters::create_face("internal://");
+        self.handle_create_face(params).await
+    }
+
     pub async fn handle_create_face(
         &self,
         params: mgmt::ControlParameters,

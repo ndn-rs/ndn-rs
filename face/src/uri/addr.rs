@@ -1,13 +1,16 @@
 use super::*;
 
+pub use internal::Internal;
 pub use tcp::Tcp;
 pub use udp::Udp;
 
+mod internal;
 mod tcp;
 mod udp;
 
 #[derive(Debug)]
 pub enum Addr {
+    Internal(Internal),
     Tcp(Tcp),
     Udp(Udp),
 }
@@ -15,7 +18,9 @@ pub enum Addr {
 impl Addr {
     pub(super) async fn from_uri(uri: &str) -> io::Result<Self> {
         let (prefix, addr) = split_face_uri(uri)?;
-        if prefix.starts_with(Tcp::PREFIX) {
+        if prefix.starts_with(Internal::PREFIX) {
+            Internal::from_uri(prefix, addr).await.map(Self::Internal)
+        } else if prefix.starts_with(Tcp::PREFIX) {
             Tcp::from_uri(prefix, addr).await.map(Self::Tcp)
         } else if prefix.starts_with(Udp::PREFIX) {
             Udp::from_uri(prefix, addr).await.map(Self::Udp)
@@ -26,6 +31,7 @@ impl Addr {
 
     pub fn any(&self) -> Self {
         match self {
+            Self::Internal(_) => Self::Internal(Internal::any()),
             Self::Tcp(_) => Self::Tcp(Tcp::any()),
             Self::Udp(_) => Self::Udp(Udp::any()),
         }

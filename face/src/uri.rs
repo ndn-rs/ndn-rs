@@ -1,6 +1,7 @@
 use super::*;
 
 pub use addr::Addr;
+pub use addr::Internal;
 pub use addr::Tcp;
 pub use addr::Udp;
 

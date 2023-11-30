@@ -19,6 +19,7 @@ pub use mtu::Mtu;
 pub use persistency::FacePersistency;
 pub use status::FaceStatus;
 pub use uri::Addr;
+pub use uri::Internal;
 pub use uri::LocalUri;
 pub use uri::Tcp;
 pub use uri::Udp;

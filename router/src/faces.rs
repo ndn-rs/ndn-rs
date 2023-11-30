@@ -88,10 +88,4 @@ impl FaceManegement {
         let id = key.data().as_ffi();
         face::FaceId::from(id)
     }
-
-    // async fn get_face_io(&self, face: &face::FaceId) -> io::Result<RwLockReadGuard<'_, Face>> {
-    //     self.get_face_impl(face)
-    //         .await
-    //         .ok_or_else(|| io::Error::other("FaceId not found"))
-    // }
 }

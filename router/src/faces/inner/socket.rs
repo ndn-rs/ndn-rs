@@ -4,8 +4,11 @@ use tokio::net;
 
 use super::*;
 
+mod internal;
+
 #[derive(Debug)]
 pub(in crate::faces) enum Socket {
+    Internal(internal::Internal),
     Tcp(Tcp),
     Udp(Udp),
 }
@@ -14,6 +17,9 @@ impl Socket {
     #[tracing::instrument]
     pub(super) async fn new(local: face::Addr, remote: face::Addr) -> io::Result<Self> {
         match (local, remote) {
+            (face::Addr::Internal(_), face::Addr::Internal(_)) => {
+                internal::Internal::new().await.map(Self::Internal)
+            }
             (face::Addr::Tcp(local), face::Addr::Tcp(remote)) => {
                 Tcp::new(local.addr, remote.addr).await.map(Self::Tcp)
             }
@@ -26,6 +32,7 @@ impl Socket {
 
     pub(super) fn local_uri(&self) -> io::Result<face::LocalUri> {
         let text = match self {
+            Self::Internal(internal) => internal.face_uri(),
             Self::Tcp(tcp) => tcp.face_uri(),
             Self::Udp(udp) => udp.face_uri(),
         };
@@ -39,6 +46,7 @@ impl Socket {
     #[tracing::instrument]
     pub(super) async fn send(&self, bytes: Bytes) -> io::Result<()> {
         match self {
+            Self::Internal(internal) => internal.send(bytes).await,
             Self::Tcp(tcp) => tcp.send(bytes).await,
             Self::Udp(udp) => udp.send(bytes).await,
         }
@@ -47,6 +55,7 @@ impl Socket {
     #[tracing::instrument]
     pub(super) async fn recv(&self, bytes: BytesMut) -> io::Result<Bytes> {
         match self {
+            Self::Internal(internal) => internal.recv(bytes).await,
             Self::Tcp(tcp) => tcp.recv(bytes).await,
             Self::Udp(udp) => udp.recv(bytes).await,
         }
