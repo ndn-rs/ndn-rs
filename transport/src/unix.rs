@@ -25,7 +25,7 @@ impl Unix {
         let local = self.local_addr()?;
         let path = local
             .as_pathname()
-            .ok_or_else(|| io::Error::other("Unnamed UDS"))?
+            .unwrap_or_else(|| Path::new("<unnamed>"))
             .display();
         let uri = format!("{}{}{}", face::Unix::PREFIX, face::URI_DELIMITER, path,);
         Ok(uri)
