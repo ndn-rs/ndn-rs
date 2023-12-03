@@ -48,9 +48,12 @@ mod packet;
 mod signature;
 mod string;
 
+mod impls;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[repr(u64)]
 pub enum Type {
-    // 0 Unassigned
+    Unassigned = 0, // Shouldn't be used
     ImplicitSha256DigestComponent = 0x01,
     ParametersSha256DigestComponent = 0x02,
     // 3 Unassigned
@@ -157,12 +160,24 @@ pub enum Type {
     DescriptionEntry = 0x0200,
     DescriptionKey = 0x0201,
     DescriptionValue = 0x0202,
+    Unknown(u64),
 }
 
 #[allow(non_upper_case_globals)]
 impl Type {
     pub const UriScheme: Self = Self::Capacity;
     pub const FaceScope: Self = Self::Count;
+}
+
+impl From<VarNumber> for Type {
+    fn from(n: VarNumber) -> Self {
+        let n = n.to_u64();
+        Self::from(n)
+        // if n > u64::from(u16::MAX) {
+        //     return Err(io::Error::other("Invalid Type `{n}`"));
+        // }
+        // Ok(n as Self)
+    }
 }
 
 pub trait Tlv: fmt::Debug {
@@ -174,8 +189,9 @@ pub trait Tlv: fmt::Debug {
 
     /// report this TLV-TYPE as a `VarNumber`
     fn type_as_varnumber(&self) -> VarNumber {
-        VarNumber::from(self.r#type() as u64)
+        VarNumber::from_u64(self.r#type().into())
     }
+
     /// Report TLV-LENGTH as a `VarNumber`
     fn length(&self) -> VarNumber {
         self.payload_size().into()
@@ -194,13 +210,19 @@ pub trait Tlv: fmt::Debug {
 
     /// Convert this TLV to `Bytes`
     fn bytes(&self) -> Bytes {
+        let mut bytes = BytesMut::new();
+        self.write(&mut bytes);
+        bytes.freeze()
+    }
+
+    /// Write this TLV to `BytesMut`
+    fn write(&self, dst: &mut BytesMut) {
         let r#type = self.type_as_varnumber().bytes();
         let length = self.length().bytes();
         let payload = self.value().unwrap_or_default();
-        let size = r#type.len() + length.len() + payload.len();
-        let mut bytes = BytesMut::with_capacity(size);
-        bytes.extend([r#type, length, payload]);
-        bytes.freeze()
+        let additional = r#type.len() + length.len() + payload.len();
+        dst.reserve(additional);
+        dst.extend([r#type, length, payload]);
     }
 }
 

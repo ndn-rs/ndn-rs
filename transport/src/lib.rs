@@ -6,13 +6,17 @@ use bytes::BytesMut;
 use tokio::net;
 
 use ndn_face as face;
-// use ndn_tlv as tlv;
+use ndn_tlv as tlv;
+use ndn_varnumber::VarNumber;
+
+pub use codec::TlvCodec;
 
 use internal::Internal;
 use tcp::Tcp;
 use udp::Udp;
 use unix::Unix;
 
+mod codec;
 mod internal;
 mod tcp;
 mod udp;

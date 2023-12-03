@@ -13,10 +13,12 @@ readme.workspace = true
 [dependencies]
 bytes.workspace = true
 tokio.workspace = true
+tokio-util.workspace = true
 tracing.workspace = true
 
 ndn-face.workspace = true
 ndn-tlv.workspace = true
+ndn-varnumber.workspace = true
 
 
 [lints]

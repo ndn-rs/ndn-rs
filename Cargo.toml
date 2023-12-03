@@ -31,6 +31,7 @@ generic-array = "1.0"
 slotmap = "1.0"
 thiserror = "1.0"
 tokio = { version = "1.34", features = ["full"] }
+tokio-util = { version = "0.7", features = ["codec", "net"] }
 tracing = "0.1"
 
 ndn = { path = "./ndn" }
