@@ -45,7 +45,7 @@ macro_rules! utf8_string {
 
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.0.fmt(f)
+                format_args!("{}={}", self.r#type(), self.0).fmt(f)
             }
         }
 
