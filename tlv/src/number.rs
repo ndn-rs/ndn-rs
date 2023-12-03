@@ -1,5 +1,25 @@
 #[macro_export]
 macro_rules! non_negative_number {
+    ($name: ident => $tlv: expr; skip_display) => {
+        $crate::non_negative_number_impl!($name => $tlv);
+    };
+
+    ($name: ident => $tlv: expr) => {
+        $crate::non_negative_number_impl!($name => $tlv);
+
+        // use tlv::Tlv as _;
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                format_args!("{}={}", self.r#type(), self.0).fmt(f)
+            }
+        }
+
+
+    };
+}
+
+#[macro_export]
+macro_rules! non_negative_number_impl {
     ($name: ident => $tlv: expr) => {
         #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $name(VarNumber);

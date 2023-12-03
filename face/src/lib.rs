@@ -9,6 +9,8 @@ use bytes::Bytes;
 use ndn_tlv as tlv;
 use ndn_varnumber::VarNumber;
 
+use tlv::Tlv as _;
+
 pub use congestion::BaseCongestionMarkingInterval;
 pub use congestion::DefaultCongestionThreshold;
 pub use expiration::ExpirationPeriod;
