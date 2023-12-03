@@ -13,6 +13,7 @@ readme.workspace = true
 [dependencies]
 bytes.workspace = true
 generic-array.workspace = true
+percent-encoding.workspace = true
 
 ndn-varnumber.workspace = true
 

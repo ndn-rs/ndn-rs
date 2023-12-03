@@ -1,3 +1,6 @@
+use percent_encoding::percent_encode;
+use percent_encoding::NON_ALPHANUMERIC;
+
 use super::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -32,10 +35,7 @@ impl<T: Into<String>> From<T> for GenericNameComponent {
 
 impl fmt::Display for GenericNameComponent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        format_args!(
-            "<GenericNameComponent>[{}]",
-            String::from_utf8_lossy(&self.0)
-        )
-        .fmt(f)
+        let encoded = percent_encode(&self.0, NON_ALPHANUMERIC);
+        format_args!("{encoded}").fmt(f)
     }
 }
