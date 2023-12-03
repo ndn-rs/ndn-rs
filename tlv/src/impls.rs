@@ -9,6 +9,10 @@ impl Type {
     pub fn to_u64(&self) -> u64 {
         self.0
     }
+
+    pub fn to_varnumber(&self) -> VarNumber {
+        VarNumber::from(self.0)
+    }
 }
 
 impl From<u64> for Type {

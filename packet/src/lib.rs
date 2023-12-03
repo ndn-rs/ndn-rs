@@ -27,7 +27,7 @@ impl Packet {
     }
 
     pub fn encode(&self, dst: &mut BytesMut) {
-        let r#type = VarNumber::from(self.r#type.to_u64()).bytes();
+        let r#type = self.r#type.to_varnumber().bytes();
         let length = self.length.bytes();
         let payload = self.bytes.clone();
         dst.extend([r#type, length, payload]);
