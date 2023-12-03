@@ -1,6 +1,7 @@
 use std::cmp;
 use std::fmt;
 use std::hash;
+use std::io;
 use std::ops;
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
@@ -76,6 +77,29 @@ impl VarNumber {
 
     pub fn as_bytes(&self) -> &[u8] {
         &self.bytes
+    }
+
+    pub fn decode(src: &mut BytesMut) -> Option<Self> {
+        if src.is_empty() {
+            return None;
+        }
+
+        let decoded = {
+            let mut src = io::Cursor::new(&mut *src);
+            let remaining = src.remaining(); // Needs 1 + [0 | 2 | 4 | 8] octets
+
+            let decoded = match src.get_u8() {
+                x @ 0..=0xfc => u64::from(x),
+                0xfd if remaining > 2 => u64::from(src.get_u16()),
+                0xfe if remaining > 4 => u64::from(src.get_u32()),
+                0xff if remaining > 8 => src.get_u64(),
+                _ => return None,
+            };
+            Self::from_u64(decoded)
+        };
+
+        src.advance(decoded.len());
+        Some(decoded)
     }
 }
 
@@ -219,6 +243,11 @@ mod tests {
         Bytes::from_static(bytes).into()
     }
 
+    fn decode(bytes: &[u8]) -> Option<VarNumber> {
+        let mut src = BytesMut::from(bytes);
+        VarNumber::decode(&mut src)
+    }
+
     #[test]
     fn number_conversion() {
         let vn: VarNumber = 2_u8.into();
@@ -304,5 +333,64 @@ mod tests {
     fn varnumber_12345678901234567890() {
         let bytes = varnumber(&[255, 171, 84, 169, 140, 235, 31, 10, 210]);
         assert_eq!(VarNumber::from_u64(12_345_678_901_234_567_890), bytes);
+    }
+
+    #[test]
+    fn decode_empty() {
+        let mut src = BytesMut::new();
+        assert!(VarNumber::decode(&mut src).is_none());
+    }
+
+    #[test]
+    fn decode_00() {
+        let n = decode(&[0]).unwrap();
+        assert_eq!(n, 0);
+    }
+
+    #[test]
+    fn decode_01() {
+        let n = decode(&[1]).unwrap();
+        assert_eq!(n, 1);
+    }
+
+    #[test]
+    fn decode_128() {
+        let n = decode(&[128]).unwrap();
+        assert_eq!(n, 128);
+    }
+
+    #[test]
+    fn decode_252() {
+        let n = decode(&[252]).unwrap();
+        assert_eq!(n, 252);
+    }
+
+    #[test]
+    fn decode_253_invalid() {
+        assert!(decode(&[253]).is_none());
+    }
+
+    #[test]
+    fn decode_253() {
+        let n = decode(&[253, 0, 253]).unwrap();
+        assert_eq!(n, 253);
+    }
+
+    #[test]
+    fn decode_65530() {
+        let n = decode(&[253u8, 255u8, 250u8]).unwrap();
+        assert_eq!(n, 65530)
+    }
+
+    #[test]
+    fn decode_1234567890() {
+        let n = decode(&[254, 0x49, 0x96, 0x02, 0xd2]).unwrap();
+        assert_eq!(n, 1_234_567_890);
+    }
+
+    #[test]
+    fn decode_12345678901234567890() {
+        let n = decode(&[255, 171, 84, 169, 140, 235, 31, 10, 210]).unwrap();
+        assert_eq!(n, 12_345_678_901_234_567_890);
     }
 }
