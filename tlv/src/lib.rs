@@ -23,7 +23,6 @@ pub use metainfo::MetaInfo;
 pub use name::FinalBlockId;
 pub use name::Name;
 pub use nonce::Nonce;
-pub use packet::Packet;
 pub use signature::DataSignature;
 pub use signature::InterestSignature;
 pub use signature::InterestSignatureInfo;
@@ -44,7 +43,6 @@ mod metainfo;
 mod name;
 mod nonce;
 mod number;
-mod packet;
 mod signature;
 mod string;
 
