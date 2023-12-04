@@ -17,9 +17,9 @@ tokio-util.workspace = true
 tracing.workspace = true
 
 ndn-face.workspace = true
+ndn-packet.workspace = true
 ndn-tlv.workspace = true
-ndn-varnumber.workspace = true
-
+# ndn-varnumber.workspace = true
 
 [lints]
 workspace = true

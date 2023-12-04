@@ -185,7 +185,7 @@ pub trait Tlv: fmt::Debug {
 
     /// report this TLV-TYPE as a `VarNumber`
     fn type_as_varnumber(&self) -> VarNumber {
-        VarNumber::from_u64(self.r#type().into())
+        self.r#type().to_varnumber()
     }
 
     /// Report TLV-LENGTH as a `VarNumber`
@@ -215,10 +215,10 @@ pub trait Tlv: fmt::Debug {
     fn write(&self, dst: &mut BytesMut) {
         let r#type = self.type_as_varnumber().bytes();
         let length = self.length().bytes();
-        let payload = self.value().unwrap_or_default();
-        let additional = r#type.len() + length.len() + payload.len();
+        let value = self.value().unwrap_or_default();
+        let additional = r#type.len() + length.len() + value.len();
         dst.reserve(additional);
-        dst.extend([r#type, length, payload]);
+        dst.extend([r#type, length, value]);
     }
 }
 

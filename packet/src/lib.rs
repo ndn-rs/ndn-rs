@@ -1,3 +1,4 @@
+use bytes::Buf;
 use bytes::Bytes;
 use bytes::BytesMut;
 
@@ -6,31 +7,37 @@ use ndn_varnumber::VarNumber;
 
 #[derive(Clone, Debug)]
 pub struct Packet {
-    r#type: tlv::Type,
-    length: VarNumber,
-    bytes: Bytes,
+    pub r#type: tlv::Type,
+    pub length: VarNumber,
+    pub value: Bytes,
 }
 
 impl Packet {
-    pub fn from_bytes(bytes: Bytes) -> Self {
-        let r#type = tlv::Type::Nonce;
-        let length = VarNumber::zero();
-        Self {
+    pub fn from_slice(mut src: &[u8]) -> Option<Self> {
+        let r#type = VarNumber::from_slice(src).map(tlv::Type::from)?;
+        let length = VarNumber::from_slice(src)?;
+        let value_size = length.to_u64() as usize;
+        let value = (src.len() > value_size).then(|| src.copy_to_bytes(value_size))?;
+        Some(Self {
             r#type,
             length,
-            bytes,
-        }
+            value,
+        })
     }
 
-    pub fn bytes(self) -> Bytes {
-        self.bytes
+    pub fn value(self) -> Bytes {
+        self.value
+    }
+
+    pub fn size(&self) -> usize {
+        self.r#type.to_varnumber().len() + self.length.len() + self.value.len()
     }
 
     pub fn encode(&self, dst: &mut BytesMut) {
         let r#type = self.r#type.to_varnumber().bytes();
         let length = self.length.bytes();
-        let payload = self.bytes.clone();
-        dst.extend([r#type, length, payload]);
+        let value = self.value.clone();
+        dst.extend([r#type, length, value]);
     }
 }
 
@@ -38,11 +45,11 @@ impl<T: tlv::Tlv> From<&T> for Packet {
     fn from(tlv: &T) -> Self {
         let r#type = tlv.r#type();
         let length = tlv.length();
-        let bytes = tlv.bytes();
+        let value = tlv.value().unwrap_or_default();
         Self {
             r#type,
             length,
-            bytes,
+            value,
         }
     }
 }

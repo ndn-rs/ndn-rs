@@ -341,8 +341,8 @@ version = "0.0.3-alpha.3"
 dependencies = [
  "bytes",
  "ndn-face",
+ "ndn-packet",
  "ndn-tlv",
- "ndn-varnumber",
  "tokio",
  "tokio-util",
  "tracing",
