@@ -11,7 +11,7 @@ impl Type {
     }
 
     pub fn to_varnumber(&self) -> VarNumber {
-        VarNumber::from(self.0)
+        VarNumber::from_u64(self.0)
     }
 }
 
