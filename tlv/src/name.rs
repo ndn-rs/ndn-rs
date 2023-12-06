@@ -1,8 +1,14 @@
 use super::*;
 
 pub use block::FinalBlockId;
+pub use component::GenericNameComponent;
+pub use component::ImplicitSha256DigestComponent;
+pub use component::NameComponent;
+pub use component::OtherTypeComponent;
+pub use component::ParametersSha256DigestComponent;
 
 mod block;
+mod component;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Name {

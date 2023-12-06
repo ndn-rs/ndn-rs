@@ -2,11 +2,11 @@ use super::*;
 
 pub use digest::ImplicitSha256DigestComponent;
 pub use digest::ParametersSha256DigestComponent;
-pub use name::GenericNameComponent;
+pub use generic::GenericNameComponent;
 pub use other::OtherTypeComponent;
 
 mod digest;
-mod name;
+mod generic;
 mod other;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
