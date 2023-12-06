@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ControlParameters {
     pub name: Option<tlv::Name>,
     pub face_id: Option<face::FaceId>,

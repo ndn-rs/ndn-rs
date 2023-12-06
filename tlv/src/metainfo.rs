@@ -2,9 +2,9 @@ use super::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct MetaInfo {
-    content_type: Option<ContentType>,
-    freshness_period: Option<FreshnessPeriod>,
-    final_block_id: Option<FinalBlockId>,
+    pub content_type: Option<ContentType>,
+    pub freshness_period: Option<FreshnessPeriod>,
+    pub final_block_id: Option<FinalBlockId>,
 }
 
 impl Tlv for MetaInfo {

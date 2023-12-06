@@ -4,17 +4,28 @@ macro_rules! non_negative_number {
         $crate::non_negative_number_impl!($name => $tlv);
     };
 
+    ($name: ident => $tlv: expr; prefix => $prefix: literal) => {
+        $crate::non_negative_number_impl!($name => $tlv);
+
+        impl $name {
+            pub const PREFIX: &'static str = $prefix;
+        }
+
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                format_args!("{}={}", Self::PREFIX, self.0).fmt(f)
+            }
+        }
+    };
+
     ($name: ident => $tlv: expr) => {
         $crate::non_negative_number_impl!($name => $tlv);
 
-        // use tlv::Tlv as _;
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 format_args!("{}={}", self.r#type(), self.0).fmt(f)
             }
         }
-
-
     };
 }
 
@@ -34,8 +45,8 @@ macro_rules! non_negative_number_impl {
             }
         }
 
-        impl tlv::Tlv for $name {
-            fn r#type(&self) -> tlv::Type {
+        impl $crate::Tlv for $name {
+            fn r#type(&self) -> $crate::Type {
                 $tlv
             }
 

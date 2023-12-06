@@ -1,17 +1,17 @@
 use super::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct GenericNameComponent(Vec<u8>);
+pub struct KeywordNameComponent(Vec<u8>);
 
-impl GenericNameComponent {
-    pub fn new(text: impl Into<Vec<u8>>) -> Self {
-        Self(text.into().to_vec())
+impl KeywordNameComponent {
+    pub fn new(text: impl AsRef<[u8]>) -> Self {
+        Self(text.as_ref().to_vec())
     }
 }
 
-impl Tlv for GenericNameComponent {
+impl Tlv for KeywordNameComponent {
     fn r#type(&self) -> Type {
-        Type::GenericNameComponent
+        Type::KeywordNameComponent
     }
 
     fn value(&self) -> Option<Bytes> {
@@ -23,14 +23,14 @@ impl Tlv for GenericNameComponent {
     }
 }
 
-impl<T: Into<String>> From<T> for GenericNameComponent {
+impl<T: Into<String>> From<T> for KeywordNameComponent {
     fn from(text: T) -> Self {
         let text = text.into().into_bytes();
         Self(text)
     }
 }
 
-impl fmt::Display for GenericNameComponent {
+impl fmt::Display for KeywordNameComponent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let encoded = percent_encode(&self.0, NON_ALPHANUMERIC);
         format_args!("{encoded}").fmt(f)

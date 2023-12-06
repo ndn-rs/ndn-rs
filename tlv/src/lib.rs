@@ -1,4 +1,5 @@
 use std::fmt;
+use std::str;
 
 use bytes::{Bytes, BytesMut};
 use ndn_varnumber::VarNumber;
@@ -18,8 +19,10 @@ pub use metainfo::MetaInfo;
 pub use name::FinalBlockId;
 pub use name::GenericNameComponent;
 pub use name::ImplicitSha256DigestComponent;
+pub use name::KeywordNameComponent;
 pub use name::Name;
 pub use name::NameComponent;
+pub use name::NameError;
 pub use name::OtherTypeComponent;
 pub use name::ParametersSha256DigestComponent;
 pub use nonce::Nonce;
@@ -47,7 +50,7 @@ mod string;
 
 mod impls;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Type(u64);
 
 #[allow(non_upper_case_globals)]
@@ -167,6 +170,14 @@ impl Type {
     pub const TxSequence: Self = Self(840);
     pub const NonDiscovery: Self = Self(844);
     pub const PrefixAnnouncement: Self = Self(848);
+}
+
+impl str::FromStr for Type {
+    type Err = NameError;
+
+    fn from_str(text: &str) -> Result<Self, Self::Err> {
+        text.parse().map(Self).map_err(|_| NameError::InvalidType)
+    }
 }
 
 impl From<VarNumber> for Type {

@@ -2,10 +2,10 @@ use super::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Data {
-    name: Name,
-    metainfo: Option<MetaInfo>,
-    content: Option<Content>,
-    data_signature: DataSignature,
+    pub name: Name,
+    pub metainfo: Option<MetaInfo>,
+    pub content: Option<Content>,
+    pub data_signature: DataSignature,
 }
 
 impl Tlv for Data {

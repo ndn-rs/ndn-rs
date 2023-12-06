@@ -18,8 +18,8 @@ pub struct Interest {
 }
 
 impl Interest {
-    pub fn new(name: impl Into<String>) -> Self {
-        let name = Name::generic(name);
+    pub fn new(name: impl AsRef<str>) -> Self {
+        let name = name.as_ref().parse().expect("Valid Name");
         Self {
             name,
             can_be_prefix: None,

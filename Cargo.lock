@@ -333,6 +333,7 @@ dependencies = [
  "generic-array",
  "ndn-varnumber",
  "percent-encoding",
+ "thiserror",
 ]
 
 [[package]]

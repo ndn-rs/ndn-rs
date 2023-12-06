@@ -1,12 +1,17 @@
+use percent_encoding::percent_encode;
+use percent_encoding::NON_ALPHANUMERIC;
+
 use super::*;
 
 pub use digest::ImplicitSha256DigestComponent;
 pub use digest::ParametersSha256DigestComponent;
 pub use generic::GenericNameComponent;
+pub use keyword::KeywordNameComponent;
 pub use other::OtherTypeComponent;
 
 mod digest;
 mod generic;
+mod keyword;
 mod other;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -42,6 +47,40 @@ impl NameComponent {
             Self::ImplicitSha256Digest(c) => c.bytes(),
             Self::ParametersSha256Digest(c) => c.bytes(),
             Self::OtherType(c) => c.bytes(),
+        }
+    }
+
+    pub fn generic(text: &str) -> Self {
+        Self::GenericName(GenericNameComponent::new(text))
+    }
+
+    pub fn implicit(text: &str) -> Result<Self, NameError> {
+        text.parse().map(Self::ImplicitSha256Digest)
+    }
+
+    pub fn parameters(text: &str) -> Result<Self, NameError> {
+        text.parse().map(Self::ParametersSha256Digest)
+    }
+
+    pub fn other(prefix: &str, text: &str) -> Result<Self, NameError> {
+        OtherTypeComponent::with_prefix(prefix, text).map(Self::OtherType)
+    }
+}
+
+impl str::FromStr for NameComponent {
+    type Err = NameError;
+
+    fn from_str(text: &str) -> Result<Self, Self::Err> {
+        if let Some((prefix, text)) = text.split_once('=') {
+            match prefix {
+                ImplicitSha256DigestComponent::PREFIX
+                | ImplicitSha256DigestComponent::PREFIX_NUMERIC => Self::implicit(text),
+                ParametersSha256DigestComponent::PREFIX
+                | ParametersSha256DigestComponent::PREFIX_NUMERIC => Self::parameters(text),
+                prefix => Self::other(prefix, text),
+            }
+        } else {
+            Ok(Self::generic(text))
         }
     }
 }
