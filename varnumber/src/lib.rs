@@ -78,20 +78,21 @@ impl VarNumber {
         &self.bytes
     }
 
-    pub fn decode(src: &mut BytesMut) -> Option<Self> {
-        let decoded = Self::from_slice(src)?;
-        src.advance(decoded.len());
-        Some(decoded)
+    pub fn from_slice(mut src: &[u8]) -> Option<Self> {
+        Self::from_buf(&mut src)
     }
 
-    pub fn from_slice(mut src: &[u8]) -> Option<Self> {
+    pub fn from_buf<B>(src: &mut B) -> Option<Self>
+    where
+        B: Buf,
+    {
         let length = src.remaining(); // Needs 1 + [0 | 2 | 4 | 8] octets
         if length > 0 {
             let value = match src.get_u8() {
-                x @ 0..=0xfc => u64::from(x),
-                0xfd if length > 2 => u64::from(src.get_u16()),
-                0xfe if length > 4 => u64::from(src.get_u32()),
-                0xff if length > 8 => src.get_u64(),
+                x @ 0..=252 => u64::from(x),
+                253 if length > 2 => u64::from(src.get_u16()),
+                254 if length > 4 => u64::from(src.get_u32()),
+                255 if length > 8 => src.get_u64(),
                 _ => return None,
             };
             Some(Self::from_u64(value))
@@ -190,11 +191,23 @@ impl cmp::PartialEq<u64> for VarNumber {
     }
 }
 
+// impl cmp::PartialEq<usize> for VarNumber {
+//     fn eq(&self, other: &usize) -> bool {
+//         self.value == (*other as u64)
+//     }
+// }
+
 impl cmp::Eq for VarNumber {}
 
 impl cmp::PartialOrd for VarNumber {
     fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+impl cmp::PartialOrd<u64> for VarNumber {
+    fn partial_cmp(&self, other: &u64) -> Option<cmp::Ordering> {
+        self.value.partial_cmp(other)
     }
 }
 
@@ -313,33 +326,39 @@ mod tests {
     }
 
     #[test]
-    fn decode_empty() {
+    fn decode_empty_buf() {
         let mut src = BytesMut::new();
-        assert!(VarNumber::decode(&mut src).is_none());
+        assert!(VarNumber::from_buf(&mut src).is_none());
+    }
+
+    #[test]
+    fn decode_empty_slice() {
+        let src = [];
+        assert!(VarNumber::from_slice(&src).is_none());
     }
 
     #[test]
     fn decode_00() {
         let n = VarNumber::from_slice(&[0]).unwrap();
-        assert_eq!(n, 0);
+        assert_eq!(n, 0_u64);
     }
 
     #[test]
     fn decode_01() {
         let n = VarNumber::from_slice(&[1]).unwrap();
-        assert_eq!(n, 1);
+        assert_eq!(n, 1_u64);
     }
 
     #[test]
     fn decode_128() {
         let n = VarNumber::from_slice(&[128]).unwrap();
-        assert_eq!(n, 128);
+        assert_eq!(n, 128_u64);
     }
 
     #[test]
     fn decode_252() {
         let n = VarNumber::from_slice(&[252]).unwrap();
-        assert_eq!(n, 252);
+        assert_eq!(n, 252_u64);
     }
 
     #[test]
@@ -350,24 +369,33 @@ mod tests {
     #[test]
     fn decode_253() {
         let n = VarNumber::from_slice(&[253, 0, 253]).unwrap();
-        assert_eq!(n, 253);
+        assert_eq!(n, 253_u64);
     }
 
     #[test]
     fn decode_65530() {
         let n = VarNumber::from_slice(&[253u8, 255u8, 250u8]).unwrap();
-        assert_eq!(n, 65530)
+        assert_eq!(n, 65530_u64)
     }
 
     #[test]
     fn decode_1234567890() {
         let n = VarNumber::from_slice(&[254, 0x49, 0x96, 0x02, 0xd2]).unwrap();
-        assert_eq!(n, 1_234_567_890);
+        assert_eq!(n, 1_234_567_890_u64);
     }
 
     #[test]
     fn decode_12345678901234567890() {
         let n = VarNumber::from_slice(&[255, 171, 84, 169, 140, 235, 31, 10, 210]).unwrap();
-        assert_eq!(n, 12_345_678_901_234_567_890);
+        assert_eq!(n, 12_345_678_901_234_567_890_u64);
+    }
+
+    #[test]
+    fn decode_and_advance() {
+        let mut src = Bytes::from_static(&[253, 255, 250, 0]);
+        assert_eq!(src.remaining(), 4);
+        let n = VarNumber::from_buf(&mut src).unwrap();
+        assert_eq!(n, 65530_u64);
+        assert_eq!(src.remaining(), 1);
     }
 }

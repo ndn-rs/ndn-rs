@@ -1,5 +1,9 @@
+use std::io;
+
 use bytes::Buf;
 use tokio_util::codec;
+
+use tlv::Tlv as _;
 
 use super::*;
 
@@ -16,14 +20,18 @@ impl<T: tlv::Tlv> codec::Encoder<T> for TlvCodec {
 }
 
 impl codec::Decoder for TlvCodec {
-    type Item = packet::Packet;
+    type Item = tlv::Generic;
     type Error = io::Error;
 
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
-        let decoded = packet::Packet::from_slice(src.as_ref());
+        let decoded = {
+            let mut src = io::Cursor::new(src.as_ref());
+            tlv::Generic::from_buf(&mut src)
+        };
         if let Some(packet) = &decoded {
             src.advance(packet.size());
         }
+
         Ok(decoded)
     }
 }

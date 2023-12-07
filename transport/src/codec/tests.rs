@@ -24,5 +24,5 @@ fn decode() {
     let packet = codec.decode(&mut src).unwrap().unwrap();
     println!("{packet:?}");
     assert!(src.is_empty());
-    assert_eq!(packet.r#type, tlv::Type::Unassigned);
+    assert_eq!(packet.r#type, tlv::Type::Data);
 }

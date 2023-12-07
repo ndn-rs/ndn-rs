@@ -14,10 +14,8 @@ pub struct Packet {
 
 impl Packet {
     pub fn from_slice(mut src: &[u8]) -> Option<Self> {
-        let r#type = VarNumber::from_slice(src).map(tlv::Type::from)?;
-        src.advance(r#type.len());
-        let length = VarNumber::from_slice(src)?;
-        src.advance(length.len());
+        let r#type = tlv::Type::from_buf(&mut src)?;
+        let length = VarNumber::from_buf(&mut src)?;
         let value_size = length.to_u64() as usize;
         let value = (src.len() >= value_size).then(|| src.copy_to_bytes(value_size))?;
         Some(Self {

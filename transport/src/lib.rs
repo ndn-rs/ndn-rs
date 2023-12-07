@@ -6,7 +6,7 @@ use bytes::BytesMut;
 use tokio::net;
 
 use ndn_face as face;
-use ndn_packet as packet;
+// use ndn_packet as packet;
 use ndn_tlv as tlv;
 
 pub use codec::TlvCodec;

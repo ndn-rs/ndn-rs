@@ -13,6 +13,19 @@ impl Type {
     pub fn to_varnumber(&self) -> VarNumber {
         VarNumber::from_u64(self.0)
     }
+
+    pub fn from_buf<B>(src: &mut B) -> Option<Self>
+    where
+        B: Buf,
+    {
+        VarNumber::from_buf(src).map(Self::from)
+    }
+}
+
+impl From<VarNumber> for Type {
+    fn from(n: VarNumber) -> Self {
+        Self(n.to_u64())
+    }
 }
 
 impl From<u64> for Type {
@@ -24,6 +37,14 @@ impl From<u64> for Type {
 impl From<Type> for u64 {
     fn from(value: Type) -> Self {
         value.0
+    }
+}
+
+impl str::FromStr for Type {
+    type Err = NameError;
+
+    fn from_str(text: &str) -> Result<Self, Self::Err> {
+        text.parse().map(Self).map_err(|_| NameError::InvalidType)
     }
 }
 

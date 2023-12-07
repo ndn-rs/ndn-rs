@@ -5,6 +5,7 @@ pub use component::GenericNameComponent;
 pub use component::ImplicitSha256DigestComponent;
 pub use component::KeywordNameComponent;
 pub use component::NameComponent;
+pub use component::NameComponentIterator;
 pub use component::OtherTypeComponent;
 pub use component::ParametersSha256DigestComponent;
 
@@ -23,6 +24,30 @@ impl Name {
         let digest = ImplicitSha256DigestComponent::new(digest);
         let components = vec![digest.into()];
         Self { components }
+    }
+
+    pub fn from_buf<B>(src: &mut B) -> Result<Option<Self>, DecodeError>
+    where
+        B: Buf,
+    {
+        Generic::from_buf(src).map(Self::try_from).transpose()
+    }
+}
+
+impl TryFrom<Generic> for Name {
+    type Error = DecodeError;
+
+    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        if generic.r#type != Type::Name {
+            return Err(DecodeError);
+        }
+        if generic.length != generic.value.len() as u64 {
+            return Err(DecodeError);
+        }
+
+        let components = NameComponent::iter(generic.value).collect::<Result<Vec<_>, _>>()?;
+
+        Ok(Self { components })
     }
 }
 
