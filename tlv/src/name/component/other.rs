@@ -35,7 +35,8 @@ impl Tlv for OtherTypeComponent {
 
 impl fmt::Display for OtherTypeComponent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let encoded = percent_encode(&self.octets, NON_ALPHANUMERIC);
+        let encoded =
+            percent_encoding::percent_encode(&self.octets, percent_encoding::NON_ALPHANUMERIC);
         format_args!("{}={}", self.r#type, encoded).fmt(f)
     }
 }

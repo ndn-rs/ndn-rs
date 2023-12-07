@@ -41,7 +41,7 @@ impl Generic {
         if self.r#type == r#type {
             Ok(self)
         } else {
-            Err(DecodeError::TypeMismatch(self))
+            Err(DecodeError::r#type(r#type, self))
         }
     }
 

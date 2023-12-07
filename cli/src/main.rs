@@ -32,9 +32,10 @@ impl Command {
             .can_be_prefix();
         println!("{ping}");
         router.send(&face, ping).await?;
-        let data = router.recv(&face).await?;
-
-        println!("{data:#?}");
+        let mut src = router.recv(&face).await?;
+        let generic = tlv::Generic::from_buf(&mut src).expect("Should be complete packet");
+        let data = tlv::Data::try_from(generic).expect("Should be valid data packet");
+        println!("GOT PACKET\n{data:#}");
 
         Ok(())
     }

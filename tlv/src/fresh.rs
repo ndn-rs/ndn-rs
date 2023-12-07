@@ -31,27 +31,4 @@ impl fmt::Display for MustBeFresh {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct FreshnessPeriod {
-    millis: u64,
-}
-
-impl Tlv for FreshnessPeriod {
-    fn r#type(&self) -> Type {
-        Type::FreshnessPeriod
-    }
-
-    fn value(&self) -> Option<Bytes> {
-        todo!()
-    }
-
-    fn payload_size(&self) -> usize {
-        todo!()
-    }
-}
-
-impl fmt::Display for FreshnessPeriod {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        format_args!("FreshnessPeriod<{} ms>", self.millis).fmt(f)
-    }
-}
+non_negative_number!(FreshnessPeriod => Type::FreshnessPeriod);

@@ -1,12 +1,17 @@
 use super::*;
 
 pub use block::FinalBlockId;
+pub use component::ByteOffsetNameComponent;
 pub use component::GenericNameComponent;
 pub use component::ImplicitSha256DigestComponent;
 pub use component::KeywordNameComponent;
 pub use component::NameComponent;
 pub use component::OtherTypeComponent;
 pub use component::ParametersSha256DigestComponent;
+pub use component::SegmentNameComponent;
+pub use component::SequenceNumNameComponent;
+pub use component::TimestampNameComponent;
+pub use component::VersionNameComponent;
 
 mod block;
 mod component;

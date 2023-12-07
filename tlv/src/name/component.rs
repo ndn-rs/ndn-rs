@@ -1,24 +1,39 @@
-use percent_encoding::percent_encode;
-use percent_encoding::NON_ALPHANUMERIC;
-
 use super::*;
 
 pub use digest::ImplicitSha256DigestComponent;
 pub use digest::ParametersSha256DigestComponent;
 pub use generic::GenericNameComponent;
 pub use keyword::KeywordNameComponent;
+pub use other::ByteOffsetNameComponent;
 pub use other::OtherTypeComponent;
+pub use other::SegmentNameComponent;
+pub use other::SequenceNumNameComponent;
+pub use other::TimestampNameComponent;
+pub use other::VersionNameComponent;
 
 mod digest;
 mod generic;
 mod keyword;
 mod other;
 
+// KeywordNameComponent	32 (0x20)	*OCTET	Well-known keyword	(not defined)
+// SegmentNameComponent	50 (0x32)	NonNegativeInteger	Segment number	seg=<dec>	NDN naming conventions
+// ByteOffsetNameComponent	52 (0x34)	NonNegativeInteger	Byte offset	off=<dec>	NDN naming conventions
+// VersionNameComponent	54 (0x36)	NonNegativeInteger	Version number	v=<dec>	NDN naming conventions
+// TimestampNameComponent	56 (0x38)	NonNegativeInteger	Unix timestamp in microseconds	t=<dec>	NDN naming conventions
+// SequenceNumNameComponent	58 (0x3a)	NonNegativeInteger	Sequence number	seq=<dec>	NDN naming conventions
+
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum NameComponent {
     GenericName(GenericNameComponent),
     ImplicitSha256Digest(ImplicitSha256DigestComponent),
     ParametersSha256Digest(ParametersSha256DigestComponent),
+    Keyword(KeywordNameComponent),
+    Segment(SegmentNameComponent),
+    ByteOffset(ByteOffsetNameComponent),
+    Version(VersionNameComponent),
+    Timestamp(TimestampNameComponent),
+    SequenceNum(SequenceNumNameComponent),
     OtherType(OtherTypeComponent),
 }
 
@@ -28,6 +43,12 @@ impl NameComponent {
             Self::GenericName(c) => c.size(),
             Self::ImplicitSha256Digest(c) => c.size(),
             Self::ParametersSha256Digest(c) => c.size(),
+            Self::Keyword(c) => c.size(),
+            Self::Segment(c) => c.size(),
+            Self::ByteOffset(c) => c.size(),
+            Self::Version(c) => c.size(),
+            Self::Timestamp(c) => c.size(),
+            Self::SequenceNum(c) => c.size(),
             Self::OtherType(c) => c.size(),
         }
     }
@@ -37,6 +58,12 @@ impl NameComponent {
             Self::GenericName(c) => c.payload_size(),
             Self::ImplicitSha256Digest(c) => c.payload_size(),
             Self::ParametersSha256Digest(c) => c.payload_size(),
+            Self::Keyword(c) => c.payload_size(),
+            Self::Segment(c) => c.payload_size(),
+            Self::ByteOffset(c) => c.payload_size(),
+            Self::Version(c) => c.payload_size(),
+            Self::Timestamp(c) => c.payload_size(),
+            Self::SequenceNum(c) => c.payload_size(),
             Self::OtherType(c) => c.payload_size(),
         }
     }
@@ -46,6 +73,12 @@ impl NameComponent {
             Self::GenericName(c) => c.bytes(),
             Self::ImplicitSha256Digest(c) => c.bytes(),
             Self::ParametersSha256Digest(c) => c.bytes(),
+            Self::Keyword(c) => c.bytes(),
+            Self::Segment(c) => c.bytes(),
+            Self::ByteOffset(c) => c.bytes(),
+            Self::Version(c) => c.bytes(),
+            Self::Timestamp(c) => c.bytes(),
+            Self::SequenceNum(c) => c.bytes(),
             Self::OtherType(c) => c.bytes(),
         }
     }
@@ -103,6 +136,24 @@ impl From<ParametersSha256DigestComponent> for NameComponent {
     }
 }
 
+impl From<KeywordNameComponent> for NameComponent {
+    fn from(value: KeywordNameComponent) -> Self {
+        Self::Keyword(value)
+    }
+}
+
+impl From<SegmentNameComponent> for NameComponent {
+    fn from(value: SegmentNameComponent) -> Self {
+        Self::Segment(value)
+    }
+}
+
+impl From<VersionNameComponent> for NameComponent {
+    fn from(value: VersionNameComponent) -> Self {
+        Self::Version(value)
+    }
+}
+
 impl From<OtherTypeComponent> for NameComponent {
     fn from(value: OtherTypeComponent) -> Self {
         Self::OtherType(value)
@@ -121,7 +172,10 @@ impl TryFrom<Generic> for NameComponent {
                 ParametersSha256DigestComponent::try_from(generic)?.into()
             }
             Type::GenericNameComponent => GenericNameComponent::try_from(generic)?.into(),
-            _ => todo!(),
+            Type::KeywordNameComponent => KeywordNameComponent::try_from(generic)?.into(),
+            Type::SegmentNameComponent => SegmentNameComponent::try_from(generic)?.into(),
+            Type::VersionNameComponent => VersionNameComponent::try_from(generic)?.into(),
+            other => todo!("Type {other} unimplemented"),
         };
         Ok(component)
     }
@@ -133,6 +187,12 @@ impl fmt::Display for NameComponent {
             Self::GenericName(c) => c.to_string(),
             Self::ImplicitSha256Digest(c) => c.to_string(),
             Self::ParametersSha256Digest(c) => c.to_string(),
+            Self::Keyword(c) => c.to_string(),
+            Self::Segment(c) => c.to_string(),
+            Self::ByteOffset(c) => c.to_string(),
+            Self::Version(c) => c.to_string(),
+            Self::Timestamp(c) => c.to_string(),
+            Self::SequenceNum(c) => c.to_string(),
             Self::OtherType(c) => c.to_string(),
         };
         format_args!("/{component}").fmt(f)

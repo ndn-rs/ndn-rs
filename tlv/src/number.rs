@@ -4,7 +4,7 @@ use super::*;
 
 #[allow(clippy::len_without_is_empty)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct NonNegativeNumber(u64);
+pub struct NonNegativeNumber(pub u64);
 
 impl NonNegativeNumber {
     pub fn to_u64(&self) -> u64 {
@@ -28,6 +28,24 @@ impl NonNegativeNumber {
     }
 }
 
+impl From<u8> for NonNegativeNumber {
+    fn from(value: u8) -> Self {
+        Self(u64::from(value))
+    }
+}
+
+impl From<u16> for NonNegativeNumber {
+    fn from(value: u16) -> Self {
+        Self(u64::from(value))
+    }
+}
+
+impl From<u32> for NonNegativeNumber {
+    fn from(value: u32) -> Self {
+        Self(u64::from(value))
+    }
+}
+
 impl From<u64> for NonNegativeNumber {
     fn from(value: u64) -> Self {
         Self(value)
@@ -37,6 +55,21 @@ impl From<u64> for NonNegativeNumber {
 impl From<NonNegativeNumber> for u64 {
     fn from(value: NonNegativeNumber) -> Self {
         value.0
+    }
+}
+
+impl TryFrom<Bytes> for NonNegativeNumber {
+    type Error = DecodeError;
+
+    fn try_from(bytes: Bytes) -> Result<Self, Self::Error> {
+        let mut buf = bytes.as_ref();
+        match buf.len() {
+            1 => Ok(buf.get_u8().into()),
+            2 => Ok(buf.get_u16().into()),
+            4 => Ok(buf.get_u32().into()),
+            8 => Ok(buf.get_u64().into()),
+            _other => Err(DecodeError::InvalidData),
+        }
     }
 }
 
@@ -132,6 +165,19 @@ macro_rules! non_negative_number_impl {
         impl From<$name> for u64 {
             fn from(value: $name) -> Self {
                 value.0.into()
+            }
+        }
+
+        impl TryFrom<$crate::Generic> for $name {
+            type Error = $crate::DecodeError;
+
+            fn try_from(generic: $crate::Generic) -> Result<Self, Self::Error> {
+                generic
+                    .check_type($tlv)?
+                    .self_check_length()?
+                    .value
+                    .try_into()
+                    .map($name)
             }
         }
     };

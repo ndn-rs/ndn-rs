@@ -34,14 +34,16 @@ impl TryFrom<Generic> for Data {
             .into_iter();
 
         // Name must be first
-        let Some(name) = items.next() else {
-            return Err(DecodeError::InvalidData);
-        };
+        let name = items
+            .next()
+            .ok_or_else(|| DecodeError::other("Data packet must have Name as first element"))?
+            .try_into()?;
 
-        let name = name.try_into()?;
+        let metainfo = items.next().map(MetaInfo::try_from).transpose()?;
+        let content = items.next().map(Content::try_from).transpose()?;
 
-        let metainfo = None;
-        let content = None;
+        items.for_each(|item| println!("{item:#?}"));
+
         let data_signature = DataSignature {
             info: SignatureInfo {},
             value: SignatureValue {},
@@ -59,6 +61,7 @@ impl TryFrom<Generic> for Data {
 impl fmt::Display for Data {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         "<Data>[".fmt(f)?;
+        self.name.fmt(f)?;
         if let Some(metainfo) = &self.metainfo {
             metainfo.fmt(f).ok();
             " ".fmt(f).ok();

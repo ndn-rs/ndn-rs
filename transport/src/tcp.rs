@@ -65,13 +65,16 @@ impl Tcp {
                 Ok(count) => {
                     tracing::trace!(count, "Got bytes");
                     bytes.extend(&buf[..count]);
-                    let generic = tlv::Generic::from_buf(&mut buf.as_ref()).unwrap();
-                    println!("{generic:?}");
-                    generic
-                        .items()
-                        .unwrap_or_default()
-                        .into_iter()
-                        .for_each(|item| println!("{item:?}"));
+                    if tlv::Generic::from_buf(&mut buf.as_ref()).is_some() {
+                        break;
+                    }
+                    // let generic = tlv::Generic::from_buf(&mut buf.as_ref()).unwrap();
+                    // println!("{generic:?}");
+                    // generic
+                    //     .items()
+                    //     .unwrap_or_default()
+                    //     .into_iter()
+                    //     .for_each(|item| println!("{item:?}"));
                     // println!("{}", String::from_utf8_lossy(&buf[..count]));
                 }
                 Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => continue,
