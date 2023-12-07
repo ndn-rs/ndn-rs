@@ -26,7 +26,20 @@ impl Tlv for ImplicitSha256DigestComponent {
     }
 
     fn payload_size(&self) -> usize {
-        32
+        GenericArray::<u8, U32>::len()
+    }
+}
+
+impl TryFrom<Generic> for ImplicitSha256DigestComponent {
+    type Error = DecodeError;
+
+    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        let digest = generic
+            .check_type(Type::ImplicitSha256DigestComponent)?
+            .check_length(GenericArray::<u8, U32>::len())?
+            .try_into_generic_array()?;
+
+        Ok(Self { digest })
     }
 }
 

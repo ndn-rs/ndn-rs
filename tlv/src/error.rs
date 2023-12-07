@@ -8,6 +8,6 @@ pub enum DecodeError {
     #[error("Length mismatch")]
     LengthMismatch(Generic),
 
-    #[error("Invalid Data")]
+    #[error("Invalid (corrupted?) Data")]
     InvalidData,
 }

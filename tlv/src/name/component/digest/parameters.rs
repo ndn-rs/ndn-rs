@@ -25,7 +25,20 @@ impl Tlv for ParametersSha256DigestComponent {
     }
 
     fn payload_size(&self) -> usize {
-        todo!()
+        GenericArray::<u8, U32>::len()
+    }
+}
+
+impl TryFrom<Generic> for ParametersSha256DigestComponent {
+    type Error = DecodeError;
+
+    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        let digest = generic
+            .check_type(Type::ParametersSha256DigestComponent)?
+            .check_length(GenericArray::<u8, U32>::len())?
+            .try_into_generic_array()?;
+
+        Ok(Self { digest })
     }
 }
 

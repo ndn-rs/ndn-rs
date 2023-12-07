@@ -36,6 +36,34 @@ impl Generic {
         }
         Some(items)
     }
+
+    pub fn check_type(self, r#type: Type) -> Result<Self, DecodeError> {
+        if self.r#type == r#type {
+            Ok(self)
+        } else {
+            Err(DecodeError::TypeMismatch(self))
+        }
+    }
+
+    pub fn self_check_length(self) -> Result<Self, DecodeError> {
+        let length = self.value.len();
+        self.check_length(length)
+    }
+
+    pub fn check_length(self, length: usize) -> Result<Self, DecodeError> {
+        if self.length == length as u64 {
+            Ok(self)
+        } else {
+            Err(DecodeError::LengthMismatch(self))
+        }
+    }
+
+    pub fn try_into_generic_array<T>(self) -> Result<GenericArray<u8, T>, DecodeError>
+    where
+        T: generic_array::ArrayLength,
+    {
+        GenericArray::try_from_iter(self.bytes()).map_err(|_| DecodeError::LengthMismatch(self))
+    }
 }
 
 impl Tlv for Generic {

@@ -5,7 +5,6 @@ pub use component::GenericNameComponent;
 pub use component::ImplicitSha256DigestComponent;
 pub use component::KeywordNameComponent;
 pub use component::NameComponent;
-pub use component::NameComponentIterator;
 pub use component::OtherTypeComponent;
 pub use component::ParametersSha256DigestComponent;
 
@@ -38,14 +37,14 @@ impl TryFrom<Generic> for Name {
     type Error = DecodeError;
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        if generic.r#type != Type::Name {
-            return Err(DecodeError::TypeMismatch(generic));
-        }
-        if generic.length != generic.value.len() as u64 {
-            return Err(DecodeError::LengthMismatch(generic));
-        }
-
-        let components = NameComponent::iter(generic.value).collect::<Result<Vec<_>, _>>()?;
+        let components = generic
+            .check_type(Type::Name)?
+            .self_check_length()?
+            .items()
+            .ok_or(DecodeError::InvalidData)?
+            .into_iter()
+            .map(NameComponent::try_from)
+            .collect::<Result<Vec<_>, _>>()?;
 
         Ok(Self { components })
     }

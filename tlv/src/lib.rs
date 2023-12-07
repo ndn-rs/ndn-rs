@@ -28,7 +28,6 @@ pub use name::ImplicitSha256DigestComponent;
 pub use name::KeywordNameComponent;
 pub use name::Name;
 pub use name::NameComponent;
-pub use name::NameComponentIterator;
 pub use name::NameError;
 pub use name::OtherTypeComponent;
 pub use name::ParametersSha256DigestComponent;

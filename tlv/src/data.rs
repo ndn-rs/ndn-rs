@@ -26,19 +26,14 @@ impl TryFrom<Generic> for Data {
     type Error = DecodeError;
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        if generic.r#type != Type::Data {
-            return Err(DecodeError::TypeMismatch(generic));
-        }
-        if generic.length != generic.value.len() as u64 {
-            return Err(DecodeError::LengthMismatch(generic));
-        }
-
-        let Some(items) = generic.items() else {
-            return Err(DecodeError::InvalidData);
-        };
+        let mut items = generic
+            .check_type(Type::Data)?
+            .self_check_length()?
+            .items()
+            .ok_or(DecodeError::InvalidData)?
+            .into_iter();
 
         // Name must be first
-        let mut items = items.into_iter();
         let Some(name) = items.next() else {
             return Err(DecodeError::InvalidData);
         };

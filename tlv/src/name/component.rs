@@ -6,13 +6,11 @@ use super::*;
 pub use digest::ImplicitSha256DigestComponent;
 pub use digest::ParametersSha256DigestComponent;
 pub use generic::GenericNameComponent;
-pub use iter::NameComponentIterator;
 pub use keyword::KeywordNameComponent;
 pub use other::OtherTypeComponent;
 
 mod digest;
 mod generic;
-mod iter;
 mod keyword;
 mod other;
 
@@ -67,10 +65,6 @@ impl NameComponent {
     pub fn other(prefix: &str, text: &str) -> Result<Self, NameError> {
         OtherTypeComponent::with_prefix(prefix, text).map(Self::OtherType)
     }
-
-    pub fn iter(value: Bytes) -> NameComponentIterator {
-        NameComponentIterator { value }
-    }
 }
 
 impl str::FromStr for NameComponent {
@@ -112,6 +106,24 @@ impl From<ParametersSha256DigestComponent> for NameComponent {
 impl From<OtherTypeComponent> for NameComponent {
     fn from(value: OtherTypeComponent) -> Self {
         Self::OtherType(value)
+    }
+}
+
+impl TryFrom<Generic> for NameComponent {
+    type Error = DecodeError;
+
+    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        let component = match generic.r#type {
+            Type::ImplicitSha256DigestComponent => {
+                ImplicitSha256DigestComponent::try_from(generic)?.into()
+            }
+            Type::ParametersSha256DigestComponent => {
+                ParametersSha256DigestComponent::try_from(generic)?.into()
+            }
+            Type::GenericNameComponent => GenericNameComponent::try_from(generic)?.into(),
+            _ => todo!(),
+        };
+        Ok(component)
     }
 }
 
