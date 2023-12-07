@@ -1,7 +1,5 @@
 [package]
-name = "ndn-varnumber"
-description = "Named Data Networking - VarNumber implementation"
-
+name = "ndn-serde-tlv"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -13,6 +11,9 @@ readme.workspace = true
 [dependencies]
 bytes.workspace = true
 serde.workspace = true
+thiserror.workspace = true
+
+ndn-varnumber.workspace = true
 
 
 [lints]

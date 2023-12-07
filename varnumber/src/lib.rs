@@ -4,9 +4,10 @@ use std::hash;
 use std::ops;
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
+use serde::{Deserialize, Serialize};
 
 #[allow(clippy::len_without_is_empty)]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct VarNumber {
     bytes: Bytes,
     value: u64,
