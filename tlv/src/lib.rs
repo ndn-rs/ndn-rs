@@ -2,6 +2,9 @@ use std::fmt;
 use std::str;
 
 use bytes::{Bytes, BytesMut};
+use generic_array::typenum::{U32, U4};
+use generic_array::GenericArray;
+
 use ndn_varnumber::VarNumber;
 
 pub use application::ApplicationParameters;
@@ -26,6 +29,7 @@ pub use name::NameError;
 pub use name::OtherTypeComponent;
 pub use name::ParametersSha256DigestComponent;
 pub use nonce::Nonce;
+pub use number::NonNegativeNumber;
 pub use signature::DataSignature;
 pub use signature::InterestSignature;
 pub use signature::InterestSignatureInfo;
@@ -269,4 +273,14 @@ where
     } else {
         Some(bytes.freeze())
     }
+}
+
+pub fn display_option<T>(item: &Option<T>, f: &mut fmt::Formatter<'_>) -> fmt::Result
+where
+    T: fmt::Display,
+{
+    use fmt::Display;
+
+    item.as_ref()
+        .map_or(Ok(()), |item| format_args!(" {item:#}").fmt(f))
 }

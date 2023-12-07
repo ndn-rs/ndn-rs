@@ -2,7 +2,14 @@ use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct Nonce {
-    bytes: [u8; 4],
+    octets: GenericArray<u8, U4>,
+}
+
+impl Nonce {
+    pub fn generate() -> Self {
+        let octets = rand::random::<[u8; 4]>().into();
+        Self { octets }
+    }
 }
 
 impl Tlv for Nonce {
@@ -11,21 +18,21 @@ impl Tlv for Nonce {
     }
 
     fn value(&self) -> Option<Bytes> {
-        let bytes = Bytes::copy_from_slice(&self.bytes);
+        let bytes = Bytes::copy_from_slice(&self.octets);
         Some(bytes)
     }
 
     fn payload_size(&self) -> usize {
-        self.bytes.len()
+        self.octets.len()
     }
 }
 
 impl fmt::Display for Nonce {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        format!(
-            "<Nonce>[{}:{}:{}:{}]",
-            self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3]
-        )
-        .fmt(f)
+        if f.alternate() {
+            format_args!("nonce={:x}", self.octets).fmt(f)
+        } else {
+            format_args!("{}={:x}", self.r#type(), self.octets).fmt(f)
+        }
     }
 }

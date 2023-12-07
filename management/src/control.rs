@@ -38,6 +38,13 @@ impl ControlParameters {
             ..Self::default()
         }
     }
+
+    pub fn mtu(self, mtu: impl Into<face::Mtu>) -> Self {
+        Self {
+            mtu: Some(mtu.into()),
+            ..self
+        }
+    }
 }
 
 impl tlv::Tlv for ControlParameters {

@@ -70,6 +70,7 @@ impl FaceManegement {
             .collect()
     }
 
+    #[tracing::instrument]
     pub async fn get_face(&self, face: &face::FaceId) -> io::Result<RwLockReadGuard<'_, Face>> {
         let key = face.into();
         let faces = self.faces.read().await;

@@ -1,5 +1,6 @@
 use bytes::Bytes;
 use clap::{Parser, Subcommand};
+use tracing_subscriber::{fmt, EnvFilter};
 
 use ndn::face;
 use ndn::management as mgmt;
@@ -24,9 +25,11 @@ impl Command {
         let router = mini::Router::new().await?;
         router.info();
         let face = router.get_default_face().await;
-        println!("{face}");
+        println!("{face:#}");
 
-        let ping = tlv::Interest::new("/localhost/nfd/faces/list");
+        let ping = tlv::Interest::new("/localhost/nfd/status/general")
+            .must_be_fresh()
+            .can_be_prefix();
         println!("{ping}");
         router.send(&face, ping).await?;
         let data = router.recv(&face).await?;
@@ -38,6 +41,7 @@ impl Command {
 }
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    fmt().with_env_filter(EnvFilter::from_default_env()).init();
     let cli = Cli::parse();
     cli.command.execute().await
 }

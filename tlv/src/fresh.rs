@@ -23,7 +23,11 @@ impl Tlv for MustBeFresh {
 
 impl fmt::Display for MustBeFresh {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        "<MustBeFresh>".fmt(f)
+        if f.alternate() {
+            "must_be_fresh".fmt(f)
+        } else {
+            format_args!("{}=", self.r#type()).fmt(f)
+        }
     }
 }
 

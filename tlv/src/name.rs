@@ -65,8 +65,8 @@ impl fmt::Display for Name {
             .iter()
             .map(|component| component.to_string())
             .collect::<Vec<_>>()
-            .join(",");
-        format_args!("{}={}", self.r#type(), components).fmt(f)
+            .join("");
+        format_args!("{}", components).fmt(f)
     }
 }
 

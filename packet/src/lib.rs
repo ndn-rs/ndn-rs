@@ -15,9 +15,11 @@ pub struct Packet {
 impl Packet {
     pub fn from_slice(mut src: &[u8]) -> Option<Self> {
         let r#type = VarNumber::from_slice(src).map(tlv::Type::from)?;
+        src.advance(r#type.len());
         let length = VarNumber::from_slice(src)?;
+        src.advance(length.len());
         let value_size = length.to_u64() as usize;
-        let value = (src.len() > value_size).then(|| src.copy_to_bytes(value_size))?;
+        let value = (src.len() >= value_size).then(|| src.copy_to_bytes(value_size))?;
         Some(Self {
             r#type,
             length,
@@ -38,6 +40,10 @@ impl Packet {
         let length = self.length.bytes();
         let value = self.value.clone();
         dst.extend([r#type, length, value]);
+    }
+
+    pub fn to_data(&self) -> Option<tlv::Data> {
+        None
     }
 }
 

@@ -57,9 +57,16 @@ impl Tcp {
         loop {
             self.socket.readable().await?;
 
-            match self.socket.try_read(&mut bytes) {
+            let mut buf = [0; 8800];
+            tracing::trace!(buffer = buf.len(), "Got buffer");
+
+            match self.socket.try_read(&mut buf) {
                 Ok(0) => break,
-                Ok(count) => tracing::trace!(count, "Got bytes"),
+                Ok(count) => {
+                    tracing::trace!(count, "Got bytes");
+                    println!("{}", String::from_utf8_lossy(&buf[..count]));
+                    bytes.extend(&buf[..count]);
+                }
                 Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => continue,
                 Err(e) => return Err(e),
             }

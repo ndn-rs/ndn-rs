@@ -1,6 +1,3 @@
-use generic_array::typenum::U32;
-use generic_array::GenericArray;
-
 use super::*;
 
 pub use implicit::ImplicitSha256DigestComponent;

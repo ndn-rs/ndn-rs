@@ -7,7 +7,7 @@ use bytes::Bytes;
 
 // use ndn_packet as packet;
 use ndn_tlv as tlv;
-use ndn_varnumber::VarNumber;
+// use ndn_varnumber::VarNumber;
 
 use tlv::Tlv as _;
 

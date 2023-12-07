@@ -70,3 +70,10 @@ impl fmt::Display for InterestSignatureValue {
         "<InterestSignatureValue>".fmt(f)
     }
 }
+
+impl fmt::Display for InterestSignature {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.info.fmt(f)?;
+        self.value.fmt(f)
+    }
+}

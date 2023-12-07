@@ -1,24 +1,26 @@
 use super::*;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct InterestLifetime;
+non_negative_number!(InterestLifetime => Type::InterestLifetime);
 
-impl Tlv for InterestLifetime {
-    fn r#type(&self) -> Type {
-        Type::InterestLifetime
-    }
+// #[derive(Clone, Debug, PartialEq, Eq, Hash)]
+// pub struct InterestLifetime;
 
-    fn value(&self) -> Option<Bytes> {
-        todo!()
-    }
+// impl Tlv for InterestLifetime {
+//     fn r#type(&self) -> Type {
+//         Type::InterestLifetime
+//     }
 
-    fn payload_size(&self) -> usize {
-        todo!()
-    }
-}
+//     fn value(&self) -> Option<Bytes> {
+//         todo!()
+//     }
 
-impl fmt::Display for InterestLifetime {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        "<InterestLifetime>".fmt(f)
-    }
-}
+//     fn payload_size(&self) -> usize {
+//         todo!()
+//     }
+// }
+
+// impl fmt::Display for InterestLifetime {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         "<InterestLifetime>".fmt(f)
+//     }
+// }

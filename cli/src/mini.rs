@@ -14,8 +14,8 @@ impl Router {
         // let router = router::Router::new();
 
         for uri in [
-            "unix:///run/nfd.sock",
-            // "tcp4://anchor.local:6363",
+            "tcp4://localhost:6363",
+            // "unix:///run/nfd.sock",
             // "tcp4://anchor.local:6363",
             // "tcp4://anchor.local:6363",
             // "tcp4://anchor.local:6363",
@@ -32,8 +32,7 @@ impl Router {
     }
 
     fn tcp_face(uri: &str) -> mgmt::ControlParameters {
-        // mgmt::ControlParameters::create_face("tcp://127.0.0.1:6363")
-        mgmt::ControlParameters::create_face(uri)
+        mgmt::ControlParameters::create_face(uri).mtu(1492)
     }
 
     pub(crate) async fn get_default_face(&self) -> face::FaceId {

@@ -117,6 +117,6 @@ impl fmt::Display for NameComponent {
             Self::ParametersSha256Digest(c) => c.to_string(),
             Self::OtherType(c) => c.to_string(),
         };
-        format_args!("<NameComponent>[{component}]",).fmt(f)
+        format_args!("/{component}").fmt(f)
     }
 }

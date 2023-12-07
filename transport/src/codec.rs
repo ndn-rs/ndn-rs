@@ -27,3 +27,6 @@ impl codec::Decoder for TlvCodec {
         Ok(decoded)
     }
 }
+
+#[cfg(test)]
+mod tests;
