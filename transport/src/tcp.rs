@@ -64,8 +64,15 @@ impl Tcp {
                 Ok(0) => break,
                 Ok(count) => {
                     tracing::trace!(count, "Got bytes");
-                    println!("{}", String::from_utf8_lossy(&buf[..count]));
                     bytes.extend(&buf[..count]);
+                    let generic = tlv::Generic::from_buf(&mut buf.as_ref()).unwrap();
+                    println!("{generic:?}");
+                    generic
+                        .items()
+                        .unwrap_or_default()
+                        .into_iter()
+                        .for_each(|item| println!("{item:?}"));
+                    // println!("{}", String::from_utf8_lossy(&buf[..count]));
                 }
                 Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => continue,
                 Err(e) => return Err(e),

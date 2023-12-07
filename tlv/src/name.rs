@@ -39,10 +39,10 @@ impl TryFrom<Generic> for Name {
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
         if generic.r#type != Type::Name {
-            return Err(DecodeError);
+            return Err(DecodeError::TypeMismatch(generic));
         }
         if generic.length != generic.value.len() as u64 {
-            return Err(DecodeError);
+            return Err(DecodeError::LengthMismatch(generic));
         }
 
         let components = NameComponent::iter(generic.value).collect::<Result<Vec<_>, _>>()?;

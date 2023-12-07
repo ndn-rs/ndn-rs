@@ -2,8 +2,8 @@ use super::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct DataSignature {
-    info: SignatureInfo,
-    value: SignatureValue,
+    pub info: SignatureInfo,
+    pub value: SignatureValue,
 }
 
 impl fmt::Display for DataSignature {

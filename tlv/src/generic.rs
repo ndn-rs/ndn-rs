@@ -26,6 +26,16 @@ impl Generic {
             value,
         })
     }
+
+    pub fn items(&self) -> Option<Vec<Self>> {
+        let mut items = vec![];
+        let mut src = self.value.as_ref();
+        while !src.is_empty() {
+            let item = Self::from_buf(&mut src)?;
+            items.push(item)
+        }
+        Some(items)
+    }
 }
 
 impl Tlv for Generic {

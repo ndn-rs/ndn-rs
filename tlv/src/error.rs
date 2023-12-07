@@ -1,5 +1,13 @@
 use super::*;
 
 #[derive(Debug, Error)]
-#[error("Invalid Packet data")]
-pub struct DecodeError;
+pub enum DecodeError {
+    #[error("Type mismatch")]
+    TypeMismatch(Generic),
+
+    #[error("Length mismatch")]
+    LengthMismatch(Generic),
+
+    #[error("Invalid Data")]
+    InvalidData,
+}
