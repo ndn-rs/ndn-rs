@@ -2,7 +2,7 @@
 macro_rules! octets {
     ($name: ident => $tlv: expr) => {
         #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-        pub struct $name(Bytes);
+        pub struct $name(pub Bytes);
 
         impl $name {
             pub fn new(text: impl AsRef<[u8]>) -> Self {

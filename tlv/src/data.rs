@@ -8,6 +8,22 @@ pub struct Data {
     pub data_signature: DataSignature,
 }
 
+impl Data {
+    pub fn check_name(self, name: impl AsRef<str>) -> Result<Self, DecodeError> {
+        (self.name.to_string() == name.as_ref())
+            .then_some(self)
+            .ok_or(DecodeError::InvalidData)
+    }
+
+    pub fn name_starts_with(self, prefix: impl AsRef<str>) -> Result<Self, DecodeError> {
+        self.name
+            .to_string()
+            .starts_with(prefix.as_ref())
+            .then_some(self)
+            .ok_or(DecodeError::InvalidData)
+    }
+}
+
 impl Tlv for Data {
     fn r#type(&self) -> Type {
         Type::Data
@@ -62,14 +78,8 @@ impl fmt::Display for Data {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         "<Data>[".fmt(f)?;
         self.name.fmt(f)?;
-        if let Some(metainfo) = &self.metainfo {
-            metainfo.fmt(f).ok();
-            " ".fmt(f).ok();
-        }
-        if let Some(content) = &self.content {
-            content.fmt(f).ok();
-            " ".fmt(f).ok();
-        }
+        display_option(&self.metainfo, f)?;
+        display_option(&self.content, f)?;
         self.data_signature.fmt(f).ok();
         "]".fmt(f)
     }

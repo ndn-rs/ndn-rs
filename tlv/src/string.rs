@@ -2,7 +2,7 @@
 macro_rules! utf8_string {
     ($name: ident => $tlv: expr) => {
         #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-        pub struct $name(String);
+        pub struct $name(pub String);
 
         impl tlv::Tlv for $name {
             fn r#type(&self) -> tlv::Type {
@@ -20,12 +20,15 @@ macro_rules! utf8_string {
             }
         }
 
-        impl<S> From<S> for $name
-        where
-            S: Into<String>,
-        {
-            fn from(s: S) -> Self {
-                Self(s.into())
+        impl From<String> for $name {
+            fn from(text: String) -> Self {
+                Self(text)
+            }
+        }
+
+        impl From<&str> for $name {
+            fn from(text: &str) -> Self {
+                Self(text.into())
             }
         }
 
@@ -40,6 +43,23 @@ macro_rules! utf8_string {
         impl std::convert::AsRef<str> for $name {
             fn as_ref(&self) -> &str {
                 self.0.as_ref()
+            }
+        }
+
+        impl TryFrom<$crate::Generic> for $name {
+            type Error = $crate::DecodeError;
+
+            fn try_from(generic: $crate::Generic) -> Result<Self, Self::Error> {
+                let bytes = generic
+                    .check_type($tlv)?
+                    .self_check_length()?
+                    .value
+                    .to_vec();
+                String::from_utf8(bytes)
+                    .map(Self)
+                    .map_err(|_| $crate::DecodeError::InvalidData)
+                // let text = String::from_utf8_lossy(&value).to_string();
+                // Ok(Self(text))
             }
         }
 

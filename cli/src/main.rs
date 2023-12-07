@@ -36,6 +36,8 @@ impl Command {
         let generic = tlv::Generic::from_buf(&mut src).expect("Should be complete packet");
         let data = tlv::Data::try_from(generic).expect("Should be valid data packet");
         println!("GOT PACKET\n{data:#}");
+        let status = mgmt::GeneralStatus::try_from(data).expect("Should be valid General Status");
+        println!("STATUS\n{status:?}");
 
         Ok(())
     }
