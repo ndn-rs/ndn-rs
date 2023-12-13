@@ -8,7 +8,7 @@ pub struct OtherTypeComponent {
 
 impl OtherTypeComponent {
     pub fn with_prefix(prefix: &str, text: &str) -> Result<Self, NameError> {
-        let r#type = prefix.parse()?;
+        let r#type = prefix.parse().or(Err(NameError::InvalidType))?;
         let octets = Bytes::copy_from_slice(text.as_bytes());
 
         Ok(Self { r#type, octets })

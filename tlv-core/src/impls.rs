@@ -1,6 +1,10 @@
 use super::*;
 
 impl Type {
+    pub const fn new(n: u64) -> Self {
+        Self(n)
+    }
+
     #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
         VarNumber::from_u64(self.0).len()
@@ -28,6 +32,12 @@ impl From<VarNumber> for Type {
     }
 }
 
+impl From<Type> for VarNumber {
+    fn from(value: Type) -> Self {
+        value.to_varnumber()
+    }
+}
+
 impl From<u64> for Type {
     fn from(value: u64) -> Self {
         Self(value)
@@ -41,10 +51,10 @@ impl From<Type> for u64 {
 }
 
 impl str::FromStr for Type {
-    type Err = NameError;
+    type Err = <u64 as str::FromStr>::Err;
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
-        text.parse().map(Self).map_err(|_| NameError::InvalidType)
+        text.parse().map(Self)
     }
 }
 

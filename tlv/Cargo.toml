@@ -17,7 +17,7 @@ percent-encoding.workspace = true
 rand.workspace = true
 thiserror.workspace = true
 
-ndn-varnumber.workspace = true
+ndn-tlv-core.workspace = true
 
 
 [lints]

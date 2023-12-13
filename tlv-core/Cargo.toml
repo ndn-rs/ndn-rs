@@ -1,0 +1,20 @@
+[package]
+name = "ndn-tlv-core"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+description = "Named Data Networking - Core Tlv trait"
+
+
+[dependencies]
+bytes.workspace = true
+
+ndn-tlv-derive.workspace = true
+ndn-varnumber.workspace = true
+
+
+[lints]
+workspace = true

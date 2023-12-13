@@ -22,7 +22,7 @@ pub struct Name {
 }
 
 impl Name {
-    pub const MAX_TLV_TYPE: Type = Type(65535);
+    pub const MAX_TLV_TYPE: Type = Type::new(65535);
 
     pub fn digest(digest: [u8; 32]) -> Self {
         let digest = ImplicitSha256DigestComponent::new(digest);

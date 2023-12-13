@@ -9,6 +9,8 @@ members = [
     "packet",
     "router",
     "tlv",
+    "tlv-core",
+    "tlv-derive",
     "transport",
     "varnumber",
 ]
@@ -27,8 +29,11 @@ readme = "README.md"
 anyhow = "1.0"
 bytes = "1.5"
 clap = { version = "4.4", features = ["derive", "env"] }
+darling = { version = "0.20", features = ["diagnostics"] }
 generic-array = { version = "1.0", features = ["alloc"] }
 percent-encoding = "2.3"
+proc-macro2 = "1.0"
+quote = "1.0"
 rand = "0.8"
 slotmap = "1.0"
 thiserror = "1.0"
@@ -44,6 +49,8 @@ ndn-management = { path = "./management" }
 ndn-packet = { path = "./packet" }
 ndn-router = { path = "./router" }
 ndn-tlv = { path = "./tlv" }
+ndn-tlv-core = { path = "./tlv-core" }
+ndn-tlv-derive = { path = "./tlv-derive" }
 ndn-transport = { path = "./transport" }
 ndn-varnumber = { path = "./varnumber" }
 
