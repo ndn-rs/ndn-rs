@@ -15,16 +15,16 @@ pub struct FaceStatus {
     pub mtu: Option<Mtu>,
 }
 
-impl tlv::Tlv for FaceStatus {
-    fn r#type(&self) -> tlv::Type {
-        tlv::Type::FaceStatus
-    }
+// impl tlv::Tlv0 for FaceStatus {
+//     fn r#type(&self) -> tlv::Type {
+//         tlv::Type::FaceStatus
+//     }
 
-    fn value(&self) -> Option<Bytes> {
-        todo!()
-    }
+//     fn value(&self) -> Option<Bytes> {
+//         todo!()
+//     }
 
-    fn payload_size(&self) -> usize {
-        todo!()
-    }
-}
+//     fn payload_size(&self) -> usize {
+//         todo!()
+//     }
+// }

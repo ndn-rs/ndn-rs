@@ -100,6 +100,10 @@ impl VarNumber {
             None
         }
     }
+
+    pub fn encode(&self, dst: &mut BytesMut) {
+        dst.extend(&self.bytes);
+    }
 }
 
 impl ops::Deref for VarNumber {

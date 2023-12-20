@@ -1,11 +1,11 @@
 use std::io;
 
-use bytes::Bytes;
+// use bytes::Bytes;
 use ndn_face as face;
 use ndn_tlv as tlv;
 // use ndn_varnumber::VarNumber;
 
-use tlv::Tlv as _;
+// use tlv::Tlv0 as _;
 
 pub use capacity::Capacity;
 pub use control::ControlParameters;

@@ -29,3 +29,9 @@ impl DecodeError {
         Self::Other(msg)
     }
 }
+
+impl From<io::Error> for DecodeError {
+    fn from(err: io::Error) -> Self {
+        Self::other(err.to_string())
+    }
+}

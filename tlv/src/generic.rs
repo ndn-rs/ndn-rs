@@ -62,31 +62,70 @@ impl Generic {
     where
         T: generic_array::ArrayLength,
     {
-        GenericArray::try_from_iter(self.bytes()).map_err(|_| DecodeError::LengthMismatch(self))
+        GenericArray::try_from_slice(&self.value)
+            .map(|array| array.clone())
+            .map_err(|_| DecodeError::LengthMismatch(self))
+    }
+
+    pub fn from_tlv<T>(t: T) -> Result<Self, <T as Tlv>::Error>
+    where
+        T: Tlv,
+    {
+        let r#type = t.r#type();
+        let length = t.length();
+        let mut value = BytesMut::with_capacity(length);
+        t.encode_value(&mut value)?;
+        let value = value.freeze();
+        let length = length.into();
+        Ok(Self {
+            r#type,
+            length,
+            value,
+        })
     }
 }
 
 impl Tlv for Generic {
+    type Error = DecodeError;
+
     fn r#type(&self) -> Type {
         self.r#type
     }
 
-    fn length(&self) -> VarNumber {
-        self.length.clone()
+    fn length(&self) -> usize {
+        self.length.to_u64() as usize
     }
 
-    fn value(&self) -> Option<Bytes> {
-        Some(self.value.clone())
+    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+        dst.put_slice(&self.value);
+        Ok(())
     }
 
-    fn size(&self) -> usize {
-        self.payload_size() + self.type_as_varnumber().len() + self.length.len()
-    }
-
-    fn payload_size(&self) -> usize {
-        self.value.len()
+    fn decode_value(_src: &mut BytesMut) -> Result<Self, Self::Error> {
+        todo!("This probably should never be implemented")
     }
 }
+// impl Tlv0 for Generic {
+//     fn r#type(&self) -> Type {
+//         self.r#type
+//     }
+
+//     fn length(&self) -> VarNumber {
+//         self.length.clone()
+//     }
+
+//     fn value(&self) -> Option<Bytes> {
+//         Some(self.value.clone())
+//     }
+
+//     fn size(&self) -> usize {
+//         self.payload_size() + self.type_as_varnumber().len() + self.length.len()
+//     }
+
+//     fn payload_size(&self) -> usize {
+//         self.value.len()
+//     }
+// }
 
 #[cfg(test)]
 mod tests {

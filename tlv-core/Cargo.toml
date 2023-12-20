@@ -11,6 +11,8 @@ description = "Named Data Networking - Core Tlv trait"
 
 [dependencies]
 bytes.workspace = true
+generic-array.workspace = true
+tokio-util.workspace = true
 
 ndn-tlv-derive.workspace = true
 ndn-varnumber.workspace = true

@@ -1,8 +1,8 @@
 use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Tlv)]
-#[tlv(r#type = Type::HopLimit)]
-pub struct HopLimit(u8);
+#[tlv(r#type = Type::HopLimit, error = DecodeError)]
+pub struct HopLimit(pub u8);
 
 impl HopLimit {
     pub fn new(limit: u8) -> Self {
@@ -10,7 +10,7 @@ impl HopLimit {
     }
 }
 
-// impl Tlv for HopLimit {
+// impl Tlv0 for HopLimit {
 //     fn r#type(&self) -> Type {
 //         Type::HopLimit
 //     }
@@ -20,7 +20,7 @@ impl HopLimit {
 //     }
 
 //     fn value(&self) -> Option<Bytes> {
-//         let bytes = Bytes::copy_from_slice(&[self.limit]);
+//         let bytes = Bytes::copy_from_slice(&[self.0]);
 //         Some(bytes)
 //     }
 

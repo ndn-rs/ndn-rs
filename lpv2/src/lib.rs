@@ -1,4 +1,6 @@
-use bytes::Bytes;
+use std::io;
+
+use bytes::{Buf, BufMut, Bytes, BytesMut};
 
 use ndn_tlv as tlv;
 
@@ -14,20 +16,20 @@ pub struct LpPacket {
     fragment: Option<Fragment>,
 }
 
-impl tlv::Tlv for LpPacket {
-    fn r#type(&self) -> tlv::Type {
-        tlv::Type::LpPacket
-    }
+// impl tlv::Tlv0 for LpPacket {
+//     fn r#type(&self) -> tlv::Type {
+//         tlv::Type::LpPacket
+//     }
 
-    fn value(&self) -> Option<Bytes> {
-        todo!()
-    }
+//     fn value(&self) -> Option<Bytes> {
+//         todo!()
+//     }
 
-    fn payload_size(&self) -> usize {
-        self.lp_header_field
-            .iter()
-            .map(|item| item.payload_size())
-            .chain(self.fragment.iter().map(|item| item.payload_size()))
-            .sum()
-    }
-}
+//     fn payload_size(&self) -> usize {
+//         self.lp_header_field
+//             .iter()
+//             .map(|item| item.payload_size())
+//             .chain(self.fragment.iter().map(|item| item.payload_size()))
+//             .sum()
+//     }
+// }

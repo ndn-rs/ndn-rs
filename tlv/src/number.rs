@@ -1,4 +1,7 @@
+use std::io;
 use std::ops;
+
+use bytes::BufMut;
 
 use super::*;
 
@@ -25,6 +28,48 @@ impl NonNegativeNumber {
 
     pub fn len(&self) -> usize {
         self.bytes().len()
+    }
+}
+
+impl TlvCodec for NonNegativeNumber {
+    type Error = io::Error;
+
+    fn total_size(&self) -> usize {
+        if self.0 <= u8::MAX as u64 {
+            1
+        } else if self.0 <= u16::MAX as u64 {
+            2
+        } else if self.0 <= u32::MAX as u64 {
+            4
+        } else {
+            8
+        }
+    }
+
+    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+        if let Ok(n) = u8::try_from(self.0) {
+            dst.put_u8(n);
+        } else if let Ok(n) = u16::try_from(self.0) {
+            dst.put_u16(n);
+        } else if let Ok(n) = u32::try_from(self.0) {
+            dst.put_u32(n);
+        } else {
+            dst.put_u64(self.0);
+        }
+
+        Ok(())
+    }
+
+    fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
+        match src.len() {
+            1 => Ok(src.get_u8().into()),
+            2 => Ok(src.get_u16().into()),
+            4 => Ok(src.get_u32().into()),
+            8 => Ok(src.get_u64().into()),
+            other => Err(io::Error::other(format!(
+                "Invalid NonNegativeNumber byte count {other}"
+            ))),
+        }
     }
 }
 
@@ -112,6 +157,7 @@ macro_rules! non_negative_number {
 
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                use $crate::Tlv;
                 format_args!("{}={}", self.r#type(), self.0).fmt(f)
             }
         }
@@ -134,19 +180,59 @@ macro_rules! non_negative_number_impl {
             }
         }
 
+        // impl $crate::TlvCodec for $name {
+        //     type Error = <$crate::NonNegativeNumber as $crate::TlvCodec>::Error;
+
+        //     fn total_size(&self) -> usize {
+        //         self.0.total_size()
+        //     }
+
+        //     fn encode(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
+        //         self.0.encode(dst)
+        //     }
+
+        //     fn decode(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
+        //         $crate::NonNegativeNumber::decode(src).map($name)
+        //     }
+        // }
+
         impl $crate::Tlv for $name {
+            type Error = $crate::DecodeError;
+
             fn r#type(&self) -> $crate::Type {
                 $tlv
             }
 
-            fn value(&self) -> Option<Bytes> {
-                Some(self.0.bytes())
-            }
-
-            fn payload_size(&self) -> usize {
+            fn length(&self) -> usize {
                 self.0.len()
             }
+
+            fn encode_value(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
+                use $crate::TlvCodec;
+                self.0.encode(dst).map_err(Self::Error::from)
+            }
+
+            fn decode_value(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
+                use $crate::TlvCodec;
+                $crate::NonNegativeNumber::decode(src)
+                    .map(Self)
+                    .map_err($crate::DecodeError::from)
+            }
         }
+
+        // impl $crate::Tlv0 for $name {
+        //     fn r#type(&self) -> $crate::Type {
+        //         $tlv
+        //     }
+
+        //     fn value(&self) -> Option<Bytes> {
+        //         Some(self.0.bytes())
+        //     }
+
+        //     fn payload_size(&self) -> usize {
+        //         self.0.len()
+        //     }
+        // }
 
         impl std::ops::Deref for $name {
             type Target = u64;

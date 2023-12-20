@@ -4,7 +4,7 @@ use super::*;
 pub struct ControlResponse {
     pub status_code: StatusCode,
     pub status_text: StatusText,
-    pub body: Vec<Box<dyn tlv::Tlv>>,
+    pub body: Vec<tlv::Generic>,
 }
 
 impl ControlResponse {
@@ -41,19 +41,19 @@ impl ControlResponse {
     }
 }
 
-impl tlv::Tlv for ControlResponse {
-    fn r#type(&self) -> tlv::Type {
-        tlv::Type::ControlResponse
-    }
+// impl tlv::Tlv0 for ControlResponse {
+//     fn r#type(&self) -> tlv::Type {
+//         tlv::Type::ControlResponse
+//     }
 
-    fn value(&self) -> Option<Bytes> {
-        let items = [self.status_code.value(), self.status_text.value()]
-            .into_iter()
-            .chain(self.body.iter().map(|item| item.value()));
-        tlv::collect_to_bytes(items)
-    }
+//     fn value(&self) -> Option<Bytes> {
+//         let items = [self.status_code.value(), self.status_text.value()]
+//             .into_iter()
+//             .chain(self.body.iter().map(|item| item.value()));
+//         tlv::collect_to_bytes(items)
+//     }
 
-    fn payload_size(&self) -> usize {
-        todo!()
-    }
-}
+//     fn payload_size(&self) -> usize {
+//         todo!()
+//     }
+// }

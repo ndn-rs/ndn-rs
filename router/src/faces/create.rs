@@ -144,16 +144,21 @@ impl From<CreateResponse> for mgmt::ControlResponse {
             flags,
         } = response;
 
-        let body: Vec<Box<dyn tlv::Tlv>> = vec![
-            Box::new(face_id),
-            Box::new(uri),
-            Box::new(local_uri),
-            Box::new(face_persistency),
-            Box::new(base_congestion_marking_interval),
-            Box::new(default_congestion_threshold),
-            Box::new(mtu),
-            Box::new(flags),
-        ];
+        let mut body = Vec::with_capacity(8);
+        body.push(tlv::Generic::from_tlv(face_id).unwrap());
+        body.push(tlv::Generic::from_tlv(uri).unwrap());
+        body.push(tlv::Generic::from_tlv(local_uri).unwrap());
+        body.push(tlv::Generic::from_tlv(face_persistency).unwrap());
+        if let Some(base_congestion_marking_interval) = base_congestion_marking_interval {
+            body.push(tlv::Generic::from_tlv(base_congestion_marking_interval).unwrap());
+        }
+        if let Some(default_congestion_threshold) = default_congestion_threshold {
+            body.push(tlv::Generic::from_tlv(default_congestion_threshold).unwrap());
+        }
+        if let Some(mtu) = mtu {
+            body.push(tlv::Generic::from_tlv(mtu).unwrap());
+        }
+        body.push(tlv::Generic::from_tlv(flags).unwrap());
 
         let status_code = mgmt::StatusCode::ok();
         let status_text = mgmt::StatusText::from("CREATED");

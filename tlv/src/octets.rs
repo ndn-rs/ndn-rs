@@ -12,18 +12,41 @@ macro_rules! octets {
         }
 
         impl $crate::Tlv for $name {
+            type Error = $crate::DecodeError;
+
             fn r#type(&self) -> $crate::Type {
                 $tlv
             }
 
-            fn value(&self) -> Option<Bytes> {
-                Some(self.0.clone())
-            }
-
-            fn payload_size(&self) -> usize {
+            fn length(&self) -> usize {
                 self.0.len()
             }
+
+            fn encode_value(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
+                use $crate::TlvCodec;
+                self.0.encode(dst).map_err(Self::Error::from)
+            }
+
+            fn decode_value(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
+                use $crate::TlvCodec;
+                bytes::Bytes::decode(src)
+                    .map(Self)
+                    .map_err($crate::DecodeError::from)
+            }
         }
+        // impl $crate::Tlv0 for $name {
+        //     fn r#type(&self) -> $crate::Type {
+        //         $tlv
+        //     }
+
+        //     fn value(&self) -> Option<Bytes> {
+        //         Some(self.0.clone())
+        //     }
+
+        //     fn payload_size(&self) -> usize {
+        //         self.0.len()
+        //     }
+        // }
 
         impl TryFrom<$crate::Generic> for $name {
             type Error = DecodeError;

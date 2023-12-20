@@ -1,6 +1,7 @@
 use super::*;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Tlv)]
+#[tlv(r#type = Type::ParametersSha256DigestComponent, error = DecodeError)]
 pub struct ParametersSha256DigestComponent {
     digest: GenericArray<u8, U32>,
 }
@@ -15,19 +16,19 @@ impl ParametersSha256DigestComponent {
     }
 }
 
-impl Tlv for ParametersSha256DigestComponent {
-    fn r#type(&self) -> Type {
-        Type::ParametersSha256DigestComponent
-    }
+// impl Tlv0 for ParametersSha256DigestComponent {
+//     fn r#type(&self) -> Type {
+//         Type::ParametersSha256DigestComponent
+//     }
 
-    fn value(&self) -> Option<Bytes> {
-        todo!()
-    }
+//     fn value(&self) -> Option<Bytes> {
+//         todo!()
+//     }
 
-    fn payload_size(&self) -> usize {
-        GenericArray::<u8, U32>::len()
-    }
-}
+//     fn payload_size(&self) -> usize {
+//         GenericArray::<u8, U32>::len()
+//     }
+// }
 
 impl TryFrom<Generic> for ParametersSha256DigestComponent {
     type Error = DecodeError;

@@ -20,21 +20,62 @@ impl FacePersistency {
             Self::Permanent => "permanent",
         }
     }
+
+    pub fn from_u8(value: u8) -> io::Result<Self> {
+        match value {
+            0 => Ok(Self::Persistent),
+            1 => Ok(Self::OnDemand),
+            2 => Ok(Self::Permanent),
+            other => Err(io::Error::other(format!(
+                "Invalid FacePersistency value '{other}'"
+            ))),
+        }
+    }
+}
+
+impl TryFrom<u8> for FacePersistency {
+    type Error = io::Error;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        Self::from_u8(value)
+    }
 }
 
 impl tlv::Tlv for FacePersistency {
+    type Error = tlv::DecodeError;
+
     fn r#type(&self) -> tlv::Type {
         tlv::Type::FacePersistency
     }
 
-    fn value(&self) -> Option<Bytes> {
-        Some(Bytes::copy_from_slice(&[*self as u8]))
-    }
-
-    fn payload_size(&self) -> usize {
+    fn length(&self) -> usize {
         1
     }
+
+    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+        dst.put_u8(*self as u8);
+        Ok(())
+    }
+
+    fn decode_value(src: &mut BytesMut) -> Result<Self, Self::Error> {
+        let value = src.get_u8();
+        Self::from_u8(value).map_err(Self::Error::from)
+    }
 }
+
+// impl tlv::Tlv0 for FacePersistency {
+//     fn r#type(&self) -> tlv::Type {
+//         tlv::Type::FacePersistency
+//     }
+
+//     fn value(&self) -> Option<Bytes> {
+//         Some(Bytes::copy_from_slice(&[*self as u8]))
+//     }
+
+//     fn payload_size(&self) -> usize {
+//         1
+//     }
+// }
 
 impl fmt::Display for FacePersistency {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -44,6 +85,8 @@ impl fmt::Display for FacePersistency {
 
 #[cfg(test)]
 mod tests {
+    use bytes::Bytes;
+
     use tlv::Tlv;
 
     use super::*;

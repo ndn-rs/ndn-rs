@@ -4,21 +4,45 @@ macro_rules! utf8_string {
         #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $name(pub String);
 
-        impl tlv::Tlv for $name {
-            fn r#type(&self) -> tlv::Type {
+        impl $crate::Tlv for $name {
+            type Error = $crate::DecodeError;
+
+            fn r#type(&self) -> $crate::Type {
                 $tlv
             }
 
-            fn value(&self) -> Option<Bytes> {
-                let data = self.0.as_bytes();
-                let bytes = Bytes::copy_from_slice(data);
-                Some(bytes)
-            }
-
-            fn payload_size(&self) -> usize {
+            fn length(&self) -> usize {
                 self.0.len()
             }
+
+            fn encode_value(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
+                use $crate::TlvCodec;
+                self.0.encode(dst).map_err(Self::Error::from)
+            }
+
+            fn decode_value(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
+                use $crate::TlvCodec;
+                String::decode(src)
+                    .map(Self)
+                    .map_err($crate::DecodeError::from)
+            }
         }
+
+        // impl tlv::Tlv0 for $name {
+        //     fn r#type(&self) -> tlv::Type {
+        //         $tlv
+        //     }
+
+        //     fn value(&self) -> Option<Bytes> {
+        //         let data = self.0.as_bytes();
+        //         let bytes = Bytes::copy_from_slice(data);
+        //         Some(bytes)
+        //     }
+
+        //     fn payload_size(&self) -> usize {
+        //         self.0.len()
+        //     }
+        // }
 
         impl From<String> for $name {
             fn from(text: String) -> Self {
@@ -65,6 +89,7 @@ macro_rules! utf8_string {
 
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                use $crate::Tlv;
                 format_args!("{}={}", self.r#type(), self.0).fmt(f)
             }
         }

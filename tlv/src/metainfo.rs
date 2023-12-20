@@ -1,25 +1,26 @@
 use super::*;
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq, Tlv)]
+#[tlv(r#type = Type::MetaInfo, error = DecodeError)]
 pub struct MetaInfo {
     pub content_type: Option<ContentType>,
     pub freshness_period: Option<FreshnessPeriod>,
     pub final_block_id: Option<FinalBlockId>,
 }
 
-impl Tlv for MetaInfo {
-    fn r#type(&self) -> Type {
-        Type::MetaInfo
-    }
+// impl Tlv0 for MetaInfo {
+//     fn r#type(&self) -> Type {
+//         Type::MetaInfo
+//     }
 
-    fn value(&self) -> Option<Bytes> {
-        todo!()
-    }
+//     fn value(&self) -> Option<Bytes> {
+//         todo!()
+//     }
 
-    fn payload_size(&self) -> usize {
-        todo!()
-    }
-}
+//     fn payload_size(&self) -> usize {
+//         todo!()
+//     }
+// }
 
 impl TryFrom<Generic> for MetaInfo {
     type Error = DecodeError;

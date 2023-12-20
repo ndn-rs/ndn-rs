@@ -1,8 +1,10 @@
 use super::*;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Tlv)]
+#[tlv(r#type = Type::ImplicitSha256DigestComponent, error = DecodeError)]
 pub struct ImplicitSha256DigestComponent {
-    digest: GenericArray<u8, U32>,
+    digest: [u8; 32],
+    // digest: GenericArray<u8, U32>,
 }
 
 impl ImplicitSha256DigestComponent {
@@ -11,24 +13,25 @@ impl ImplicitSha256DigestComponent {
 
     pub fn new(digest: impl Into<GenericArray<u8, U32>>) -> Self {
         let digest = digest.into();
+        let digest = digest.into();
         Self { digest }
     }
 }
 
-impl Tlv for ImplicitSha256DigestComponent {
-    fn r#type(&self) -> Type {
-        Type::ImplicitSha256DigestComponent
-    }
+// impl Tlv0 for ImplicitSha256DigestComponent {
+//     fn r#type(&self) -> Type {
+//         Type::ImplicitSha256DigestComponent
+//     }
 
-    fn value(&self) -> Option<Bytes> {
-        let bytes = Bytes::copy_from_slice(&self.digest);
-        Some(bytes)
-    }
+//     fn value(&self) -> Option<Bytes> {
+//         let bytes = Bytes::copy_from_slice(&self.digest);
+//         Some(bytes)
+//     }
 
-    fn payload_size(&self) -> usize {
-        GenericArray::<u8, U32>::len()
-    }
-}
+//     fn payload_size(&self) -> usize {
+//         GenericArray::<u8, U32>::len()
+//     }
+// }
 
 impl TryFrom<Generic> for ImplicitSha256DigestComponent {
     type Error = DecodeError;
@@ -37,7 +40,8 @@ impl TryFrom<Generic> for ImplicitSha256DigestComponent {
         let digest = generic
             .check_type(Type::ImplicitSha256DigestComponent)?
             .check_length(GenericArray::<u8, U32>::len())?
-            .try_into_generic_array()?;
+            .try_into_generic_array()?
+            .into();
 
         Ok(Self { digest })
     }
@@ -53,6 +57,7 @@ impl str::FromStr for ImplicitSha256DigestComponent {
 
 impl fmt::Display for ImplicitSha256DigestComponent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        format!("{}={:x}", Self::PREFIX, self.digest).fmt(f)
+        let array = GenericArray::<u8, U32>::from_slice(&self.digest);
+        format!("{}={:x}", Self::PREFIX, array).fmt(f)
     }
 }

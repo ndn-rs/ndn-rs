@@ -11,8 +11,9 @@ use ndn_management as mgmt;
 use ndn_tlv as tlv;
 use ndn_transport as transport;
 
+use tlv::Data;
 use tlv::Interest;
-use tlv::{Data, Tlv};
+use tlv::TlvCodec;
 
 pub use content::ContentStore;
 pub use error::Error;
@@ -69,14 +70,14 @@ impl Router {
     ) -> io::Result<()> {
         if let Some(data) = self.content_store.lookup(&interest).await {
             // TODO Check freshness
-            let data = data.bytes();
+            let data = data.bytes().unwrap();
             self.faces.send(downstream, data).await?;
         } else {
             self.pending_interest_table
                 .register(&interest, downstream)
                 .await;
             let upstream = self.forwarding_information_base.lookup(&interest).await;
-            let data = interest.bytes();
+            let data = interest.bytes().unwrap();
             self.faces.send(&upstream, data).await?;
         }
 

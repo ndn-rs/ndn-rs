@@ -3,19 +3,19 @@ use std::io;
 use bytes::Buf;
 use tokio_util::codec;
 
-use tlv::Tlv as _;
+use tlv::TlvCodec as _;
 
 use super::*;
 
 #[derive(Debug)]
 pub struct TlvCodec;
 
-impl<T: tlv::Tlv> codec::Encoder<T> for TlvCodec {
+impl<T: tlv::TlvCodec> codec::Encoder<T> for TlvCodec {
     type Error = io::Error;
 
     fn encode(&mut self, item: T, dst: &mut BytesMut) -> Result<(), Self::Error> {
-        item.write(dst);
-        Ok(())
+        item.encode(dst)
+            .map_err(|err| io::Error::other(err.to_string()))
     }
 }
 
@@ -28,8 +28,8 @@ impl codec::Decoder for TlvCodec {
             let mut src = io::Cursor::new(src.as_ref());
             tlv::Generic::from_buf(&mut src)
         };
-        if let Some(packet) = &decoded {
-            src.advance(packet.size());
+        if let Some(generic) = &decoded {
+            src.advance(generic.total_size());
         }
 
         Ok(decoded)

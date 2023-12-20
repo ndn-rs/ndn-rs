@@ -39,8 +39,12 @@ impl Router {
         self.faces.get_faces().await.pop().unwrap()
     }
 
-    pub(crate) async fn send(&self, face: &face::FaceId, packet: impl tlv::Tlv) -> io::Result<()> {
-        let data = packet.bytes();
+    pub(crate) async fn send(
+        &self,
+        face: &face::FaceId,
+        packet: impl tlv::TlvCodec,
+    ) -> io::Result<()> {
+        let data = packet.bytes().unwrap();
         self.faces.send(face, data).await
     }
 

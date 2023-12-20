@@ -1,6 +1,7 @@
 use super::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Tlv)]
+#[tlv(r#type = Type::Data, error = DecodeError)]
 pub struct Data {
     pub name: Name,
     pub metainfo: Option<MetaInfo>,
@@ -24,19 +25,19 @@ impl Data {
     }
 }
 
-impl Tlv for Data {
-    fn r#type(&self) -> Type {
-        Type::Data
-    }
+// impl Tlv0 for Data {
+//     fn r#type(&self) -> Type {
+//         Type::Data
+//     }
 
-    fn value(&self) -> Option<Bytes> {
-        todo!()
-    }
+//     fn value(&self) -> Option<Bytes> {
+//         todo!()
+//     }
 
-    fn payload_size(&self) -> usize {
-        todo!()
-    }
-}
+//     fn payload_size(&self) -> usize {
+//         todo!()
+//     }
+// }
 
 impl TryFrom<Generic> for Data {
     type Error = DecodeError;

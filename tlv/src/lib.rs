@@ -1,7 +1,8 @@
 use std::fmt;
+use std::io;
 use std::str;
 
-use bytes::{Buf, Bytes};
+use bytes::{Buf, BufMut, Bytes, BytesMut};
 use generic_array::typenum::{U32, U4};
 use generic_array::GenericArray;
 use thiserror::Error;
@@ -9,6 +10,9 @@ use thiserror::Error;
 pub use ndn_tlv_core::collect_to_bytes;
 pub use ndn_tlv_core::display_option;
 pub use ndn_tlv_core::Tlv;
+// pub use ndn_tlv_core::Tlv0;
+pub use ndn_tlv_core as core;
+pub use ndn_tlv_core::TlvCodec;
 pub use ndn_tlv_core::Type;
 pub use ndn_tlv_core::VarNumber;
 
