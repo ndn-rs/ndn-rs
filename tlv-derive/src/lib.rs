@@ -1,7 +1,4 @@
 use darling::ast;
-use darling::usage::UsesTypeParams;
-use darling::uses_lifetimes;
-use darling::uses_type_params;
 use darling::util;
 use darling::FromDeriveInput;
 use darling::FromField;
@@ -25,7 +22,6 @@ fn derive2(input: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
         Err(err) => return err.write_errors(),
     };
 
-    println!("{}", quote::quote!(#tlv));
     quote::quote!(#tlv)
 }
 
@@ -44,11 +40,7 @@ struct TlvDerive {
 struct PayloadItem {
     ident: Option<syn::Ident>,
     ty: syn::Type,
-    // generics: syn::Generics,
 }
-
-uses_lifetimes!(PayloadItem, ty);
-uses_type_params!(PayloadItem, ty);
 
 #[derive(Debug, FromMeta)]
 struct Crates {
@@ -144,13 +136,14 @@ fn handle_struct(
 ) {
     let (style, fields) = fields.as_ref().split();
     match style {
-        ast::Style::Tuple => handle_tuple_struct(fields),
+        ast::Style::Tuple => handle_tuple_struct(tlv, fields),
         ast::Style::Struct => handle_regular_struct(tlv, fields),
         ast::Style::Unit => handle_unit_struct(fields),
     }
 }
 
 fn handle_tuple_struct(
+    tlv: &syn::Path,
     fields: Vec<&PayloadItem>,
 ) -> (
     proc_macro2::TokenStream,
@@ -160,7 +153,7 @@ fn handle_tuple_struct(
     (
         tuple_length(&fields),
         tuple_encode(&fields),
-        tuple_decode(&fields),
+        tuple_decode(tlv, &fields),
     )
 }
 
@@ -185,12 +178,12 @@ fn tuple_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     )
 }
 
-fn tuple_decode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
+fn tuple_decode(tlv: &syn::Path, fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     let fields = fields
         .iter()
         .enumerate()
         .map(|(n, item)| (syn::Index::from(n), &item.ty))
-        .map(|(_idx, ty)| quote::quote!( #ty::decode(src)? ));
+        .map(|(_idx, _ty)| quote::quote!( #tlv::TlvCodec::decode(src)? ));
     quote::quote!(
         Ok(Self(#(#fields,)*))
     )
@@ -233,14 +226,7 @@ fn struct_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
 fn struct_decode(tlv: &syn::Path, fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     let fields = fields
         .iter()
-        .inspect(|field| {
-            let options = darling::usage::Options::from(darling::usage::Purpose::BoundImpl);
-            let types = darling::usage::IdentSet::default();
-            let params = field.ty.uses_type_params(&options, &types);
-            println!("PARAMS\n{params:?}");
-        })
         .map(|field| (&field.ident, &field.ty))
-        .inspect(|(name, ty)| println!("{name:?}: {ty:#?}"))
         .map(|(name, _ty)| quote::quote!( #name: #tlv::TlvCodec::decode(src)? ));
     quote::quote!(
         Ok(Self { #(#fields,)* })
