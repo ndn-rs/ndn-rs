@@ -63,20 +63,6 @@ impl tlv::Tlv for FacePersistency {
     }
 }
 
-// impl tlv::Tlv0 for FacePersistency {
-//     fn r#type(&self) -> tlv::Type {
-//         tlv::Type::FacePersistency
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         Some(Bytes::copy_from_slice(&[*self as u8]))
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         1
-//     }
-// }
-
 impl fmt::Display for FacePersistency {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.as_str().fmt(f)

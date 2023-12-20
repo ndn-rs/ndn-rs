@@ -47,35 +47,3 @@ impl ControlParameters {
         }
     }
 }
-
-// impl tlv::Tlv0 for ControlParameters {
-//     fn r#type(&self) -> tlv::Type {
-//         tlv::Type::ControlParameters
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         let items = [
-//             self.name.value(),
-//             self.face_id.value(),
-//             self.uri.value(),
-//             self.local_uri.value(),
-//             self.origin.value(),
-//             self.cost.value(),
-//             self.capacity.value(),
-//             self.count.value(),
-//             self.base_congestion_marking_interval.value(),
-//             self.default_congestion_threshold.value(),
-//             self.mtu.value(),
-//             self.flags.value(),
-//             self.mask.value(),
-//             self.strategy.value(),
-//             self.expiration_period.value(),
-//             self.face_persistency.value(),
-//         ];
-//         tlv::collect_to_bytes(items)
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         todo!()
-//     }
-// }

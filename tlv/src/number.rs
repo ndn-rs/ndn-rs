@@ -220,20 +220,6 @@ macro_rules! non_negative_number_impl {
             }
         }
 
-        // impl $crate::Tlv0 for $name {
-        //     fn r#type(&self) -> $crate::Type {
-        //         $tlv
-        //     }
-
-        //     fn value(&self) -> Option<Bytes> {
-        //         Some(self.0.bytes())
-        //     }
-
-        //     fn payload_size(&self) -> usize {
-        //         self.0.len()
-        //     }
-        // }
-
         impl std::ops::Deref for $name {
             type Target = u64;
 

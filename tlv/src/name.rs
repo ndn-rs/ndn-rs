@@ -70,24 +70,6 @@ impl str::FromStr for Name {
     }
 }
 
-// impl Tlv0 for Name {
-//     fn r#type(&self) -> Type {
-//         Type::Name
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         let items = self.components.iter().map(|component| component.bytes());
-//         collect_to_bytes(items)
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         self.components
-//             .iter()
-//             .map(|component| component.size())
-//             .sum()
-//     }
-// }
-
 impl fmt::Display for Name {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let components = self

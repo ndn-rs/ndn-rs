@@ -44,16 +44,3 @@ impl Packet {
         None
     }
 }
-
-// impl<T: tlv::Tlv0> From<&T> for Packet {
-//     fn from(tlv: &T) -> Self {
-//         let r#type = tlv.r#type();
-//         let length = tlv.length();
-//         let value = tlv.value().unwrap_or_default();
-//         Self {
-//             r#type,
-//             length,
-//             value,
-//         }
-//     }
-// }

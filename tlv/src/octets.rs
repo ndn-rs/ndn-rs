@@ -34,19 +34,6 @@ macro_rules! octets {
                     .map_err($crate::DecodeError::from)
             }
         }
-        // impl $crate::Tlv0 for $name {
-        //     fn r#type(&self) -> $crate::Type {
-        //         $tlv
-        //     }
-
-        //     fn value(&self) -> Option<Bytes> {
-        //         Some(self.0.clone())
-        //     }
-
-        //     fn payload_size(&self) -> usize {
-        //         self.0.len()
-        //     }
-        // }
 
         impl TryFrom<$crate::Generic> for $name {
             type Error = DecodeError;

@@ -28,22 +28,6 @@ macro_rules! utf8_string {
             }
         }
 
-        // impl tlv::Tlv0 for $name {
-        //     fn r#type(&self) -> tlv::Type {
-        //         $tlv
-        //     }
-
-        //     fn value(&self) -> Option<Bytes> {
-        //         let data = self.0.as_bytes();
-        //         let bytes = Bytes::copy_from_slice(data);
-        //         Some(bytes)
-        //     }
-
-        //     fn payload_size(&self) -> usize {
-        //         self.0.len()
-        //     }
-        // }
-
         impl From<String> for $name {
             fn from(text: String) -> Self {
                 Self(text)

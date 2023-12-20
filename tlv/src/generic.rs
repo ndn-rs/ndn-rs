@@ -105,27 +105,6 @@ impl Tlv for Generic {
         todo!("This probably should never be implemented")
     }
 }
-// impl Tlv0 for Generic {
-//     fn r#type(&self) -> Type {
-//         self.r#type
-//     }
-
-//     fn length(&self) -> VarNumber {
-//         self.length.clone()
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         Some(self.value.clone())
-//     }
-
-//     fn size(&self) -> usize {
-//         self.payload_size() + self.type_as_varnumber().len() + self.length.len()
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         self.value.len()
-//     }
-// }
 
 #[cfg(test)]
 mod tests {

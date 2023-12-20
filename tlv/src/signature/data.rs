@@ -20,39 +20,11 @@ pub struct SignatureInfo;
 #[tlv(r#type = Type::SignatureValue, error = DecodeError)]
 pub struct SignatureValue;
 
-// impl Tlv0 for SignatureInfo {
-//     fn r#type(&self) -> Type {
-//         Type::SignatureInfo
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         todo!()
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         todo!()
-//     }
-// }
-
 impl fmt::Display for SignatureInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         "<SignatureInfo>".fmt(f)
     }
 }
-
-// impl Tlv0 for SignatureValue {
-//     fn r#type(&self) -> Type {
-//         Type::SignatureValue
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         todo!()
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         todo!()
-//     }
-// }
 
 impl fmt::Display for SignatureValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

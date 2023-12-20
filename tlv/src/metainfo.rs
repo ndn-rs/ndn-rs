@@ -8,20 +8,6 @@ pub struct MetaInfo {
     pub final_block_id: Option<FinalBlockId>,
 }
 
-// impl Tlv0 for MetaInfo {
-//     fn r#type(&self) -> Type {
-//         Type::MetaInfo
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         todo!()
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         todo!()
-//     }
-// }
-
 impl TryFrom<Generic> for MetaInfo {
     type Error = DecodeError;
 

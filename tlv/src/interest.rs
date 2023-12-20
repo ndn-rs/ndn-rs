@@ -53,39 +53,6 @@ impl Interest {
     }
 }
 
-// impl Tlv0 for Interest {
-//     fn r#type(&self) -> Type {
-//         Type::Interest
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         let items = [
-//             self.name.bytes(),
-//             self.can_be_prefix.bytes(),
-//             self.must_be_fresh.bytes(),
-//             self.forwarding_hint.bytes(),
-//             self.nonce.bytes(),
-//             self.interest_lifetime.bytes(),
-//             self.hop_limit.bytes(),
-//             self.application_parameters.bytes(),
-//             self.interest_signature.bytes(),
-//         ];
-//         collect_to_bytes(items)
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         self.name.size()
-//             + self.can_be_prefix.size()
-//             + self.must_be_fresh.size()
-//             + self.forwarding_hint.size()
-//             + self.nonce.size()
-//             + self.interest_lifetime.size()
-//             + self.hop_limit.size()
-//             + self.application_parameters.size()
-//             + self.interest_signature.size()
-//     }
-// }
-
 impl fmt::Display for Interest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         format_args!("interest={}", self.name).fmt(f)?;

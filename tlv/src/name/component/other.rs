@@ -40,20 +40,6 @@ impl Tlv for OtherTypeComponent {
     }
 }
 
-// impl Tlv0 for OtherTypeComponent {
-//     fn r#type(&self) -> Type {
-//         self.r#type
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         Some(self.octets.clone())
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         self.octets.len()
-//     }
-// }
-
 impl fmt::Display for OtherTypeComponent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let encoded =

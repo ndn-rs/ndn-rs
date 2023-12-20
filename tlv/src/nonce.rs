@@ -51,21 +51,6 @@ impl Tlv for Nonce {
     }
 }
 
-// impl Tlv0 for Nonce {
-//     fn r#type(&self) -> Type {
-//         Type::Nonce
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         let bytes = Bytes::copy_from_slice(&self.octets);
-//         Some(bytes)
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         self.octets.len()
-//     }
-// }
-
 impl fmt::Display for Nonce {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let octets = GenericArray::<u8, U4>::from_slice(&self.octets);

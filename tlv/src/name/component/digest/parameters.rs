@@ -16,20 +16,6 @@ impl ParametersSha256DigestComponent {
     }
 }
 
-// impl Tlv0 for ParametersSha256DigestComponent {
-//     fn r#type(&self) -> Type {
-//         Type::ParametersSha256DigestComponent
-//     }
-
-//     fn value(&self) -> Option<Bytes> {
-//         todo!()
-//     }
-
-//     fn payload_size(&self) -> usize {
-//         GenericArray::<u8, U32>::len()
-//     }
-// }
-
 impl TryFrom<Generic> for ParametersSha256DigestComponent {
     type Error = DecodeError;
 
