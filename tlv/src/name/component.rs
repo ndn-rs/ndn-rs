@@ -38,51 +38,6 @@ pub enum NameComponent {
 }
 
 impl NameComponent {
-    // pub fn size(&self) -> usize {
-    //     match self {
-    //         Self::GenericName(c) => c.size(),
-    //         Self::ImplicitSha256Digest(c) => c.size(),
-    //         Self::ParametersSha256Digest(c) => c.size(),
-    //         Self::Keyword(c) => c.size(),
-    //         Self::Segment(c) => c.size(),
-    //         Self::ByteOffset(c) => c.size(),
-    //         Self::Version(c) => c.size(),
-    //         Self::Timestamp(c) => c.size(),
-    //         Self::SequenceNum(c) => c.size(),
-    //         Self::OtherType(c) => c.size(),
-    //     }
-    // }
-
-    // pub fn payload_size(&self) -> usize {
-    //     match self {
-    //         Self::GenericName(c) => c.payload_size(),
-    //         Self::ImplicitSha256Digest(c) => c.payload_size(),
-    //         Self::ParametersSha256Digest(c) => c.payload_size(),
-    //         Self::Keyword(c) => c.payload_size(),
-    //         Self::Segment(c) => c.payload_size(),
-    //         Self::ByteOffset(c) => c.payload_size(),
-    //         Self::Version(c) => c.payload_size(),
-    //         Self::Timestamp(c) => c.payload_size(),
-    //         Self::SequenceNum(c) => c.payload_size(),
-    //         Self::OtherType(c) => c.payload_size(),
-    //     }
-    // }
-
-    // pub fn bytes(&self) -> Bytes {
-    //     match self {
-    //         Self::GenericName(c) => c.bytes(),
-    //         Self::ImplicitSha256Digest(c) => c.bytes(),
-    //         Self::ParametersSha256Digest(c) => c.bytes(),
-    //         Self::Keyword(c) => c.bytes(),
-    //         Self::Segment(c) => c.bytes(),
-    //         Self::ByteOffset(c) => c.bytes(),
-    //         Self::Version(c) => c.bytes(),
-    //         Self::Timestamp(c) => c.bytes(),
-    //         Self::SequenceNum(c) => c.bytes(),
-    //         Self::OtherType(c) => c.bytes(),
-    //     }
-    // }
-
     pub fn generic(text: &str) -> Self {
         Self::GenericName(GenericNameComponent::new(text))
     }
@@ -236,16 +191,16 @@ impl Tlv for NameComponent {
     /// Encode the value into the supplied buffer
     fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
         match self {
-            Self::GenericName(c) => c.encode(dst),
-            Self::ImplicitSha256Digest(c) => c.encode(dst),
-            Self::ParametersSha256Digest(c) => c.encode(dst),
-            Self::Keyword(c) => c.encode(dst),
-            Self::Segment(c) => c.encode(dst),
-            Self::ByteOffset(c) => c.encode(dst),
-            Self::Version(c) => c.encode(dst),
-            Self::Timestamp(c) => c.encode(dst),
-            Self::SequenceNum(c) => c.encode(dst),
-            Self::OtherType(c) => c.encode(dst),
+            Self::GenericName(c) => c.encode_value(dst),
+            Self::ImplicitSha256Digest(c) => c.encode_value(dst),
+            Self::ParametersSha256Digest(c) => c.encode_value(dst),
+            Self::Keyword(c) => c.encode_value(dst),
+            Self::Segment(c) => c.encode_value(dst),
+            Self::ByteOffset(c) => c.encode_value(dst),
+            Self::Version(c) => c.encode_value(dst),
+            Self::Timestamp(c) => c.encode_value(dst),
+            Self::SequenceNum(c) => c.encode_value(dst),
+            Self::OtherType(c) => c.encode_value(dst),
         }
     }
 

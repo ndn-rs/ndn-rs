@@ -49,7 +49,11 @@ pub use signature::DataSignature;
 pub use signature::InterestSignature;
 pub use signature::InterestSignatureInfo;
 pub use signature::InterestSignatureValue;
+pub use signature::KeyDigest;
+pub use signature::KeyLocator;
 pub use signature::SignatureInfo;
+pub use signature::SignatureNonce;
+pub use signature::SignatureType;
 pub use signature::SignatureValue;
 
 mod application;

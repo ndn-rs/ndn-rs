@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Clone, Debug, PartialEq, Tlv)]
+#[derive(Clone, Debug, Tlv)]
 #[tlv(r#type = Type::Data, error = DecodeError)]
 pub struct Data {
     pub name: Name,
@@ -47,10 +47,7 @@ impl TryFrom<Generic> for Data {
 
         items.for_each(|item| println!("{item:#?}"));
 
-        let data_signature = DataSignature {
-            info: SignatureInfo {},
-            value: SignatureValue {},
-        };
+        let data_signature = DataSignature::digest();
 
         Ok(Self {
             name,
