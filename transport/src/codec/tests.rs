@@ -17,6 +17,7 @@ const P1: &[u8] = &[
     30, 2, 32, 49, 242, 60, 6, 201, 70, 78, 10, 105, 155, 243, 234, 81, 99, 45, 95, 155, 148, 108,
     107, 150, 54, 206, 64, 36, 21, 71, 250, 100, 63, 254, 121,
 ];
+
 #[test]
 fn decode() {
     let mut src = P1.iter().collect();
@@ -25,4 +26,11 @@ fn decode() {
     println!("{packet:?}");
     assert!(src.is_empty());
     assert_eq!(packet.r#type, tlv::Type::Data);
+    let data = tlv::Data::try_from(packet).unwrap();
+    assert_eq!(
+        data.name(),
+        "/localhost/nfd/status/general/v=1701934166024/seg=0"
+    );
+    assert!(data.metainfo.is_some());
+    assert!(data.content.is_some());
 }
