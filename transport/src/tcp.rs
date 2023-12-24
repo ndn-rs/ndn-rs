@@ -2,7 +2,7 @@ use super::*;
 
 #[derive(Debug)]
 pub struct Tcp {
-    socket: net::TcpStream,
+    framed: Framed<net::TcpStream, TlvCodec>,
 }
 
 impl Tcp {
@@ -12,11 +12,13 @@ impl Tcp {
     ) -> io::Result<Self> {
         tracing::info!("Ignoring local for now");
         let socket = net::TcpStream::connect(remote).await?;
-        Ok(Self { socket })
+        let codec = TlvCodec::new();
+        let framed = Framed::new(socket, codec);
+        Ok(Self { framed })
     }
 
     fn local_addr(&self) -> io::Result<SocketAddr> {
-        self.socket.local_addr()
+        self.framed.get_ref().local_addr()
     }
 
     pub(super) fn face_uri(&self) -> io::Result<String> {
@@ -29,14 +31,22 @@ impl Tcp {
         Ok(uri)
     }
 
+    pub(super) async fn send_item(&mut self, item: impl tlv::Tlv) -> io::Result<()> {
+        self.framed.send(item).await
+    }
+
+    pub(super) async fn recv_item(&mut self) -> io::Result<Option<tlv::Generic>> {
+        self.framed.try_next().await
+    }
+
     #[tracing::instrument(level = "trace", skip_all, err(level = "error"))]
     pub(super) async fn send(&self, bytes: Bytes) -> io::Result<()> {
         let count = loop {
-            self.socket.writable().await?;
+            self.framed.get_ref().writable().await?;
 
             // Try to write data, this may still fail with `WouldBlock`
             // if the readiness event is a false positive.
-            match self.socket.try_write(&bytes) {
+            match self.framed.get_ref().try_write(&bytes) {
                 Ok(count) => break count,
                 Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => continue,
                 Err(e) => {
@@ -55,12 +65,12 @@ impl Tcp {
     #[tracing::instrument(level = "trace", skip_all, err(level = "error"))]
     pub(super) async fn recv(&self, mut bytes: BytesMut) -> io::Result<Bytes> {
         loop {
-            self.socket.readable().await?;
+            self.framed.get_ref().readable().await?;
 
             let mut buf = [0; 8800];
             tracing::trace!(buffer = buf.len(), "Got buffer");
 
-            match self.socket.try_read(&mut buf) {
+            match self.framed.get_ref().try_read(&mut buf) {
                 Ok(0) => break,
                 Ok(count) => {
                     tracing::trace!(count, "Got bytes");

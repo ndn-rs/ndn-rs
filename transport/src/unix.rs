@@ -43,6 +43,15 @@ impl Unix {
         format!("{}{}{}", "fd", face::URI_DELIMITER, fd)
     }
 
+    pub(super) async fn send_item(&mut self, item: impl tlv::Tlv) -> io::Result<()> {
+        let _ = item;
+        todo!()
+    }
+
+    pub(super) async fn recv_item(&mut self) -> io::Result<Option<tlv::Generic>> {
+        Ok(None)
+    }
+
     #[tracing::instrument(level = "trace", skip_all, err(level = "error"))]
     pub(super) async fn send(&self, bytes: Bytes) -> io::Result<()> {
         let count = loop {

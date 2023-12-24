@@ -2,7 +2,9 @@ use slotmap::Key;
 use slotmap::KeyData;
 use slotmap::SlotMap;
 use tokio::sync::RwLock;
+use tokio::sync::RwLockMappedWriteGuard;
 use tokio::sync::RwLockReadGuard;
+use tokio::sync::RwLockWriteGuard;
 
 use super::*;
 use transport::Transport;
@@ -50,6 +52,21 @@ impl FaceManegement {
         }
     }
 
+    #[tracing::instrument(skip_all)]
+    pub async fn send_packet(&self, face: &face::FaceId, packet: impl tlv::Tlv) -> io::Result<()> {
+        self.get_face_mut(face).await?.send_packet(packet).await
+    }
+
+    #[tracing::instrument(skip(self))]
+    pub async fn recv_packet(&self, face: &face::FaceId) -> io::Result<tlv::Generic> {
+        self.get_face_mut(face)
+            .await?
+            .recv_packet()
+            .await
+            .transpose()
+            .unwrap()
+    }
+
     #[tracing::instrument]
     pub async fn send(&self, face: &face::FaceId, data: Bytes) -> io::Result<()> {
         self.get_face(face).await?.send(data).await
@@ -75,6 +92,17 @@ impl FaceManegement {
         let key = face.into();
         let faces = self.faces.read().await;
         RwLockReadGuard::try_map(faces, |faces| faces.get(key))
+            .map_err(|_| io::Error::other("FaceId not found"))
+    }
+
+    #[tracing::instrument]
+    pub async fn get_face_mut(
+        &self,
+        face: &face::FaceId,
+    ) -> io::Result<RwLockMappedWriteGuard<'_, Face>> {
+        let key = face.into();
+        let faces = self.faces.write().await;
+        RwLockWriteGuard::try_map(faces, |faces| faces.get_mut(key))
             .map_err(|_| io::Error::other("FaceId not found"))
     }
 
@@ -159,6 +187,14 @@ impl Face {
 
     pub(crate) fn mtu(&self) -> &face::Mtu {
         &self.mtu
+    }
+
+    pub(crate) async fn send_packet(&mut self, packet: impl tlv::Tlv) -> io::Result<()> {
+        self.transport.send_item(packet).await
+    }
+
+    pub(crate) async fn recv_packet(&mut self) -> io::Result<Option<tlv::Generic>> {
+        self.transport.recv_item().await
     }
 
     pub(crate) async fn send(&self, bytes: Bytes) -> io::Result<()> {

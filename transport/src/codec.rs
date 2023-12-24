@@ -7,8 +7,14 @@ use tlv::TlvCodec as _;
 
 use super::*;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct TlvCodec;
+
+impl TlvCodec {
+    pub fn new() -> Self {
+        Self
+    }
+}
 
 impl<T: tlv::TlvCodec> codec::Encoder<T> for TlvCodec {
     type Error = io::Error;

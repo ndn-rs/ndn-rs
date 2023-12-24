@@ -30,6 +30,7 @@ anyhow = "1.0"
 bytes = "1.5"
 clap = { version = "4.4", features = ["derive", "env"] }
 darling = { version = "0.20", features = ["diagnostics"] }
+futures = "0.3"
 generic-array = { version = "1.0", features = ["alloc"] }
 percent-encoding = "2.3"
 proc-macro2 = "1.0"
