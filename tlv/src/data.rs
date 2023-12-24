@@ -10,18 +10,29 @@ pub struct Data {
 }
 
 impl Data {
+    pub fn name(&self) -> String {
+        self.name.to_string()
+    }
+
     pub fn check_name(self, name: impl AsRef<str>) -> Result<Self, DecodeError> {
-        (self.name.to_string() == name.as_ref())
-            .then_some(self)
-            .ok_or(DecodeError::InvalidData)
+        let expected_name = name.as_ref();
+        let name = self.name();
+
+        (name == expected_name).then_some(self).ok_or_else(|| {
+            DecodeError::invalid(format!(
+                "Name prefix mismatch, expected: {expected_name}, found: {name}"
+            ))
+        })
     }
 
     pub fn name_starts_with(self, prefix: impl AsRef<str>) -> Result<Self, DecodeError> {
-        self.name
-            .to_string()
-            .starts_with(prefix.as_ref())
-            .then_some(self)
-            .ok_or(DecodeError::InvalidData)
+        let prefix = prefix.as_ref();
+        let name = self.name();
+        name.starts_with(prefix).then_some(self).ok_or_else(|| {
+            DecodeError::invalid(format!(
+                "Name prefix mismatch, expected: {prefix}, found: {name}"
+            ))
+        })
     }
 }
 
@@ -33,7 +44,7 @@ impl TryFrom<Generic> for Data {
             .check_type(Type::Data)?
             .self_check_length()?
             .items()
-            .ok_or(DecodeError::InvalidData)?
+            .ok_or_else(|| DecodeError::invalid("Insufficient amount of "))?
             .into_iter();
 
         // Name must be first
@@ -42,10 +53,33 @@ impl TryFrom<Generic> for Data {
             .ok_or_else(|| DecodeError::other("Data packet must have Name as first element"))?
             .try_into()?;
 
-        let metainfo = items.next().map(MetaInfo::try_from).transpose()?;
-        let content = items.next().map(Content::try_from).transpose()?;
+        let mut metainfo: Option<MetaInfo> = None;
+        let mut content: Option<Content> = None;
+        // let data_signature;
 
-        items.for_each(|item| println!("{item:#?}"));
+        for item in items {
+            match item.r#type() {
+                Type::MetaInfo => {
+                    if metainfo.is_none() {
+                        metainfo = Some(MetaInfo::try_from(item)?);
+                    } else {
+                        Err(DecodeError::other("Multiple MetaInfio"))?
+                    }
+                }
+                Type::Content => {
+                    if content.is_none() {
+                        content = Some(Content::try_from(item)?);
+                    } else {
+                        Err(DecodeError::other("Multiple Content"))?
+                    }
+                }
+                other => println!("skip {other}"),
+            }
+        }
+        // let metainfo = items.next().map(MetaInfo::try_from).transpose()?;
+        // let content = items.next().map(Content::try_from).transpose()?;
+
+        // items.for_each(|item| println!("{item:?}"));
 
         let data_signature = DataSignature::digest();
 
@@ -62,9 +96,12 @@ impl fmt::Display for Data {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         "<Data>[".fmt(f)?;
         self.name.fmt(f)?;
+        write!(f, " ")?;
         display_option(&self.metainfo, f)?;
+        write!(f, " ")?;
         display_option(&self.content, f)?;
+        write!(f, " ")?;
         self.data_signature.fmt(f).ok();
-        "]".fmt(f)
+        write!(f, "]")
     }
 }

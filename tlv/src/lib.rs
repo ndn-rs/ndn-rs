@@ -1,6 +1,7 @@
 use std::fmt;
 use std::io;
 use std::str;
+use std::time;
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use generic_array::typenum::{U32, U4};
@@ -55,6 +56,7 @@ pub use signature::SignatureInfo;
 pub use signature::SignatureNonce;
 pub use signature::SignatureType;
 pub use signature::SignatureValue;
+pub use timestamp::MilliSeconds;
 
 mod application;
 mod canbeprefix;
@@ -73,5 +75,6 @@ mod number;
 mod octets;
 mod signature;
 mod string;
+mod timestamp;
 
 mod error;

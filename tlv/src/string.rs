@@ -65,9 +65,7 @@ macro_rules! utf8_string {
                     .to_vec();
                 String::from_utf8(bytes)
                     .map(Self)
-                    .map_err(|_| $crate::DecodeError::InvalidData)
-                // let text = String::from_utf8_lossy(&value).to_string();
-                // Ok(Self(text))
+                    .map_err(|err| $crate::DecodeError::invalid(err.to_string()))
             }
         }
 

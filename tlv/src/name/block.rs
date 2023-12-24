@@ -16,13 +16,13 @@ impl TryFrom<Generic> for FinalBlockId {
             .into_iter()
             .map(NameComponent::try_from)
             .next()
-            .ok_or(DecodeError::InvalidData)?
+            .ok_or_else(|| DecodeError::invalid("Empty FinalBlockId name"))?
             .map(FinalBlockId)
     }
 }
 
 impl fmt::Display for FinalBlockId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        format_args!("<FinalBlockId>[{}]", self.0).fmt(f)
+        format_args!("FinalBlockId=[{}]", self.0).fmt(f)
     }
 }

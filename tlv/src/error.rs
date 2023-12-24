@@ -9,7 +9,7 @@ pub enum DecodeError {
     LengthMismatch(Generic),
 
     #[error("Invalid (corrupted?) Data")]
-    InvalidData,
+    InvalidData(String),
 
     #[error("{0}")]
     Other(String),
@@ -22,6 +22,11 @@ impl DecodeError {
 
     pub fn length(generic: Generic) -> Self {
         Self::LengthMismatch(generic)
+    }
+
+    pub fn invalid(reason: impl Into<String>) -> Self {
+        let reason = reason.into();
+        Self::InvalidData(reason)
     }
 
     pub fn other(msg: impl Into<String>) -> Self {

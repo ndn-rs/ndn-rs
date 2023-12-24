@@ -47,7 +47,7 @@ impl TryFrom<Generic> for Name {
             .check_type(Type::Name)?
             .self_check_length()?
             .items()
-            .ok_or(DecodeError::InvalidData)?
+            .ok_or_else(|| DecodeError::invalid("Wrong number of bytes"))?
             .into_iter()
             .map(NameComponent::try_from)
             .collect::<Result<Vec<_>, _>>()?;

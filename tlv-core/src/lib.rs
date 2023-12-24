@@ -38,8 +38,11 @@ pub fn display_option<T>(item: &Option<T>, f: &mut fmt::Formatter<'_>) -> fmt::R
 where
     T: fmt::Display,
 {
-    use fmt::Display;
-
-    item.as_ref()
-        .map_or(Ok(()), |item| format_args!(" {item:#}").fmt(f))
+    if let Some(item) = item.as_ref() {
+        item.fmt(f)
+    } else {
+        Ok(())
+    }
+    // item.as_ref()
+    //     .map_or(Ok(()), |item| format_args!(" {item:#}").fmt(f))
 }

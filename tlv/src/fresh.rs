@@ -7,7 +7,7 @@ pub struct MustBeFresh;
 impl fmt::Display for MustBeFresh {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if f.alternate() {
-            "must_be_fresh".fmt(f)
+            "must_be_fresh=".fmt(f)
         } else {
             format_args!("{}=", self.r#type()).fmt(f)
         }

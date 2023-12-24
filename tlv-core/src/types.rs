@@ -76,7 +76,9 @@ impl Type {
     pub const FaceStatus: Self = Self(128);
     pub const NfdVersion: Self = Self(128); // Conflicts with FaceStatus
     pub const LocalUri: Self = Self(129);
+    pub const StartTimestamp: Self = Self(129);
     pub const ChannelStatus: Self = Self(130);
+    pub const CurrentTimestamp: Self = Self(130);
     pub const Capacity: Self = Self(131);
     pub const UriScheme: Self = Self(131); // conflicts with Capacity
     pub const Count: Self = Self(132);

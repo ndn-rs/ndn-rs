@@ -113,7 +113,9 @@ impl TryFrom<Bytes> for NonNegativeNumber {
             2 => Ok(buf.get_u16().into()),
             4 => Ok(buf.get_u32().into()),
             8 => Ok(buf.get_u64().into()),
-            _other => Err(DecodeError::InvalidData),
+            other => Err(DecodeError::invalid(format!(
+                "Wrong number of bytes: ({other})"
+            ))),
         }
     }
 }

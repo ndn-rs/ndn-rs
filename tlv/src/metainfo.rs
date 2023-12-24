@@ -43,9 +43,17 @@ impl TryFrom<Generic> for MetaInfo {
 
 impl fmt::Display for MetaInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if f.alternate() {
+            write!(f, "MetaInfo")?;
+        } else {
+            write!(f, "{}", self.r#type())?;
+        }
+        write!(f, "=[")?;
         display_option(&self.content_type, f)?;
+        write!(f, " ")?;
         display_option(&self.freshness_period, f)?;
+        write!(f, " ")?;
         display_option(&self.final_block_id, f)?;
-        Ok(())
+        write!(f, "]")
     }
 }
