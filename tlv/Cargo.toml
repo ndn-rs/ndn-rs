@@ -16,6 +16,7 @@ generic-array.workspace = true
 percent-encoding.workspace = true
 rand.workspace = true
 thiserror.workspace = true
+time.workspace = true
 
 ndn-tlv-core.workspace = true
 

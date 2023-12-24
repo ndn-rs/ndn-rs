@@ -1,12 +1,13 @@
 use std::fmt;
 use std::io;
 use std::str;
-use std::time;
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use generic_array::typenum::{U32, U4};
 use generic_array::GenericArray;
 use thiserror::Error;
+
+pub use time;
 
 pub use ndn_tlv_core as core;
 pub use ndn_tlv_core::collect_to_bytes;
@@ -25,6 +26,7 @@ pub use error::DecodeError;
 pub use fresh::FreshnessPeriod;
 pub use fresh::MustBeFresh;
 pub use generic::Generic;
+pub use generic::OptionGeneric;
 pub use hint::ForwardingHint;
 pub use hoplimit::HopLimit;
 pub use interest::Interest;

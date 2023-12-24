@@ -39,7 +39,19 @@ impl Router {
         self.faces.get_faces().await.pop().unwrap()
     }
 
-    pub(crate) async fn send(
+    pub(crate) async fn send_packet(
+        &self,
+        face: &face::FaceId,
+        packet: impl tlv::Tlv,
+    ) -> io::Result<()> {
+        self.faces.send_packet(face, packet).await
+    }
+
+    pub(crate) async fn recv_packet(&self, face: &face::FaceId) -> io::Result<tlv::Generic> {
+        self.faces.recv_packet(face).await
+    }
+
+    pub(crate) async fn _send(
         &self,
         face: &face::FaceId,
         packet: impl tlv::TlvCodec,
@@ -48,7 +60,7 @@ impl Router {
         self.faces.send(face, data).await
     }
 
-    pub(crate) async fn recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
+    pub(crate) async fn _recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
         self.faces.recv(face).await
     }
 

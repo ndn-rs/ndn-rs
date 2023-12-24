@@ -74,11 +74,8 @@ impl Type {
     // 113 reserved
     pub const Uri: Self = Self(114);
     pub const FaceStatus: Self = Self(128);
-    pub const NfdVersion: Self = Self(128); // Conflicts with FaceStatus
     pub const LocalUri: Self = Self(129);
-    pub const StartTimestamp: Self = Self(129);
     pub const ChannelStatus: Self = Self(130);
-    pub const CurrentTimestamp: Self = Self(130);
     pub const Capacity: Self = Self(131);
     pub const UriScheme: Self = Self(131); // conflicts with Capacity
     pub const Count: Self = Self(132);
@@ -119,4 +116,19 @@ impl Type {
     pub const TxSequence: Self = Self(840);
     pub const NonDiscovery: Self = Self(844);
     pub const PrefixAnnouncement: Self = Self(848);
+}
+
+/// Constants for NFD
+#[allow(non_upper_case_globals)]
+impl Type {
+    pub const NfdVersion: Self = Self(128); // Conflicts with FaceStatus
+    pub const StartTimestamp: Self = Self(129);
+    pub const CurrentTimestamp: Self = Self(130);
+    pub const NNameTreeEntries: Self = Self(131);
+    pub const NFibEntries: Self = Self(132);
+    pub const NPitEntries: Self = Self(133);
+    pub const NMeasurementsEntries: Self = Self(134);
+    pub const NCsEntries: Self = Self(135);
+    pub const NSatisfiedInterests: Self = Self(153);
+    pub const NUnsatisfiedInterests: Self = Self(154);
 }

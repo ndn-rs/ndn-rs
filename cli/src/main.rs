@@ -31,13 +31,15 @@ impl Command {
             .must_be_fresh()
             .can_be_prefix();
         println!("{ping}");
-        router.send(&face, ping).await?;
-        let mut src = router.recv(&face).await?;
-        let generic = tlv::Generic::from_buf(&mut src).expect("Should be complete packet");
+        router.send_packet(&face, ping).await?;
+        let generic = router.recv_packet(&face).await?;
+
         let data = tlv::Data::try_from(generic).expect("Should be valid data packet");
         println!("GOT PACKET\n{data:#}");
         let status = mgmt::GeneralStatus::try_from(data).expect("Should be valid General Status");
         println!("STATUS\n{status:?}");
+        println!("Start:   {}", status.start_timestamp.to_local_datetime());
+        println!("Current: {}", status.current_timestamp.to_local_datetime());
 
         Ok(())
     }

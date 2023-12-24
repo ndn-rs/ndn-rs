@@ -1,3 +1,5 @@
+use time::ext::NumericalStdDuration;
+
 use super::*;
 
 /// Timestamp in milliseconds since UNIX EPOCH
@@ -10,13 +12,23 @@ impl MilliSeconds {
         self.0.to_u64()
     }
 
-    pub fn to_duration(&self) -> time::Duration {
-        let millis = self.to_u64();
-        time::Duration::from_millis(millis)
+    pub fn to_duration(&self) -> std::time::Duration {
+        self.to_u64().std_milliseconds()
     }
 
-    pub fn to_system_time(&self) -> time::SystemTime {
-        time::UNIX_EPOCH + self.to_duration()
+    pub fn to_system_time(&self) -> std::time::SystemTime {
+        std::time::UNIX_EPOCH + self.to_duration()
+    }
+
+    pub fn to_offset_datetime(&self) -> time::OffsetDateTime {
+        self.to_system_time().into()
+    }
+
+    pub fn to_local_datetime(&self) -> time::OffsetDateTime {
+        let datetime = self.to_offset_datetime();
+        println!("{:?}", time::UtcOffset::current_local_offset());
+        time::UtcOffset::current_local_offset()
+            .map_or(datetime, |offset| datetime.to_offset(offset))
     }
 
     pub fn len(&self) -> usize {
@@ -101,6 +113,14 @@ macro_rules! milliseconds_impl {
 
             pub fn to_system_time(&self) -> std::time::SystemTime {
                 self.0.to_system_time()
+            }
+
+            pub fn to_offset_datetime(&self) -> $crate::time::OffsetDateTime {
+                self.0.to_offset_datetime()
+            }
+
+            pub fn to_local_datetime(&self) -> $crate::time::OffsetDateTime {
+                self.0.to_local_datetime()
             }
         }
 

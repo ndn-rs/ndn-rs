@@ -106,6 +106,16 @@ impl Tlv for Generic {
     }
 }
 
+pub trait OptionGeneric {
+    fn invalid_data(self, reason: impl Into<String>) -> Result<Generic, DecodeError>;
+}
+
+impl OptionGeneric for Option<Generic> {
+    fn invalid_data(self, reason: impl Into<String>) -> Result<Generic, DecodeError> {
+        self.ok_or_else(|| DecodeError::invalid(reason))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

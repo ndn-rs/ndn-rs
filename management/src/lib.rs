@@ -5,6 +5,8 @@ use ndn_face as face;
 use ndn_tlv as tlv;
 // use ndn_varnumber::VarNumber;
 
+use tlv::OptionGeneric;
+
 pub use capacity::Capacity;
 pub use control::ControlParameters;
 pub use cost::Cost;
