@@ -1,8 +1,10 @@
 use darling::ast;
-use darling::util;
+// use darling::util;
+use darling::Error;
 use darling::FromDeriveInput;
 use darling::FromField;
 use darling::FromMeta;
+use darling::FromVariant;
 
 use darling::export::syn;
 
@@ -29,11 +31,17 @@ fn derive2(input: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
 #[darling(attributes(tlv))]
 struct TlvDerive {
     ident: syn::Ident,
-    data: ast::Data<util::Ignored, PayloadItem>,
+    data: ast::Data<PayloadVariant, PayloadItem>,
     r#type: syn::Path,
     error: syn::Path,
     #[darling(default)]
     crates: Crates,
+}
+
+#[derive(Debug, FromVariant)]
+struct PayloadVariant {
+    ident: syn::Ident,
+    fields: ast::Fields<PayloadItem>,
 }
 
 #[derive(Debug, FromField)]
@@ -83,7 +91,7 @@ impl quote::ToTokens for TlvDerive {
         } = self;
 
         let (length, encode, decode) = match data {
-            ast::Data::Enum(r#enum) => handle_enum(r#enum),
+            ast::Data::Enum(r#enum) => handle_enum(tlv, r#enum),
             ast::Data::Struct(r#struct) => handle_struct(tlv, r#struct),
         };
 
@@ -117,13 +125,32 @@ impl quote::ToTokens for TlvDerive {
 }
 
 fn handle_enum(
-    _items: &[util::Ignored],
+    tlv: &syn::Path,
+    variants: &[PayloadVariant],
 ) -> (
     proc_macro2::TokenStream,
     proc_macro2::TokenStream,
     proc_macro2::TokenStream,
 ) {
-    todo!()
+    println!("{tlv:?}");
+    println!("{variants:?}");
+    for variant in variants {
+        println!("{}: {:?}", variant.ident, variant.fields);
+    }
+    let newtype_only = variants.iter().all(|variant| variant.fields.is_newtype());
+    if newtype_only {
+        (
+            enum_length(variants),
+            enum_encode(variants),
+            enum_decode(tlv, variants),
+        )
+    } else {
+        (
+            Error::custom("Only newtype enum are supported at this time").write_errors(),
+            Error::custom("Only newtype enum are supported at this time").write_errors(),
+            Error::custom("Only newtype enum are supported at this time").write_errors(),
+        )
+    }
 }
 
 fn handle_struct(
@@ -260,4 +287,57 @@ fn unit_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
 fn unit_decode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     assert!(fields.is_empty());
     quote::quote!(Ok(Self))
+}
+
+fn enum_length(variants: &[PayloadVariant]) -> proc_macro2::TokenStream {
+    let variants = variants.iter().map(variant_length);
+    quote::quote!(
+            match self {
+                #(#variants,)*
+            }
+    )
+}
+
+fn enum_encode(variants: &[PayloadVariant]) -> proc_macro2::TokenStream {
+    let variants = variants.iter().map(variant_encode);
+    quote::quote!(
+            match self {
+                #(#variants,)*
+            }
+    )
+}
+
+fn enum_decode(tlv: &syn::Path, variants: &[PayloadVariant]) -> proc_macro2::TokenStream {
+    let variants = variants.iter().map(|variant| variant_decode(tlv, variant));
+    quote::quote!(
+            let r#type = #tlv::VarNumber::peek(src)
+                .ok_or_else(|| #tlv::DecodeError::invalid("Insufficient bytes to determine TLV-TYPE"))?;
+            match r#type {
+                #(#variants,)*
+            }
+    )
+}
+
+fn variant_length(variant: &PayloadVariant) -> proc_macro2::TokenStream {
+    let ident = &variant.ident;
+    quote::quote!(Self::#ident(payload) => payload.total_size())
+}
+
+fn variant_encode(variant: &PayloadVariant) -> proc_macro2::TokenStream {
+    let ident = &variant.ident;
+    quote::quote!(Self::#ident(payload) => payload.encode(dst))
+}
+
+fn variant_decode(tlv: &syn::Path, variant: &PayloadVariant) -> proc_macro2::TokenStream {
+    let ident = &variant.ident;
+    let (_style, items) = variant.fields.as_ref().split();
+    // let item = items[0];
+    let ty = &items[0].ty;
+    quote::quote!(
+        #ty::r#type() => {
+            #tlv::TlvCodec::decode(src).map(Self::#ident)
+        }
+    )
+    //     if variant.f  #name: #tlv::TlvCodec::decode(src)? );
+    // quote::quote!(Self::#ident(payload) => #name: #tlv::TlvCodec::decode(src)?)
 }

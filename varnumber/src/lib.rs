@@ -101,6 +101,11 @@ impl VarNumber {
         }
     }
 
+    pub fn peek(src: &[u8]) -> Option<Self> {
+        let mut src = std::io::Cursor::new(src);
+        Self::from_buf(&mut src)
+    }
+
     pub fn encode(&self, dst: &mut BytesMut) {
         dst.extend(&self.bytes);
     }
@@ -401,5 +406,31 @@ mod tests {
         let n = VarNumber::from_buf(&mut src).unwrap();
         assert_eq!(n, 65530_u64);
         assert_eq!(src.remaining(), 1);
+    }
+
+    #[test]
+    fn peek_over() {
+        let src = Bytes::from_static(&[253, 255, 250, 233]);
+        assert_eq!(src.remaining(), 4);
+        let n = VarNumber::peek(&src).unwrap();
+        assert_eq!(n, 65530_u64);
+        assert_eq!(src.remaining(), 4);
+    }
+
+    #[test]
+    fn peek_exact() {
+        let src = Bytes::from_static(&[253, 255, 251]);
+        assert_eq!(src.remaining(), 3);
+        let n = VarNumber::peek(&src).unwrap();
+        assert_eq!(n, 65531_u64);
+        assert_eq!(src.remaining(), 3);
+    }
+
+    #[test]
+    fn peek_under() {
+        let src = Bytes::from_static(&[253, 255]);
+        assert_eq!(src.remaining(), 2);
+        assert!(dbg!(VarNumber::peek(&src)).is_none());
+        assert_eq!(src.remaining(), 2);
     }
 }

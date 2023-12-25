@@ -35,4 +35,15 @@ impl SignatureType {
     //         Self::SignatureEd25519 => true,
     //     }
     // }
+
+    pub fn needs_key_locator(&self) -> bool {
+        match *self {
+            Self::DigestSha256 => false,
+            Self::SignatureSha256WithRsa => true,
+            Self::SignatureSha256WithEcdsa => true,
+            Self::SignatureHmacWithSha256 => true,
+            Self::SignatureEd25519 => true,
+            other => false,
+        }
+    }
 }

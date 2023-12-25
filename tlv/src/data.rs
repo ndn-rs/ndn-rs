@@ -55,7 +55,8 @@ impl TryFrom<Generic> for Data {
 
         let mut metainfo: Option<MetaInfo> = None;
         let mut content: Option<Content> = None;
-        // let data_signature;
+        let mut signature_info: Option<SignatureInfo> = None;
+        let mut signature_value: Option<SignatureValue> = None;
 
         for item in items {
             match item.r#type() {
@@ -71,6 +72,20 @@ impl TryFrom<Generic> for Data {
                         content = Some(Content::try_from(item)?);
                     } else {
                         Err(DecodeError::other("Multiple Content"))?
+                    }
+                }
+                Type::SignatureInfo => {
+                    if content.is_none() {
+                        signature_info = Some(SignatureInfo::try_from(item)?);
+                    } else {
+                        Err(DecodeError::other("Multiple SignatureInfo"))?
+                    }
+                }
+                Type::SignatureValue => {
+                    if content.is_none() {
+                        signature_value = Some(SignatureValue::try_from(item)?);
+                    } else {
+                        Err(DecodeError::other("Multiple SignatureValue"))?
                     }
                 }
                 other => println!("skip {other}"),
