@@ -27,7 +27,12 @@ macro_rules! octets {
                 self.0.encode(dst).map_err(Self::Error::from)
             }
 
-            fn decode_value(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
+            fn decode_value(
+                r#type: $crate::Type,
+                length: usize,
+                src: &mut bytes::BytesMut,
+            ) -> Result<Self, Self::Error> {
+                let _ = (r#type, length);
                 use $crate::TlvCodec;
                 bytes::Bytes::decode(src)
                     .map(Self)
@@ -39,7 +44,10 @@ macro_rules! octets {
             type Error = DecodeError;
 
             fn try_from(generic: $crate::Generic) -> Result<Self, Self::Error> {
-                let value = generic.check_type($tlv)?.self_check_length()?.value;
+                let value = generic
+                    .check_type($tlv)?
+                    //.self_check_length()?
+                    .value;
                 Ok(Self(value))
             }
         }

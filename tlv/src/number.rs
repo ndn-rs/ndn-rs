@@ -214,7 +214,12 @@ macro_rules! non_negative_number_impl {
                 self.0.encode(dst).map_err(Self::Error::from)
             }
 
-            fn decode_value(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
+            fn decode_value(
+                r#type: $crate::Type,
+                length: usize,
+                src: &mut bytes::BytesMut,
+            ) -> Result<Self, Self::Error> {
+                let _ = (r#type, length);
                 use $crate::TlvCodec;
                 $crate::NonNegativeNumber::decode(src)
                     .map(Self)
@@ -248,7 +253,7 @@ macro_rules! non_negative_number_impl {
             fn try_from(generic: $crate::Generic) -> Result<Self, Self::Error> {
                 generic
                     .check_type($tlv)?
-                    .self_check_length()?
+                    // .self_check_length()?
                     .value
                     .try_into()
                     .map($name)

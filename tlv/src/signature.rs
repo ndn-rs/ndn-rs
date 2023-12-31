@@ -26,24 +26,14 @@ impl SignatureType {
     pub const SignatureHmacWithSha256: Self = Self(NonNegativeNumber(4));
     pub const SignatureEd25519: Self = Self(NonNegativeNumber(5));
 
-    // pub fn need_key_locator(&self) -> bool {
-    //     match self {
-    //         Self::DigestSha256 => false,
-    //         Self::SignatureSha256WithRsa => true,
-    //         Self::SignatureSha256WithEcdsa => true,
-    //         Self::SignatureHmacWithSha256 => true,
-    //         Self::SignatureEd25519 => true,
-    //     }
-    // }
-
     pub fn needs_key_locator(&self) -> bool {
-        match *self {
-            Self::DigestSha256 => false,
-            Self::SignatureSha256WithRsa => true,
-            Self::SignatureSha256WithEcdsa => true,
-            Self::SignatureHmacWithSha256 => true,
-            Self::SignatureEd25519 => true,
-            other => false,
+        match self {
+            &Self::DigestSha256 => false,
+            &Self::SignatureSha256WithRsa => true,
+            &Self::SignatureSha256WithEcdsa => true,
+            &Self::SignatureHmacWithSha256 => true,
+            &Self::SignatureEd25519 => true,
+            _other => false,
         }
     }
 }

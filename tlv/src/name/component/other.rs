@@ -34,9 +34,18 @@ impl Tlv for OtherTypeComponent {
         self.octets.encode(dst).map_err(Self::Error::from)
     }
 
-    fn decode_value(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
-        let _ = src;
-        todo!("OtherTypeComponents::decode_value is not defined yet")
+    fn decode_value(
+        r#type: Type,
+        length: usize,
+        src: &mut bytes::BytesMut,
+    ) -> Result<Self, Self::Error> {
+        if length == src.len() {
+            let octets = src.copy_to_bytes(length);
+            Ok(Self { r#type, octets })
+        } else {
+            println!("Mismatch on {type}");
+            Err(DecodeError::length_mismatch(length, src.len()))
+        }
     }
 }
 

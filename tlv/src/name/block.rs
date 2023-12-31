@@ -10,7 +10,7 @@ impl TryFrom<Generic> for FinalBlockId {
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
         generic
             .check_type(Type::FinalBlockId)?
-            .self_check_length()?
+            // .self_check_length()?
             .items()
             .ok_or(DecodeError::other("Empty FinalBlockId"))?
             .into_iter()

@@ -109,6 +109,10 @@ impl VarNumber {
     pub fn encode(&self, dst: &mut BytesMut) {
         dst.extend(&self.bytes);
     }
+
+    pub fn decode(src: &mut BytesMut) -> Option<Self> {
+        Self::from_buf(src)
+    }
 }
 
 impl ops::Deref for VarNumber {

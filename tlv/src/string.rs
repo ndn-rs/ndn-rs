@@ -20,7 +20,11 @@ macro_rules! utf8_string {
                 self.0.encode(dst).map_err(Self::Error::from)
             }
 
-            fn decode_value(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
+            fn decode_value(
+                r#type: $crate::Type,
+                length: usize,
+                src: &mut bytes::BytesMut,
+            ) -> Result<Self, Self::Error> {
                 use $crate::TlvCodec;
                 String::decode(src)
                     .map(Self)
@@ -60,7 +64,7 @@ macro_rules! utf8_string {
             fn try_from(generic: $crate::Generic) -> Result<Self, Self::Error> {
                 let bytes = generic
                     .check_type($tlv)?
-                    .self_check_length()?
+                    // .self_check_length()?
                     .value
                     .to_vec();
                 String::from_utf8(bytes)

@@ -24,25 +24,43 @@ impl Tlv for KeyLocator {
 
     fn length(&self) -> usize {
         match self {
-            KeyLocator::Name(payload) => payload.total_size(),
-            KeyLocator::Digest(payload) => payload.total_size(),
+            Self::Name(payload) => payload.total_size(),
+            Self::Digest(payload) => payload.total_size(),
         }
     }
 
     fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
         match self {
-            KeyLocator::Name(payload) => payload.encode(dst),
-            KeyLocator::Digest(payload) => payload.encode(dst),
+            Self::Name(payload) => payload.encode(dst),
+            Self::Digest(payload) => payload.encode(dst),
         }
     }
 
-    fn decode_value(src: &mut BytesMut) -> Result<Self, Self::Error> {
+    fn decode_value(r#type: Type, length: usize, src: &mut BytesMut) -> Result<Self, Self::Error> {
+        let _ = (r#type, length);
         let r#type = VarNumber::peek(src)
             .ok_or_else(|| DecodeError::invalid("Insufficient bytes"))?
             .into();
         match r#type {
             Type::Name => Name::decode(src).map(Self::Name),
             Type::KeyDigest => KeyDigest::decode(src).map(Self::Digest),
+            other => Err(DecodeError::other(format!(
+                "Invalid embedded KeyLocator element {other}"
+            ))),
         }
+    }
+}
+
+impl TryFrom<Generic> for KeyLocator {
+    type Error = DecodeError;
+
+    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        let length = generic.length();
+        let bytes = generic
+            .check_type(Type::KeyLocator)?
+            // .self_check_length()?
+            .value;
+        let mut src = BytesMut::from(bytes.as_ref());
+        Self::decode_value(Type::KeyLocator, length, &mut src)
     }
 }

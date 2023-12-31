@@ -23,7 +23,7 @@ impl TryFrom<Generic> for ParametersSha256DigestComponent {
         let digest = generic
             .check_type(Type::ParametersSha256DigestComponent)?
             .check_length(GenericArray::<u8, U32>::len())?
-            .try_into_generic_array()?;
+            .try_into_generic_array_inefficient()?;
 
         Ok(Self { digest })
     }

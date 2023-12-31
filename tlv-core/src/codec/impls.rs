@@ -52,8 +52,12 @@ where
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
-        let _ = src;
-        todo!()
+        let mut items = vec![];
+        while !src.is_empty() {
+            let item = T::decode(src)?;
+            items.push(item);
+        }
+        Ok(items)
     }
 }
 

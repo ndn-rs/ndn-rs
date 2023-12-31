@@ -5,8 +5,8 @@ pub enum DecodeError {
     #[error("Type mismatch: expecting {0}, found {1:?}")]
     TypeMismatch(Type, Generic),
 
-    #[error("Length mismatch")]
-    LengthMismatch(Generic),
+    #[error("Length mismatch: expected {expected}, found {found}")]
+    LengthMismatch { expected: usize, found: usize },
 
     #[error("Invalid (corrupted?) Data")]
     InvalidData(String),
@@ -20,10 +20,6 @@ impl DecodeError {
         Self::TypeMismatch(r#type, generic)
     }
 
-    pub fn length(generic: Generic) -> Self {
-        Self::LengthMismatch(generic)
-    }
-
     pub fn invalid(reason: impl Into<String>) -> Self {
         let reason = reason.into();
         Self::InvalidData(reason)
@@ -32,6 +28,10 @@ impl DecodeError {
     pub fn other(msg: impl Into<String>) -> Self {
         let msg = msg.into();
         Self::Other(msg)
+    }
+
+    pub const fn length_mismatch(expected: usize, found: usize) -> Self {
+        Self::LengthMismatch { expected, found }
     }
 }
 

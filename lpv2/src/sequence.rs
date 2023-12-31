@@ -22,7 +22,12 @@ impl tlv::Tlv for Sequence {
         Ok(())
     }
 
-    fn decode_value(src: &mut BytesMut) -> Result<Self, Self::Error> {
+    fn decode_value(
+        r#type: tlv::Type,
+        length: usize,
+        src: &mut BytesMut,
+    ) -> Result<Self, Self::Error> {
+        let _ = (r#type, length);
         let mut sequence = [0; 8];
         if src.len() == sequence.len() {
             src.copy_to_slice(&mut sequence);

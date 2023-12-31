@@ -57,7 +57,12 @@ impl tlv::Tlv for FacePersistency {
         Ok(())
     }
 
-    fn decode_value(src: &mut BytesMut) -> Result<Self, Self::Error> {
+    fn decode_value(
+        r#type: tlv::Type,
+        length: usize,
+        src: &mut BytesMut,
+    ) -> Result<Self, Self::Error> {
+        let _ = (r#type, length);
         let value = src.get_u8();
         Self::from_u8(value).map_err(Self::Error::from)
     }

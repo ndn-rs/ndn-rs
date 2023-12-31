@@ -40,9 +40,10 @@ impl Tlv for Nonce {
         Ok(())
     }
 
-    fn decode_value(src: &mut BytesMut) -> Result<Self, Self::Error> {
+    fn decode_value(r#type: Type, length: usize, src: &mut BytesMut) -> Result<Self, Self::Error> {
+        assert_eq!(r#type, Type::Nonce);
         let mut octets = [0; 4];
-        if src.len() == octets.len() {
+        if length == octets.len() {
             src.copy_to_slice(&mut octets);
             Ok(Self { octets })
         } else {

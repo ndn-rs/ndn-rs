@@ -114,7 +114,7 @@ impl quote::ToTokens for TlvDerive {
                     #encode
                 }
 
-                fn decode_value(src: &mut #bytes::BytesMut) -> Result<Self, Self::Error> {
+                fn decode_value(r#type: #tlv::Type, length: usize, src: &mut #bytes::BytesMut) -> Result<Self, Self::Error> {
                     use #tlv::TlvCodec;
                     #decode
                 }

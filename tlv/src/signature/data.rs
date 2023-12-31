@@ -67,3 +67,36 @@ impl TlvCodec for DataSignature {
         todo!("Need to think how to decode both info and value at once")
     }
 }
+
+impl TryFrom<Generic> for SignatureValue {
+    type Error = DecodeError;
+
+    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        generic
+            .check_type(Type::SignatureValue)?
+            // .self_check_length()?
+            .try_into_generic_array_inefficient()
+            .map(|digest| Self { digest })
+    }
+}
+
+impl TryFrom<(Option<SignatureInfo>, Option<SignatureValue>)> for DataSignature {
+    type Error = DecodeError;
+
+    fn try_from(
+        data: (Option<SignatureInfo>, Option<SignatureValue>),
+    ) -> Result<Self, Self::Error> {
+        match data {
+            (Some(info), Some(value)) => Ok(Self { info, value }),
+            (Some(_info), None) => Err(DecodeError::other(
+                "Invalid Data Signature (Signature Info witout Signature Value)",
+            )),
+            (None, Some(_value)) => Err(DecodeError::other(
+                "Invalid Data Signature (Signature Value witout Signature Info)",
+            )),
+            (None, None) => Err(DecodeError::other(
+                "Invalid Data Signature (Neither Signature Info nor Signature Value)",
+            )),
+        }
+    }
+}

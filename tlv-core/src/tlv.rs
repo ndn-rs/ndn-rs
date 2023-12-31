@@ -9,21 +9,27 @@ pub trait Tlv: fmt::Debug + Sized {
     /// Report TLV-LENGTH as usize
     fn length(&self) -> usize;
 
-    /// Encode the value into the supplied buffer
-    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error>;
-
-    /// Decode this object from supplied buffer
-    fn decode_value(src: &mut BytesMut) -> Result<Self, Self::Error>;
-
     /// Encode TLV-TYPE
     fn encode_type(&self, dst: &mut BytesMut) {
         self.r#type().to_varnumber().encode(dst)
     }
 
-    /// Encode TLV_LENGTH
+    /// Encode TLV-LENGTH
     fn encode_length(&self, dst: &mut BytesMut) {
         VarNumber::from(self.length()).encode(dst)
     }
+
+    /// Encode the value into the supplied buffer
+    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error>;
+
+    // /// Decode TLV-TYPE
+    // fn decode_type(src: &mut BytesMut) -> Result<Type, Self::Error>;
+
+    // /// Decode TLV-LENGTH
+    // fn decode_length(src: &mut BytesMut) -> Result<VarNumber, Self::Error>;
+
+    /// Decode this object from supplied buffer
+    fn decode_value(r#type: Type, length: usize, src: &mut BytesMut) -> Result<Self, Self::Error>;
 
     /// Report TLV-VALUE as `Bytes` buffer (if value is present)
     fn value(&self) -> Option<Bytes> {
@@ -69,7 +75,10 @@ where
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
-        // TODO: Need to decode and verify TLV-TYPE and TLV-LENGTH
-        T::decode_value(src)
+        let r#type = Type::decode(src).ok_or_else(|| io::Error::other("Invalid TLV-TYPE"))?;
+        let length = VarNumber::decode(src)
+            .ok_or_else(|| io::Error::other("Invalid TLV-LENGTH"))?
+            .to_u64() as usize;
+        T::decode_value(r#type, length, src)
     }
 }

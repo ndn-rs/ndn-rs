@@ -45,7 +45,7 @@ impl TryFrom<Generic> for Name {
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
         let components = generic
             .check_type(Type::Name)?
-            .self_check_length()?
+            // .self_check_length()?
             .items()
             .ok_or_else(|| DecodeError::invalid("Wrong number of bytes"))?
             .into_iter()

@@ -22,12 +22,12 @@ impl TryFrom<Generic> for SignatureInfo {
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
         let mut items = generic
             .check_type(Type::SignatureInfo)?
-            .self_check_length()?
+            // .self_check_length()?
             .items()
             .ok_or_else(|| DecodeError::other("Empty SignatureInfo"))?
             .into_iter();
 
-        let signature_type = items
+        let signature_type: SignatureType = items
             .next()
             .ok_or_else(|| {
                 DecodeError::other("SignatureInfo must have SignatureType as first element")
@@ -40,7 +40,8 @@ impl TryFrom<Generic> for SignatureInfo {
                 .ok_or_else(|| {
                     DecodeError::other("SignatureType requires KeyLocator, which is missing")
                 })?
-                .try_into::<KeyLocator>()?
+                .try_into()
+                .map(Some)?
         } else {
             None
         };

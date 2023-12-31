@@ -42,7 +42,7 @@ impl TryFrom<Generic> for Data {
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
         let mut items = generic
             .check_type(Type::Data)?
-            .self_check_length()?
+            // .self_check_length()?
             .items()
             .ok_or_else(|| DecodeError::invalid("Insufficient amount of "))?
             .into_iter();
@@ -52,6 +52,8 @@ impl TryFrom<Generic> for Data {
             .next()
             .ok_or_else(|| DecodeError::other("Data packet must have Name as first element"))?
             .try_into()?;
+
+        println!("Decoded name: {name}");
 
         let mut metainfo: Option<MetaInfo> = None;
         let mut content: Option<Content> = None;
@@ -63,6 +65,7 @@ impl TryFrom<Generic> for Data {
                 Type::MetaInfo => {
                     if metainfo.is_none() {
                         metainfo = Some(MetaInfo::try_from(item)?);
+                        println!("Decoded MtaInfo: {metainfo:?}");
                     } else {
                         Err(DecodeError::other("Multiple MetaInfio"))?
                     }
@@ -70,20 +73,23 @@ impl TryFrom<Generic> for Data {
                 Type::Content => {
                     if content.is_none() {
                         content = Some(Content::try_from(item)?);
+                        println!("Decoded Content: {content:?}");
                     } else {
                         Err(DecodeError::other("Multiple Content"))?
                     }
                 }
                 Type::SignatureInfo => {
-                    if content.is_none() {
+                    if signature_info.is_none() {
                         signature_info = Some(SignatureInfo::try_from(item)?);
+                        println!("Decoded SignatureInfo: {signature_info:?}");
                     } else {
                         Err(DecodeError::other("Multiple SignatureInfo"))?
                     }
                 }
                 Type::SignatureValue => {
-                    if content.is_none() {
+                    if signature_value.is_none() {
                         signature_value = Some(SignatureValue::try_from(item)?);
+                        println!("Decoded SignatureValue: {signature_value:?}");
                     } else {
                         Err(DecodeError::other("Multiple SignatureValue"))?
                     }
@@ -91,12 +97,8 @@ impl TryFrom<Generic> for Data {
                 other => println!("skip {other}"),
             }
         }
-        // let metainfo = items.next().map(MetaInfo::try_from).transpose()?;
-        // let content = items.next().map(Content::try_from).transpose()?;
 
-        // items.for_each(|item| println!("{item:?}"));
-
-        let data_signature = DataSignature::digest();
+        let data_signature = (signature_info, signature_value).try_into()?;
 
         Ok(Self {
             name,

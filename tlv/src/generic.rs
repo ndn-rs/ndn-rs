@@ -45,26 +45,25 @@ impl Generic {
         }
     }
 
-    pub fn self_check_length(self) -> Result<Self, DecodeError> {
-        let length = self.value.len();
-        self.check_length(length)
+    pub fn _self_check_length(self) -> Result<Self, DecodeError> {
+        let expected = self.value.len();
+        self.check_length(expected)
     }
 
-    pub fn check_length(self, length: usize) -> Result<Self, DecodeError> {
-        if self.length == length as u64 {
-            Ok(self)
-        } else {
-            Err(DecodeError::LengthMismatch(self))
-        }
+    pub fn check_length(self, expected: usize) -> Result<Self, DecodeError> {
+        let found = self.length.to_u64() as usize;
+        (found == expected)
+            .then_some(self)
+            .ok_or(DecodeError::length_mismatch(expected, found))
     }
 
-    pub fn try_into_generic_array<T>(self) -> Result<GenericArray<u8, T>, DecodeError>
+    pub fn try_into_generic_array_inefficient<T>(self) -> Result<GenericArray<u8, T>, DecodeError>
     where
         T: generic_array::ArrayLength,
     {
         GenericArray::try_from_slice(&self.value)
             .map(|array| array.clone())
-            .map_err(|_| DecodeError::LengthMismatch(self))
+            .map_err(|_| DecodeError::length_mismatch(T::to_usize(), self.value.len()))
     }
 
     pub fn from_tlv<T>(t: T) -> Result<Self, <T as Tlv>::Error>
@@ -101,7 +100,8 @@ impl Tlv for Generic {
         Ok(())
     }
 
-    fn decode_value(_src: &mut BytesMut) -> Result<Self, Self::Error> {
+    fn decode_value(r#type: Type, length: usize, src: &mut BytesMut) -> Result<Self, Self::Error> {
+        let _ = (r#type, length, src);
         todo!("This probably should never be implemented")
     }
 }
