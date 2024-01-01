@@ -26,7 +26,7 @@ impl MilliSeconds {
 
     pub fn to_local_datetime(&self) -> time::OffsetDateTime {
         let datetime = self.to_offset_datetime();
-        println!("{:?}", time::UtcOffset::current_local_offset());
+        // println!("{:?}", time::UtcOffset::current_local_offset());
         time::UtcOffset::current_local_offset()
             .map_or(datetime, |offset| datetime.to_offset(offset))
     }

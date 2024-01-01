@@ -32,11 +32,19 @@ macro_rules! octets {
                 length: usize,
                 src: &mut bytes::BytesMut,
             ) -> Result<Self, Self::Error> {
-                let _ = (r#type, length);
-                use $crate::TlvCodec;
-                bytes::Bytes::decode(src)
-                    .map(Self)
-                    .map_err($crate::DecodeError::from)
+                if r#type != $tlv {
+                    Err($crate::DecodeError::invalid("TLV-TYPE mismatch"))
+                } else if length > src.len() {
+                    Err($crate::DecodeError::length_mismatch(length, src.len()))
+                } else {
+                    Ok(Self(src.split_to(length).freeze()))
+                }
+
+                // let _ = (r#type, length);
+                // use $crate::TlvCodec;
+                // bytes::Bytes::decode(src)
+                //     .map(Self)
+                //     .map_err($crate::DecodeError::from)
             }
         }
 

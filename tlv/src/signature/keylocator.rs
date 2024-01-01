@@ -55,7 +55,6 @@ impl TryFrom<Generic> for KeyLocator {
     type Error = DecodeError;
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        println!("KeyLocator from: {generic}");
         let _length = generic.length();
         let mut bytes = generic
             .check_type(Type::KeyLocator)?
@@ -75,9 +74,13 @@ impl TryFrom<Generic> for KeyLocator {
 
 impl fmt::Display for KeyLocator {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Name(name) => name.fmt(f),
-            Self::Digest(_) => todo!(),
-        }
+        format_args!(
+            "key locator: {}",
+            match self {
+                Self::Name(name) => name,
+                Self::Digest(_) => todo!(),
+            }
+        )
+        .fmt(f)
     }
 }

@@ -122,6 +122,14 @@ impl Generic {
     }
 }
 
+impl Iterator for Generic {
+    type Item = Self;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        Self::from_bytes_mut(&mut self.value)
+    }
+}
+
 impl fmt::Display for Generic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Generic")

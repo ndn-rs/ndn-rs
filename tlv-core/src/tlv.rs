@@ -79,6 +79,7 @@ where
         let length = VarNumber::decode(src)
             .ok_or_else(|| io::Error::other("Invalid TLV-LENGTH"))?
             .to_usize();
-        T::decode_value(r#type, length, src)
+        let mut src = src.split_to(length);
+        T::decode_value(r#type, length, &mut src)
     }
 }

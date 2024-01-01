@@ -36,7 +36,7 @@ where
 
 impl<T> TlvCodec for Vec<T>
 where
-    T: TlvCodec,
+    T: TlvCodec + fmt::Debug,
 {
     type Error = T::Error;
 
@@ -55,7 +55,7 @@ where
         let mut items = vec![];
         while !src.is_empty() {
             let item = T::decode(src)?;
-            items.push(item);
+            items.push(dbg!(item));
         }
         Ok(items)
     }
@@ -164,7 +164,7 @@ impl TlvCodec for String {
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
-        let vec = src.to_vec();
+        let vec = src.split().to_vec();
         Self::from_utf8(vec).map_err(io::Error::other)
     }
 }
@@ -183,7 +183,7 @@ impl TlvCodec for Bytes {
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
-        Ok(src.copy_to_bytes(src.len()))
+        Ok(src.split().freeze())
     }
 }
 

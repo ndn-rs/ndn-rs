@@ -34,68 +34,60 @@ impl Data {
             ))
         })
     }
-}
 
-impl TryFrom<Generic> for Data {
-    type Error = DecodeError;
-
-    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        println!("Data from: {generic}");
-        let mut items = generic
-            .check_type(Type::Data)?
-            // .self_check_length()?
-            .items()
-            .ok_or_else(|| DecodeError::invalid("Insufficient amount of "))?
-            .into_iter();
-
-        // Name must be first
-        let name = items
+    pub fn from_generic(generic: Generic) -> Result<Self, DecodeError> {
+        let mut generic = generic.check_type(Type::Data)?;
+        let name = generic
             .next()
-            .ok_or_else(|| DecodeError::other("Data packet must have Name as first element"))?
-            .try_into()?;
+            .ok_or_else(|| DecodeError::other("Data packet must have Name as first element"))?;
 
-        println!("Decoded name: {name}");
+        let name = Name::from_generic(name)?;
+        tracing::trace!(%name, "Data: decoded name");
 
         let mut metainfo: Option<MetaInfo> = None;
         let mut content: Option<Content> = None;
         let mut signature_info: Option<SignatureInfo> = None;
         let mut signature_value: Option<SignatureValue> = None;
 
-        for item in items {
+        for item in generic {
             match item.r#type() {
                 Type::MetaInfo => {
                     if metainfo.is_none() {
-                        metainfo = Some(MetaInfo::try_from(item)?);
-                        println!("Decoded MtaInfo: {metainfo:?}");
+                        metainfo = MetaInfo::try_from(item)
+                            .inspect(|metainfo| tracing::trace!(%metainfo, "Data: decoded"))
+                            .map(Some)?;
                     } else {
                         Err(DecodeError::other("Multiple MetaInfio"))?
                     }
                 }
                 Type::Content => {
                     if content.is_none() {
-                        content = Some(Content::try_from(item)?);
-                        println!("Decoded Content: {content:?}");
+                        content = Content::try_from(item)
+                            .inspect(|content| tracing::trace!(%content, "Data: decoded"))
+                            .map(Some)?;
                     } else {
                         Err(DecodeError::other("Multiple Content"))?
                     }
                 }
                 Type::SignatureInfo => {
                     if signature_info.is_none() {
-                        signature_info = Some(SignatureInfo::try_from(item)?);
-                        println!("Decoded SignatureInfo: {signature_info:?}");
+                        signature_info = SignatureInfo::try_from(item)
+                            .inspect(|info| tracing::trace!(%info, "Data: decoded"))
+                            .map(Some)?;
                     } else {
                         Err(DecodeError::other("Multiple SignatureInfo"))?
                     }
                 }
                 Type::SignatureValue => {
                     if signature_value.is_none() {
-                        signature_value = Some(SignatureValue::try_from(item)?);
-                        println!("Decoded SignatureValue: {signature_value:?}");
+                        signature_value = SignatureValue::try_from(item)
+                            .inspect(|value| tracing::trace!(%value, "Data: decoded"))
+                            .map(Some)?;
                     } else {
                         Err(DecodeError::other("Multiple SignatureValue"))?
                     }
                 }
-                other => println!("skip {other}"),
+                other => tracing::warn!(%other, "Data: skip"),
             }
         }
 
@@ -107,6 +99,14 @@ impl TryFrom<Generic> for Data {
             content,
             data_signature,
         })
+    }
+}
+
+impl TryFrom<Generic> for Data {
+    type Error = DecodeError;
+
+    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        Self::from_generic(generic)
     }
 }
 

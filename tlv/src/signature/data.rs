@@ -21,7 +21,7 @@ impl DataSignature {
 
 impl fmt::Display for DataSignature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        format_args!("DataSignature<{} {}>", self.info, self.value).fmt(f)
+        format_args!("DataSignature[{} {:x}]", self.info, self.value.0).fmt(f)
     }
 }
 

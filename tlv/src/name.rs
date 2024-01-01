@@ -31,29 +31,21 @@ impl Name {
         Self { components }
     }
 
-    // pub fn from_buf<B>(src: &mut B) -> Result<Option<Self>, DecodeError>
-    // where
-    //     B: Buf,
-    // {
-    //     Generic::from_buf(src).map(Self::try_from).transpose()
-    // }
+    pub fn from_generic(generic: Generic) -> Result<Self, DecodeError> {
+        let components = generic
+            .check_type(Type::Name)?
+            .map(NameComponent::try_from)
+            .inspect(|component| tracing::trace!(?component, "Name: decoded"))
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(Self { components })
+    }
 }
 
 impl TryFrom<Generic> for Name {
     type Error = DecodeError;
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        println!("Name from: {generic}");
-        let components = generic
-            .check_type(Type::Name)?
-            // .self_check_length()?
-            .items()
-            .ok_or_else(|| DecodeError::invalid("Wrong number of bytes"))?
-            .into_iter()
-            .map(NameComponent::try_from)
-            .collect::<Result<Vec<_>, _>>()?;
-
-        Ok(Self { components })
+        Self::from_generic(generic)
     }
 }
 

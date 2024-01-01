@@ -119,7 +119,6 @@ impl TryFrom<Generic> for NameComponent {
     type Error = DecodeError;
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        println!("NameComponent from: {generic}");
         let component = match generic.r#type {
             Type::ImplicitSha256DigestComponent => {
                 ImplicitSha256DigestComponent::try_from(generic)?.into()
@@ -205,27 +204,33 @@ impl Tlv for NameComponent {
         }
     }
 
-    /// Decode this object from supplied buffer
+    /// Decode this object from the supplied buffer
     fn decode_value(r#type: Type, length: usize, src: &mut BytesMut) -> Result<Self, Self::Error> {
-        let _ = (r#type, length);
-        let r#type = VarNumber::peek(src)
-            .ok_or_else(|| DecodeError::invalid("Insufficient bytes for Name Component"))?
-            .into();
+        let mut src = src.split_to(length);
+        let src = &mut src;
         match r#type {
-            Type::GenericNameComponent => TlvCodec::decode(src).map(Self::GenericName),
+            Type::GenericNameComponent => {
+                Tlv::decode_value(r#type, length, src).map(Self::GenericName)
+            }
             Type::ImplicitSha256DigestComponent => {
-                TlvCodec::decode(src).map(Self::ImplicitSha256Digest)
+                Tlv::decode_value(r#type, length, src).map(Self::ImplicitSha256Digest)
             }
             Type::ParametersSha256DigestComponent => {
-                TlvCodec::decode(src).map(Self::ParametersSha256Digest)
+                Tlv::decode_value(r#type, length, src).map(Self::ParametersSha256Digest)
             }
-            Type::KeywordNameComponent => TlvCodec::decode(src).map(Self::Keyword),
-            Type::SegmentNameComponent => TlvCodec::decode(src).map(Self::Segment),
-            Type::ByteOffsetNameComponent => TlvCodec::decode(src).map(Self::ByteOffset),
-            Type::VersionNameComponent => TlvCodec::decode(src).map(Self::Version),
-            Type::TimestampNameComponent => TlvCodec::decode(src).map(Self::Timestamp),
-            Type::SequenceNumNameComponent => TlvCodec::decode(src).map(Self::SequenceNum),
-            _other => TlvCodec::decode(src).map(Self::OtherType),
+            Type::KeywordNameComponent => Tlv::decode_value(r#type, length, src).map(Self::Keyword),
+            Type::SegmentNameComponent => Tlv::decode_value(r#type, length, src).map(Self::Segment),
+            Type::ByteOffsetNameComponent => {
+                Tlv::decode_value(r#type, length, src).map(Self::ByteOffset)
+            }
+            Type::VersionNameComponent => Tlv::decode_value(r#type, length, src).map(Self::Version),
+            Type::TimestampNameComponent => {
+                Tlv::decode_value(r#type, length, src).map(Self::Timestamp)
+            }
+            Type::SequenceNumNameComponent => {
+                Tlv::decode_value(r#type, length, src).map(Self::SequenceNum)
+            }
+            _other => Tlv::decode_value(r#type, length, src).map(Self::OtherType),
         }
     }
 }

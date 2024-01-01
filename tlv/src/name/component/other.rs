@@ -39,11 +39,10 @@ impl Tlv for OtherTypeComponent {
         length: usize,
         src: &mut bytes::BytesMut,
     ) -> Result<Self, Self::Error> {
-        if length == src.len() {
+        if length <= src.len() {
             let octets = src.copy_to_bytes(length);
             Ok(Self { r#type, octets })
         } else {
-            println!("Mismatch on {type}");
             Err(DecodeError::length_mismatch(length, src.len()))
         }
     }
