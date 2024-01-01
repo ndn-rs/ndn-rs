@@ -8,19 +8,20 @@ pub struct Generic {
 }
 
 impl Generic {
-    pub fn from_buf_deprecated<B>(src: &mut B) -> Option<Self>
+    fn decode_from_buf<B>(src: &mut B) -> Option<(Type, VarNumber, usize, usize)>
     where
         B: Buf,
     {
+        let buf_length = src.remaining();
         let r#type = Type::from_buf(src)?;
         let length = VarNumber::from_buf(src)?;
-        let value_size = length.to_u64() as usize;
-        let value = (src.remaining() >= value_size).then(|| src.copy_to_bytes(value_size))?;
-        Some(Self {
-            r#type,
-            length,
-            value,
-        })
+        let value_length = length.to_usize();
+        let value_offset = buf_length - src.remaining();
+        if src.remaining() >= value_length {
+            Some((r#type, length, value_offset, value_length))
+        } else {
+            None
+        }
     }
 
     pub fn from_bytes_mut(src: &mut BytesMut) -> Option<Self> {
@@ -49,20 +50,17 @@ impl Generic {
         })
     }
 
-    fn decode_from_buf<B>(src: &mut B) -> Option<(Type, VarNumber, usize, usize)>
-    where
-        B: Buf,
-    {
-        let buf_length = src.remaining();
-        let r#type = Type::from_buf(src)?;
-        let length = VarNumber::from_buf(src)?;
-        let value_length = length.to_u64() as usize;
-        let value_offset = buf_length - src.remaining();
-        if src.remaining() >= value_length {
-            Some((r#type, length, value_offset, value_length))
-        } else {
-            None
-        }
+    pub fn from_slice(src: &[u8]) -> Option<Self> {
+        let mut src = io::Cursor::new(src);
+        let (r#type, length, value_offset, value_length) = Self::decode_from_buf(&mut src)?;
+        let src = src.into_inner();
+        let data = src.split_at(value_offset).1.split_at(value_length).0;
+        let value = Bytes::copy_from_slice(data);
+        Some(Self {
+            r#type,
+            length,
+            value,
+        })
     }
 
     pub fn items(self) -> Option<Vec<Self>> {
@@ -89,7 +87,7 @@ impl Generic {
     }
 
     pub fn check_length(self, expected: usize) -> Result<Self, DecodeError> {
-        let found = self.length.to_u64() as usize;
+        let found = self.length.to_usize();
         (found == expected)
             .then_some(self)
             .ok_or(DecodeError::length_mismatch(expected, found))
@@ -140,7 +138,7 @@ impl Tlv for Generic {
     }
 
     fn length(&self) -> usize {
-        self.length.to_u64() as usize
+        self.length.to_usize()
     }
 
     fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {

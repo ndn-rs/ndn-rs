@@ -68,6 +68,10 @@ impl VarNumber {
         self.value
     }
 
+    pub fn to_usize(&self) -> usize {
+        self.value as usize
+    }
+
     // Cloning `Bytes` should be simple and relatively inexpensive, as it just creates another
     // reference to the original data.
     pub fn bytes(&self) -> Bytes {

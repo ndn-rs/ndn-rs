@@ -78,7 +78,7 @@ where
         let r#type = Type::decode(src).ok_or_else(|| io::Error::other("Invalid TLV-TYPE"))?;
         let length = VarNumber::decode(src)
             .ok_or_else(|| io::Error::other("Invalid TLV-LENGTH"))?
-            .to_u64() as usize;
+            .to_usize();
         T::decode_value(r#type, length, src)
     }
 }
