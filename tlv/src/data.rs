@@ -40,6 +40,7 @@ impl TryFrom<Generic> for Data {
     type Error = DecodeError;
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        println!("Data from: {generic}");
         let mut items = generic
             .check_type(Type::Data)?
             // .self_check_length()?

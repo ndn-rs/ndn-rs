@@ -119,6 +119,7 @@ impl TryFrom<Generic> for NameComponent {
     type Error = DecodeError;
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        println!("NameComponent from: {generic}");
         let component = match generic.r#type {
             Type::ImplicitSha256DigestComponent => {
                 ImplicitSha256DigestComponent::try_from(generic)?.into()

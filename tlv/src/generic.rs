@@ -8,11 +8,7 @@ pub struct Generic {
 }
 
 impl Generic {
-    pub fn from_slice(mut src: &[u8]) -> Option<Self> {
-        Self::from_buf(&mut src)
-    }
-
-    pub fn from_buf<B>(src: &mut B) -> Option<Self>
+    pub fn from_buf_deprecated<B>(src: &mut B) -> Option<Self>
     where
         B: Buf,
     {
@@ -27,11 +23,53 @@ impl Generic {
         })
     }
 
-    pub fn items(&self) -> Option<Vec<Self>> {
+    pub fn from_bytes_mut(src: &mut BytesMut) -> Option<Self> {
+        let mut src = io::Cursor::new(src);
+        let (r#type, length, value_offset, value_length) = Self::decode_from_buf(&mut src)?;
+        let src = src.into_inner();
+        let _type_and_length = src.split_to(value_offset);
+        let value = src.split_to(value_length).freeze();
+        Some(Self {
+            r#type,
+            length,
+            value,
+        })
+    }
+
+    pub fn from_bytes(src: &mut Bytes) -> Option<Self> {
+        let mut src = io::Cursor::new(src);
+        let (r#type, length, value_offset, value_length) = Self::decode_from_buf(&mut src)?;
+        let src = src.into_inner();
+        let _type_and_length = src.split_to(value_offset);
+        let value = src.split_to(value_length);
+        Some(Self {
+            r#type,
+            length,
+            value,
+        })
+    }
+
+    fn decode_from_buf<B>(src: &mut B) -> Option<(Type, VarNumber, usize, usize)>
+    where
+        B: Buf,
+    {
+        let buf_length = src.remaining();
+        let r#type = Type::from_buf(src)?;
+        let length = VarNumber::from_buf(src)?;
+        let value_length = length.to_u64() as usize;
+        let value_offset = buf_length - src.remaining();
+        if src.remaining() >= value_length {
+            Some((r#type, length, value_offset, value_length))
+        } else {
+            None
+        }
+    }
+
+    pub fn items(self) -> Option<Vec<Self>> {
         let mut items = vec![];
-        let mut src = self.value.as_ref();
+        let mut src = self.value;
         while !src.is_empty() {
-            let item = Self::from_buf(&mut src)?;
+            let item = Self::from_bytes(&mut src)?;
             items.push(item)
         }
         Some(items)
@@ -81,6 +119,16 @@ impl Generic {
             length,
             value,
         })
+    }
+}
+
+impl fmt::Display for Generic {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Generic")
+            .field("type", &self.r#type)
+            .field("length", &self.length.to_u64())
+            .field("value", &format!("{} octets", self.value.len()))
+            .finish_non_exhaustive()
     }
 }
 
@@ -141,7 +189,7 @@ mod tests {
     fn decode_and_advance() {
         let mut src = Bytes::from_static(P1);
         assert_eq!(src.remaining(), 288);
-        let p = Generic::from_buf(&mut src).unwrap();
+        let p = Generic::from_bytes(&mut src).unwrap();
         assert_eq!(src.remaining(), 1);
         assert_eq!(p.r#type, Type::Data);
         assert_eq!(p.length, 283_u64);

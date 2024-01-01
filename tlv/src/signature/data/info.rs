@@ -20,6 +20,7 @@ impl TryFrom<Generic> for SignatureInfo {
     type Error = DecodeError;
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        println!("SignatureType from: {generic}");
         let mut items = generic
             .check_type(Type::SignatureInfo)?
             // .self_check_length()?
@@ -41,6 +42,7 @@ impl TryFrom<Generic> for SignatureInfo {
                     DecodeError::other("SignatureType requires KeyLocator, which is missing")
                 })?
                 .try_into()
+                .inspect(|k| println!("KeyLocator: {k}"))
                 .map(Some)?
         } else {
             None
@@ -50,5 +52,11 @@ impl TryFrom<Generic> for SignatureInfo {
             signature_type,
             key_locator,
         })
+    }
+}
+
+impl fmt::Display for SignatureInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        "<SignatureInfo>".fmt(f)
     }
 }

@@ -25,30 +25,38 @@ impl fmt::Display for DataSignature {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Tlv)]
-#[tlv(r#type = Type::SignatureValue, error = DecodeError)]
-pub struct SignatureValue {
-    digest: GenericArray<u8, U32>,
-}
+octets!(SignatureValue => Type::SignatureValue);
+
+// #[derive(Clone, Debug, PartialEq, Tlv)]
+// #[tlv(r#type = Type::SignatureValue, error = DecodeError)]
+// pub struct SignatureValue {
+//     digest: GenericArray<u8, U32>,
+// }
 
 impl SignatureValue {
     pub fn digest() -> Self {
         let digest = GenericArray::from_array([0; 32]);
-        Self { digest }
+        Self::new(digest)
     }
 }
 
-impl fmt::Display for SignatureInfo {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        "<SignatureInfo>".fmt(f)
-    }
-}
+// impl fmt::Display for SignatureValue {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         "<SignatureValue>".fmt(f)
+//     }
+// }
 
-impl fmt::Display for SignatureValue {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        "<SignatureValue>".fmt(f)
-    }
-}
+// impl TryFrom<Generic> for SignatureValue {
+//     type Error = DecodeError;
+
+//     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+//         generic
+//             .check_type(Type::SignatureValue)?
+//             // .self_check_length()?
+//             .try_into_generic_array_inefficient()
+//             .map(|digest| Self { digest })
+//     }
+// }
 
 impl TlvCodec for DataSignature {
     type Error = DecodeError;
@@ -65,18 +73,6 @@ impl TlvCodec for DataSignature {
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
         let _ = src;
         todo!("Need to think how to decode both info and value at once")
-    }
-}
-
-impl TryFrom<Generic> for SignatureValue {
-    type Error = DecodeError;
-
-    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        generic
-            .check_type(Type::SignatureValue)?
-            // .self_check_length()?
-            .try_into_generic_array_inefficient()
-            .map(|digest| Self { digest })
     }
 }
 

@@ -75,7 +75,7 @@ impl Tcp {
                 Ok(count) => {
                     tracing::trace!(count, "Got bytes");
                     bytes.extend(&buf[..count]);
-                    if tlv::Generic::from_buf(&mut buf.as_ref()).is_some() {
+                    if tlv::Generic::from_buf_deprecated(&mut buf.as_ref()).is_some() {
                         break;
                     }
                     // let generic = tlv::Generic::from_buf(&mut buf.as_ref()).unwrap();

@@ -31,18 +31,19 @@ impl Name {
         Self { components }
     }
 
-    pub fn from_buf<B>(src: &mut B) -> Result<Option<Self>, DecodeError>
-    where
-        B: Buf,
-    {
-        Generic::from_buf(src).map(Self::try_from).transpose()
-    }
+    // pub fn from_buf<B>(src: &mut B) -> Result<Option<Self>, DecodeError>
+    // where
+    //     B: Buf,
+    // {
+    //     Generic::from_buf(src).map(Self::try_from).transpose()
+    // }
 }
 
 impl TryFrom<Generic> for Name {
     type Error = DecodeError;
 
     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+        println!("Name from: {generic}");
         let components = generic
             .check_type(Type::Name)?
             // .self_check_length()?

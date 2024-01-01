@@ -11,9 +11,7 @@ impl Iterator for Iter {
     type Item = Generic;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut src = self.bytes.as_ref();
-        let item = Generic::from_buf(&mut src)?;
-        self.bytes.advance(item.size());
+        let item = Generic::from_bytes(&mut self.bytes)?;
         Some(item)
     }
 }

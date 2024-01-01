@@ -186,3 +186,21 @@ impl TlvCodec for Bytes {
         Ok(src.copy_to_bytes(src.len()))
     }
 }
+
+impl TlvCodec for BytesMut {
+    type Error = io::Error;
+
+    fn total_size(&self) -> usize {
+        self.len()
+    }
+
+    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+        dst.reserve(self.len());
+        dst.extend(self);
+        Ok(())
+    }
+
+    fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
+        Ok(src.split())
+    }
+}
