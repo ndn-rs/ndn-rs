@@ -61,7 +61,7 @@ impl TryFrom<Generic> for KeyLocator {
             .check_type(Type::KeyLocator)?
             // .self_check_length()?
             .value;
-        let generic = Generic::from_bytes(&mut bytes)
+        let generic = Generic::from_bytes_mut(&mut bytes)
             .ok_or_else(|| DecodeError::other("KeyLocator no items"))?;
         match generic.r#type() {
             Type::Name => Name::try_from(generic).map(Self::Name),

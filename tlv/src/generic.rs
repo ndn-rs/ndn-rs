@@ -4,7 +4,7 @@ use super::*;
 pub struct Generic {
     pub r#type: Type,
     pub length: VarNumber,
-    pub value: Bytes,
+    pub value: BytesMut,
 }
 
 impl Generic {
@@ -29,7 +29,7 @@ impl Generic {
         let (r#type, length, value_offset, value_length) = Self::decode_from_buf(&mut src)?;
         let src = src.into_inner();
         let _type_and_length = src.split_to(value_offset);
-        let value = src.split_to(value_length).freeze();
+        let value = src.split_to(value_length);
         Some(Self {
             r#type,
             length,
@@ -42,7 +42,9 @@ impl Generic {
         let (r#type, length, value_offset, value_length) = Self::decode_from_buf(&mut src)?;
         let src = src.into_inner();
         let _type_and_length = src.split_to(value_offset);
-        let value = src.split_to(value_length);
+        let data = src.split_to(value_length);
+        let mut value = BytesMut::with_capacity(value_length);
+        value.extend_from_slice(&data);
         Some(Self {
             r#type,
             length,
@@ -55,7 +57,8 @@ impl Generic {
         let (r#type, length, value_offset, value_length) = Self::decode_from_buf(&mut src)?;
         let src = src.into_inner();
         let data = src.split_at(value_offset).1.split_at(value_length).0;
-        let value = Bytes::copy_from_slice(data);
+        let mut value = BytesMut::with_capacity(value_length);
+        value.extend_from_slice(data);
         Some(Self {
             r#type,
             length,
@@ -67,7 +70,7 @@ impl Generic {
         let mut items = vec![];
         let mut src = self.value;
         while !src.is_empty() {
-            let item = Self::from_bytes(&mut src)?;
+            let item = Self::from_bytes_mut(&mut src)?;
             items.push(item)
         }
         Some(items)
@@ -110,7 +113,6 @@ impl Generic {
         let length = t.length();
         let mut value = BytesMut::with_capacity(length);
         t.encode_value(&mut value)?;
-        let value = value.freeze();
         let length = length.into();
         Ok(Self {
             r#type,

@@ -47,7 +47,8 @@ macro_rules! octets {
                 let value = generic
                     .check_type($tlv)?
                     //.self_check_length()?
-                    .value;
+                    .value
+                    .freeze();
                 Ok(Self(value))
             }
         }

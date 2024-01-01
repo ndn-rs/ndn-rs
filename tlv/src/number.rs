@@ -26,6 +26,21 @@ impl NonNegativeNumber {
         }
     }
 
+    pub fn from_buf<B>(buf: &mut B) -> Result<Self, DecodeError>
+    where
+        B: Buf,
+    {
+        match buf.remaining() {
+            1 => Ok(buf.get_u8().into()),
+            2 => Ok(buf.get_u16().into()),
+            4 => Ok(buf.get_u32().into()),
+            8 => Ok(buf.get_u64().into()),
+            other => Err(DecodeError::invalid(format!(
+                "Wrong number of bytes: ({other})"
+            ))),
+        }
+    }
+
     pub fn len(&self) -> usize {
         self.bytes().len()
     }
@@ -61,15 +76,7 @@ impl TlvCodec for NonNegativeNumber {
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
-        match src.len() {
-            1 => Ok(src.get_u8().into()),
-            2 => Ok(src.get_u16().into()),
-            4 => Ok(src.get_u32().into()),
-            8 => Ok(src.get_u64().into()),
-            other => Err(io::Error::other(format!(
-                "Invalid NonNegativeNumber byte count {other}"
-            ))),
-        }
+        Self::from_buf(src).map_err(io::Error::other)
     }
 }
 
@@ -108,15 +115,15 @@ impl TryFrom<Bytes> for NonNegativeNumber {
 
     fn try_from(bytes: Bytes) -> Result<Self, Self::Error> {
         let mut buf = bytes.as_ref();
-        match buf.len() {
-            1 => Ok(buf.get_u8().into()),
-            2 => Ok(buf.get_u16().into()),
-            4 => Ok(buf.get_u32().into()),
-            8 => Ok(buf.get_u64().into()),
-            other => Err(DecodeError::invalid(format!(
-                "Wrong number of bytes: ({other})"
-            ))),
-        }
+        Self::from_buf(&mut buf)
+    }
+}
+
+impl TryFrom<BytesMut> for NonNegativeNumber {
+    type Error = DecodeError;
+
+    fn try_from(mut bytes: BytesMut) -> Result<Self, Self::Error> {
+        Self::from_buf(&mut bytes)
     }
 }
 
