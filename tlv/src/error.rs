@@ -11,6 +11,9 @@ pub enum DecodeError {
     #[error("Invalid (corrupted?) Data")]
     InvalidData(String),
 
+    #[error("IO Error: {0}")]
+    Io(#[from] io::Error),
+
     #[error("{0}")]
     Other(String),
 }
@@ -35,8 +38,11 @@ impl DecodeError {
     }
 }
 
-impl From<io::Error> for DecodeError {
-    fn from(err: io::Error) -> Self {
-        Self::other(err.to_string())
+impl From<DecodeError> for io::Error {
+    fn from(err: DecodeError) -> Self {
+        match err {
+            DecodeError::Io(err) => err,
+            other => Self::other(other),
+        }
     }
 }

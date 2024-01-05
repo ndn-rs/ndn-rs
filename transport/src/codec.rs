@@ -17,8 +17,7 @@ impl<T: tlv::TlvCodec> codec::Encoder<T> for TlvCodec {
     type Error = io::Error;
 
     fn encode(&mut self, item: T, dst: &mut BytesMut) -> Result<(), Self::Error> {
-        item.encode(dst)
-            .map_err(|err| io::Error::other(err.to_string()))
+        item.encode(dst).map_err(Into::into)
     }
 }
 

@@ -3,7 +3,7 @@ use super::*;
 mod impls;
 
 pub trait TlvCodec: Sized {
-    type Error: From<io::Error> + StdError + Send + Sync;
+    type Error: From<io::Error> + Into<io::Error> + StdError + Send + Sync;
 
     fn total_size(&self) -> usize;
 

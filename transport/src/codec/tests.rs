@@ -21,7 +21,7 @@ const P1: &[u8] = &[
 #[test]
 fn decode() {
     let mut src = P1.iter().collect();
-    let mut codec = TlvCodec;
+    let mut codec = TlvCodec::new();
     let packet = codec.decode(&mut src).unwrap().unwrap();
     println!("{packet:?}");
     assert!(src.is_empty());

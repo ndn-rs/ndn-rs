@@ -1,7 +1,7 @@
 use super::*;
 
 pub trait Tlv: fmt::Debug + Sized {
-    type Error: From<io::Error> + StdError + Send + Sync;
+    type Error: From<io::Error> + Into<io::Error> + StdError + Send + Sync;
 
     /// Report this TLV-TYPE as `Type`
     fn r#type(&self) -> Type;

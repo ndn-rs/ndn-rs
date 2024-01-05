@@ -100,6 +100,10 @@ impl Data {
             data_signature,
         })
     }
+
+    pub fn into_content(self) -> Option<Bytes> {
+        self.content.map(|content| content.0)
+    }
 }
 
 impl TryFrom<Generic> for Data {

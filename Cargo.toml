@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "cli",
+    "client",
     "face",
     "lpv2",
     "management",
@@ -45,6 +46,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 ndn = { path = "./ndn" }
+ndn-client = { path = "./client" }
 ndn-face = { path = "./face" }
 ndn-lpv2 = { path = "./lpv2" }
 ndn-management = { path = "./management" }

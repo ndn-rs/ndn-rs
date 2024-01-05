@@ -51,6 +51,10 @@ impl Interest {
             ..self
         }
     }
+
+    pub fn name(&self) -> String {
+        self.name.to_string()
+    }
 }
 
 impl fmt::Display for Interest {
