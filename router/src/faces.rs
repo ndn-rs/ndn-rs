@@ -7,7 +7,6 @@ use tokio::sync::RwLockReadGuard;
 use tokio::sync::RwLockWriteGuard;
 
 use super::*;
-use transport::Transport;
 
 mod create;
 
@@ -18,7 +17,7 @@ pub struct Face {
     local_uri: face::LocalUri,
     mtu: face::Mtu,
     persistency: face::FacePersistency,
-    transport: Transport,
+    transport: transport::Transport,
 }
 
 slotmap::new_key_type! { struct FaceKey; }
@@ -52,16 +51,14 @@ impl FaceManegement {
         }
     }
 
-    #[tracing::instrument(skip_all)]
-    pub async fn send_packet(&self, face: &face::FaceId, packet: impl tlv::Tlv) -> io::Result<()> {
-        self.get_face_mut(face).await?.send_packet(packet).await
+    pub async fn send_item(&self, face: &face::FaceId, packet: impl tlv::Tlv) -> io::Result<()> {
+        self.get_face_mut(face).await?.send_item(packet).await
     }
 
-    #[tracing::instrument(skip(self))]
-    pub async fn recv_packet(&self, face: &face::FaceId) -> io::Result<tlv::Generic> {
+    pub async fn recv_item(&self, face: &face::FaceId) -> io::Result<tlv::Generic> {
         self.get_face_mut(face)
             .await?
-            .recv_packet()
+            .recv_item()
             .await
             .transpose()
             .unwrap()
@@ -119,7 +116,7 @@ impl FaceManegement {
 
 impl Face {
     #[tracing::instrument]
-    pub(crate) async fn new(
+    pub async fn new(
         uri: face::Uri,
         local_uri: Option<face::LocalUri>,
         persistency: face::FacePersistency,
@@ -133,7 +130,7 @@ impl Face {
             remote.any()
         };
 
-        let transport = Transport::new(local, remote).await?;
+        let transport = transport::Transport::new(local, remote).await?;
         let local_uri = transport.local_uri()?;
         let mtu = transport.mtu();
         Ok(Self {
@@ -147,7 +144,7 @@ impl Face {
     }
 
     #[tracing::instrument]
-    pub(crate) async fn update_congestion(
+    pub async fn update_congestion(
         &self,
         base_congestion_marking_interval: Option<face::BaseCongestionMarkingInterval>,
         default_congestion_threshold: Option<face::DefaultCongestionThreshold>,
@@ -157,7 +154,7 @@ impl Face {
     }
 
     #[tracing::instrument]
-    pub(crate) async fn update_flags(
+    pub async fn update_flags(
         &self,
         flags_and_mask: Option<(face::Flags, face::Mask)>,
     ) -> io::Result<()> {
@@ -165,36 +162,42 @@ impl Face {
         Ok(())
     }
 
-    pub(crate) fn face_id(&self) -> &face::FaceId {
+    pub fn face_id(&self) -> &face::FaceId {
         &self.face_id
     }
 
-    pub(crate) fn update_face_id(self, face_id: face::FaceId) -> Self {
+    pub fn update_face_id(self, face_id: face::FaceId) -> Self {
         Self { face_id, ..self }
     }
 
-    pub(crate) fn uri(&self) -> &face::Uri {
+    pub fn uri(&self) -> &face::Uri {
         &self.uri
     }
 
-    pub(crate) fn local_uri(&self) -> &face::LocalUri {
+    pub fn local_uri(&self) -> &face::LocalUri {
         &self.local_uri
     }
 
-    pub(crate) fn persistency(&self) -> face::FacePersistency {
+    pub fn persistency(&self) -> face::FacePersistency {
         self.persistency
     }
 
-    pub(crate) fn mtu(&self) -> &face::Mtu {
+    pub fn mtu(&self) -> &face::Mtu {
         &self.mtu
     }
 
-    pub(crate) async fn send_packet(&mut self, packet: impl tlv::Tlv) -> io::Result<()> {
-        self.transport.send_item(packet).await
+    #[tracing::instrument(skip_all)]
+    pub async fn send_item(&mut self, item: impl tlv::Tlv) -> io::Result<()> {
+        tracing::trace!(r#type = %item.r#type(), "Outgoing item");
+        self.transport.send_item(item).await
     }
 
-    pub(crate) async fn recv_packet(&mut self) -> io::Result<Option<tlv::Generic>> {
-        self.transport.recv_item().await
+    #[tracing::instrument(skip(self))]
+    pub async fn recv_item(&mut self) -> io::Result<Option<tlv::Generic>> {
+        self.transport.recv_item().await.inspect(|item| {
+            item.as_ref()
+                .inspect(|item| tracing::trace!(r#type = %item.r#type(), "Incoming item"));
+        })
     }
 
     pub(crate) async fn send(&self, bytes: Bytes) -> io::Result<()> {
@@ -202,11 +205,11 @@ impl Face {
     }
 
     pub(crate) async fn recv(&self) -> io::Result<Bytes> {
-        let bytes = BytesMut::with_capacity(self.mtu.to_usize());
+        let bytes: BytesMut = BytesMut::with_capacity(self.mtu.to_usize());
         self.transport.recv(bytes).await
     }
 
-    pub(crate) fn to_face_status(&self) -> face::FaceStatus {
+    pub fn to_face_status(&self) -> face::FaceStatus {
         let face_id = self.face_id.clone();
         let uri = self.uri.clone();
         let local_uri = self.local_uri.clone();

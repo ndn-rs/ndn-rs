@@ -75,7 +75,7 @@ impl TryFrom<Generic> for KeyLocator {
 impl fmt::Display for KeyLocator {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         format_args!(
-            "key locator: {}",
+            "{}",
             match self {
                 Self::Name(name) => name,
                 Self::Digest(_) => todo!(),

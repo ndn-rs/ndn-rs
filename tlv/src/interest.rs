@@ -7,15 +7,15 @@ mod lifetime;
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Tlv)]
 #[tlv(r#type = Type::Interest, error = DecodeError)]
 pub struct Interest {
-    name: Name,
-    can_be_prefix: Option<CanBePrefix>,
-    must_be_fresh: Option<MustBeFresh>,
-    forwarding_hint: Option<ForwardingHint>,
-    nonce: Option<Nonce>,
-    interest_lifetime: Option<InterestLifetime>,
-    hop_limit: Option<HopLimit>,
-    application_parameters: Option<ApplicationParameters>,
-    interest_signature: Option<InterestSignature>,
+    pub name: Name,
+    pub can_be_prefix: Option<CanBePrefix>,
+    pub must_be_fresh: Option<MustBeFresh>,
+    pub forwarding_hint: Option<ForwardingHint>,
+    pub nonce: Option<Nonce>,
+    pub interest_lifetime: Option<InterestLifetime>,
+    pub hop_limit: Option<HopLimit>,
+    pub application_parameters: Option<ApplicationParameters>,
+    pub interest_signature: Option<InterestSignature>,
 }
 
 impl Interest {
@@ -54,6 +54,10 @@ impl Interest {
 
     pub fn name(&self) -> String {
         self.name.to_string()
+    }
+
+    pub fn is_can_be_prefix(&self) -> bool {
+        self.can_be_prefix.is_some()
     }
 }
 

@@ -39,30 +39,30 @@ impl Router {
         self.faces.get_faces().await.pop().unwrap()
     }
 
-    pub(crate) async fn send_packet(
+    pub(crate) async fn send_item(
         &self,
         face: &face::FaceId,
         packet: impl tlv::Tlv,
     ) -> io::Result<()> {
-        self.faces.send_packet(face, packet).await
+        self.faces.send_item(face, packet).await
     }
 
-    pub(crate) async fn recv_packet(&self, face: &face::FaceId) -> io::Result<tlv::Generic> {
-        self.faces.recv_packet(face).await
+    pub(crate) async fn recv_item(&self, face: &face::FaceId) -> io::Result<tlv::Generic> {
+        self.faces.recv_item(face).await
     }
 
-    pub(crate) async fn _send(
-        &self,
-        face: &face::FaceId,
-        packet: impl tlv::TlvCodec,
-    ) -> io::Result<()> {
-        let data = packet.bytes().unwrap();
-        self.faces.send(face, data).await
-    }
+    // pub(crate) async fn _send(
+    //     &self,
+    //     face: &face::FaceId,
+    //     packet: impl tlv::TlvCodec,
+    // ) -> io::Result<()> {
+    //     let data = packet.bytes().unwrap();
+    //     self.faces.send(face, data).await
+    // }
 
-    pub(crate) async fn _recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
-        self.faces.recv(face).await
-    }
+    // pub(crate) async fn _recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
+    //     self.faces.recv(face).await
+    // }
 
     pub(crate) fn info(&self) {
         println!("{:#?}", self.faces);

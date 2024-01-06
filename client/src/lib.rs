@@ -1,22 +1,26 @@
-use std::collections::HashMap;
 use std::io;
 use std::marker::PhantomData;
 use std::sync::Arc;
 
 use bytes::BytesMut;
+use hashbrown::HashMap;
 use tokio::sync::oneshot;
 use tokio::sync::Mutex;
+use tokio::task;
 
 use ndn_face as face;
+use ndn_router as router;
 use ndn_tlv as tlv;
 use ndn_transport as transport;
 
+pub mod simple;
 mod worker;
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Client {
-    transport: Arc<Mutex<transport::Transport>>,
+    write: Arc<Mutex<transport::Transport>>,
     pending: Arc<Mutex<HashMap<String, PendingInternal>>>,
+    worker: task::JoinHandle<()>,
 }
 
 impl Client {
@@ -29,58 +33,45 @@ impl Client {
             .map(Mutex::new)
             .map(Arc::new)?;
 
-        let client = Self { transport, pending };
-        let _handle = tokio::spawn(client.clone().run());
+        let inner = worker::ClientInternal::new(transport.clone(), pending.clone());
+        let worker = tokio::spawn(inner.run());
 
-        Ok(client)
+        Ok(Self {
+            write: transport,
+            pending,
+            worker,
+        })
     }
 
-    pub async fn express_interest<T>(&self, name: impl AsRef<str>) -> PendingInterest<T> {
-        let interest = tlv::Interest::new(name);
+    pub async fn express_interest<T>(
+        &self,
+        name: impl AsRef<str>,
+    ) -> io::Result<PendingInterest<T>> {
+        let interest = tlv::Interest::new(name).must_be_fresh().can_be_prefix();
         let (tx, rx) = oneshot::channel();
         let internal = PendingInternal {
             interest: interest.clone(),
             tx,
         };
 
+        tracing::trace!(name = interest.name(), "About to send interest");
+        self.write.lock().await.send_item(interest.clone()).await?;
+        tracing::trace!("Interest sent");
+
         self.pending
             .lock()
             .await
             .insert(internal.interest.name(), internal);
 
-        PendingInterest {
+        Ok(PendingInterest {
             interest,
             rx,
             data: PhantomData,
-        }
-    }
-    async fn run(self) {
-        loop {
-            match self.next_item().await {
-                Ok(generic) => {
-                    let data =
-                        tlv::Data::from_generic(generic).expect("Should be valid data packet");
-                    let name = data.name();
-                    let Some(pending) = self.pending.lock().await.remove(&name) else {
-                        tracing::warn!(name, "Drop unsolicited data packet");
-                        continue;
-                    };
-                    if pending.tx.send(data).is_err() {
-                        tracing::warn!(name, "Failed to send data packet; dropping");
-                    }
-                }
-                Err(err) => tracing::error!(%err, "transport.recv_item()"),
-            }
-        }
+        })
     }
 
-    async fn next_item(&self) -> io::Result<tlv::Generic> {
-        loop {
-            let Some(item) = self.transport.lock().await.recv_item().await.transpose() else {
-                continue;
-            };
-            break item;
-        }
+    pub async fn shutdown(self) -> io::Result<()> {
+        self.worker.await.map_err(io::Error::other)
     }
 }
 
@@ -99,22 +90,24 @@ pub struct PendingInterest<T> {
 
 impl<T> PendingInterest<T>
 where
-    T: tlv::Tlv,
-    <T as tlv::Tlv>::Error: 'static,
+    T: tlv::TlvCodec,
+    <T as tlv::TlvCodec>::Error: Into<io::Error>,
 {
     pub async fn data(self) -> io::Result<T> {
-        let content = self
-            .rx
-            .await
-            .map_err(io::Error::other)?
-            .into_content()
-            .unwrap_or_default();
+        let data = self.recv_item().await?;
+        let content = data.into_content().unwrap_or_default();
         let mut content = BytesMut::from(content.as_ref());
-        <T as tlv::TlvCodec>::decode(&mut content).map_err(io::Error::other)
+        <T as tlv::TlvCodec>::decode(&mut content).map_err(Into::into)
     }
 
     pub fn interest(&self) -> &tlv::Interest {
         &self.interest
+    }
+
+    async fn recv_item(self) -> io::Result<tlv::Data> {
+        self.rx
+            .await
+            .map_err(|error| io::Error::new(io::ErrorKind::BrokenPipe, error))
     }
 }
 

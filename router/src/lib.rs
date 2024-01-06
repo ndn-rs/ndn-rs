@@ -13,10 +13,12 @@ use ndn_transport as transport;
 
 use tlv::Data;
 use tlv::Interest;
+use tlv::Tlv;
 use tlv::TlvCodec;
 
 pub use content::ContentStore;
 pub use error::Error;
+pub use faces::Face;
 pub use faces::FaceManegement;
 pub use forwarding::ForwardingInformationBase;
 pub use pending::PendingInterestTable;

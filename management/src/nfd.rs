@@ -153,6 +153,75 @@ impl TryFrom<tlv::Data> for GeneralStatus {
     }
 }
 
+impl tlv::core::TlvCodec for GeneralStatus {
+    type Error = tlv::DecodeError;
+
+    fn total_size(&self) -> usize {
+        // use tlv::core::TlvCodec;
+        [
+            self.version.total_size(),
+            self.start_timestamp.total_size(),
+            self.current_timestamp.total_size(),
+            self.n_name_tree_entries.total_size(),
+            self.n_fib_entries.total_size(),
+            self.n_pit_entries.total_size(),
+            self.n_measurements_entries.total_size(),
+            self.n_cs_entries.total_size(),
+            self.n_in_interests.total_size(),
+            self.n_in_data.total_size(),
+            self.n_in_nacks.total_size(),
+            self.n_out_interests.total_size(),
+            self.n_out_data.total_size(),
+            self.n_out_nacks.total_size(),
+            self.n_satisfied_interests.total_size(),
+            self.n_unsatisfied_interests.total_size(),
+        ]
+        .into_iter()
+        .sum()
+    }
+
+    fn encode(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
+        self.version.encode(dst)?;
+        self.start_timestamp.encode(dst)?;
+        self.current_timestamp.encode(dst)?;
+        self.n_name_tree_entries.encode(dst)?;
+        self.n_fib_entries.encode(dst)?;
+        self.n_pit_entries.encode(dst)?;
+        self.n_measurements_entries.encode(dst)?;
+        self.n_cs_entries.encode(dst)?;
+        self.n_in_interests.encode(dst)?;
+        self.n_in_data.encode(dst)?;
+        self.n_in_nacks.encode(dst)?;
+        self.n_out_interests.encode(dst)?;
+        self.n_out_data.encode(dst)?;
+        self.n_out_nacks.encode(dst)?;
+        self.n_satisfied_interests.encode(dst)?;
+        self.n_unsatisfied_interests.encode(dst)?;
+        Ok(())
+    }
+
+    fn decode(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
+        Ok(Self {
+            version: tlv::core::TlvCodec::decode(src)?,
+            start_timestamp: tlv::core::TlvCodec::decode(src)?,
+            current_timestamp: tlv::core::TlvCodec::decode(src)?,
+            n_name_tree_entries: tlv::core::TlvCodec::decode(src)?,
+            n_fib_entries: tlv::core::TlvCodec::decode(src)?,
+            n_pit_entries: tlv::core::TlvCodec::decode(src)?,
+            n_measurements_entries: tlv::core::TlvCodec::decode(src)?,
+            n_cs_entries: tlv::core::TlvCodec::decode(src)?,
+            n_in_interests: tlv::core::TlvCodec::decode(src)?,
+            n_in_data: tlv::core::TlvCodec::decode(src)?,
+            n_in_nacks: tlv::core::TlvCodec::decode(src)?,
+            n_out_interests: tlv::core::TlvCodec::decode(src)?,
+            n_out_data: tlv::core::TlvCodec::decode(src)?,
+            n_out_nacks: tlv::core::TlvCodec::decode(src)?,
+            n_satisfied_interests: tlv::core::TlvCodec::decode(src)?,
+            n_unsatisfied_interests: tlv::core::TlvCodec::decode(src)?,
+        })
+    }
+}
+
 tlv::utf8_string!(NfdVersion => tlv::Type::NfdVersion);
 tlv::milliseconds!(StartTimestamp => tlv::Type::StartTimestamp);
 tlv::milliseconds!(CurrentTimestamp => tlv::Type::CurrentTimestamp);

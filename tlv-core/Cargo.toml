@@ -13,6 +13,7 @@ description = "Named Data Networking - Core Tlv trait"
 bytes.workspace = true
 generic-array.workspace = true
 tokio-util.workspace = true
+tracing.workspace = true
 
 ndn-tlv-derive.workspace = true
 ndn-varnumber.workspace = true
