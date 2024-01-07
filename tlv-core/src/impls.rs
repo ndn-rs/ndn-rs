@@ -25,6 +25,10 @@ impl Type {
         VarNumber::from_buf(src).map(Self::from)
     }
 
+    pub fn peek(buf: &[u8]) -> Option<Self> {
+        VarNumber::peek(buf).map(Self::from)
+    }
+
     pub fn decode(src: &mut BytesMut) -> Option<Self> {
         Self::from_buf(src)
     }

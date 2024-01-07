@@ -8,6 +8,7 @@ pub struct Sequence {
 
 impl tlv::Tlv for Sequence {
     type Error = tlv::DecodeError;
+    const TYPE: tlv::Type = tlv::Type::Sequence;
 
     fn r#type(&self) -> tlv::Type {
         tlv::Type::Sequence

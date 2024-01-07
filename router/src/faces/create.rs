@@ -54,7 +54,7 @@ impl FaceManegement {
         face.update_flags(create.flags_and_mask).await?;
 
         let id = self.insert(face).await;
-        self.get_face(&id)
+        self.get_face(id)
             .await
             .map(|face| CreateResponse::from_face(&face))
     }
@@ -111,11 +111,11 @@ impl TryFrom<mgmt::ControlParameters> for CreateRequest {
 
 impl CreateResponse {
     fn from_face(face: &Face) -> Self {
-        let face_id = face.face_id().clone();
+        let face_id = face.face_id();
         let uri = face.uri().clone();
         let local_uri = face.local_uri().clone();
         let face_persistency = face.persistency();
-        let mtu = Some(face.mtu().clone());
+        let mtu = Some(face.mtu());
         let flags = face::Flags::from(0); // FIXME
 
         Self {

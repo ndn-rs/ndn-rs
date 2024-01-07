@@ -36,6 +36,7 @@ impl SignatureValue {
 
 impl TlvCodec for DataSignature {
     type Error = DecodeError;
+    const TYPE: Type = Type::SignatureInfo;
 
     fn total_size(&self) -> usize {
         self.info.total_size() + self.value.total_size()
@@ -47,8 +48,9 @@ impl TlvCodec for DataSignature {
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
-        let _ = src;
-        todo!("Need to think how to decode both info and value at once")
+        let info = TlvCodec::decode(src)?;
+        let value = TlvCodec::decode(src)?;
+        Ok(Self { info, value })
     }
 }
 

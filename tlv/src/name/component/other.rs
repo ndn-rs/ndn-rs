@@ -21,6 +21,7 @@ impl OtherTypeComponent {
 
 impl Tlv for OtherTypeComponent {
     type Error = DecodeError;
+    const TYPE: Type = Type::Unassigned;
 
     fn r#type(&self) -> Type {
         self.r#type

@@ -99,10 +99,11 @@ impl quote::ToTokens for TlvDerive {
             #[automatically_derived]
             impl #tlv::Tlv for #name {
                 type Error = #error;
+                const TYPE: #tlv::Type = #r#type;
 
-                fn r#type(&self) -> #tlv::Type {
-                    #r#type
-                }
+                // fn r#type(&self) -> #tlv::Type {
+                //     #r#type
+                // }
 
                 fn length(&self) -> usize {
                     use #tlv::TlvCodec;

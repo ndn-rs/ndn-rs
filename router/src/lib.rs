@@ -2,8 +2,8 @@ use std::collections::{HashMap, HashSet};
 use std::io;
 // use std::net;
 
-use bytes::Bytes;
-use bytes::BytesMut;
+// use bytes::Bytes;
+// use bytes::BytesMut;
 use tokio::sync::{RwLock, RwLockReadGuard};
 
 use ndn_face as face;
@@ -14,7 +14,7 @@ use ndn_transport as transport;
 use tlv::Data;
 use tlv::Interest;
 use tlv::Tlv;
-use tlv::TlvCodec;
+// use tlv::TlvCodec;
 
 pub use content::ContentStore;
 pub use error::Error;
@@ -62,25 +62,24 @@ impl Router {
     }
 
     pub async fn handle_face_status(&self, face: face::FaceId) -> face::FaceStatus {
-        self.faces.get_face(&face).await.unwrap().to_face_status()
+        self.faces.get_face(face).await.unwrap().to_face_status()
     }
 
     pub async fn handle_interest(
         &self,
         interest: Interest,
-        downstream: &face::FaceId,
+        downstream: face::FaceId,
     ) -> io::Result<()> {
         if let Some(data) = self.content_store.lookup(&interest).await {
             // TODO Check freshness
-            let data = data.bytes().unwrap();
-            self.faces.send(downstream, data).await?;
+            let data = data.clone();
+            self.faces.send_item(downstream, data).await?;
         } else {
             self.pending_interest_table
                 .register(&interest, downstream)
                 .await;
             let upstream = self.forwarding_information_base.lookup(&interest).await;
-            let data = interest.bytes().unwrap();
-            self.faces.send(&upstream, data).await?;
+            self.faces.send_item(upstream, interest).await?;
         }
 
         Ok(())

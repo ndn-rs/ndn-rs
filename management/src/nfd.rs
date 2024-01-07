@@ -155,6 +155,7 @@ impl TryFrom<tlv::Data> for GeneralStatus {
 
 impl tlv::core::TlvCodec for GeneralStatus {
     type Error = tlv::DecodeError;
+    const TYPE: tlv::Type = tlv::Type::Unassigned;
 
     fn total_size(&self) -> usize {
         // use tlv::core::TlvCodec;

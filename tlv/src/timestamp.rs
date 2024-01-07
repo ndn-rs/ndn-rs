@@ -38,6 +38,7 @@ impl MilliSeconds {
 
 impl TlvCodec for MilliSeconds {
     type Error = io::Error;
+    const TYPE: Type = Type::Unassigned;
 
     fn total_size(&self) -> usize {
         self.0.total_size()
@@ -126,10 +127,11 @@ macro_rules! milliseconds_impl {
 
         impl $crate::Tlv for $name {
             type Error = $crate::DecodeError;
+            const TYPE: $crate::Type = $tlv;
 
-            fn r#type(&self) -> $crate::Type {
-                $tlv
-            }
+            // fn r#type(&self) -> $crate::Type {
+            //     $tlv
+            // }
 
             fn length(&self) -> usize {
                 self.0.len()

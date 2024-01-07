@@ -41,13 +41,13 @@ impl Router {
 
     pub(crate) async fn send_item(
         &self,
-        face: &face::FaceId,
+        face: face::FaceId,
         packet: impl tlv::Tlv,
     ) -> io::Result<()> {
         self.faces.send_item(face, packet).await
     }
 
-    pub(crate) async fn recv_item(&self, face: &face::FaceId) -> io::Result<tlv::Generic> {
+    pub(crate) async fn recv_item(&self, face: face::FaceId) -> io::Result<tlv::Generic> {
         self.faces.recv_item(face).await
     }
 

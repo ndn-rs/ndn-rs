@@ -4,6 +4,7 @@ mod impls;
 
 pub trait TlvCodec: Sized {
     type Error: From<io::Error> + Into<io::Error> + StdError + Send + Sync;
+    const TYPE: Type;
 
     fn total_size(&self) -> usize;
 

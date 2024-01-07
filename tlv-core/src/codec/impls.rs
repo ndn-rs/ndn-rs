@@ -7,6 +7,7 @@ where
     T: TlvCodec,
 {
     type Error = T::Error;
+    const TYPE: Type = T::TYPE;
 
     fn total_size(&self) -> usize {
         if let Some(ref item) = self {
@@ -29,7 +30,15 @@ where
         if src.is_empty() {
             Ok(None)
         } else {
-            T::decode(src).map(Some)
+            let remaining = src.remaining();
+            let r#type = Type::peek(src)
+                .ok_or_else(|| io::Error::other("Corrupted TLV-TYPE when decoding Option<T>"))?;
+            assert_eq!(remaining, src.remaining());
+            if r#type == T::TYPE {
+                T::decode(src).map(Some)
+            } else {
+                Ok(None)
+            }
         }
     }
 }
@@ -39,6 +48,7 @@ where
     T: TlvCodec + fmt::Debug,
 {
     type Error = T::Error;
+    const TYPE: Type = T::TYPE;
 
     fn total_size(&self) -> usize {
         self.iter().map(|item| item.total_size()).sum()
@@ -63,6 +73,7 @@ where
 
 impl TlvCodec for u8 {
     type Error = io::Error;
+    const TYPE: Type = Type::Unassigned;
 
     fn total_size(&self) -> usize {
         1
@@ -107,6 +118,7 @@ impl TlvCodec for u8 {
 
 impl<const N: usize> TlvCodec for [u8; N] {
     type Error = io::Error;
+    const TYPE: Type = Type::Unassigned;
 
     fn total_size(&self) -> usize {
         self.len()
@@ -133,6 +145,7 @@ where
     T: ArrayLength,
 {
     type Error = io::Error;
+    const TYPE: Type = Type::Unassigned;
 
     fn total_size(&self) -> usize {
         Self::len()
@@ -152,6 +165,7 @@ where
 
 impl TlvCodec for String {
     type Error = io::Error;
+    const TYPE: Type = Type::Unassigned;
 
     fn total_size(&self) -> usize {
         self.len()
@@ -171,6 +185,7 @@ impl TlvCodec for String {
 
 impl TlvCodec for Bytes {
     type Error = io::Error;
+    const TYPE: Type = Type::Unassigned;
 
     fn total_size(&self) -> usize {
         self.len()
@@ -189,6 +204,7 @@ impl TlvCodec for Bytes {
 
 impl TlvCodec for BytesMut {
     type Error = io::Error;
+    const TYPE: Type = Type::Unassigned;
 
     fn total_size(&self) -> usize {
         self.len()

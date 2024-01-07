@@ -8,7 +8,13 @@ pub struct InterestSignature {
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Tlv)]
 #[tlv(r#type = Type::InterestSignatureInfo, error = DecodeError)]
-pub struct InterestSignatureInfo;
+pub struct InterestSignatureInfo {
+    pub signature_type: SignatureType,
+    pub key_locator: Option<KeyLocator>,
+    pub signature_nonce: Option<SignatureNonce>,
+    pub signature_time: Option<SignatureTime>,
+    pub signature_seq_num: Option<SignatureSeqNum>,
+}
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Tlv)]
 #[tlv(r#type = Type::InterestSignatureValue, error = DecodeError)]
@@ -35,6 +41,7 @@ impl fmt::Display for InterestSignature {
 
 impl TlvCodec for InterestSignature {
     type Error = DecodeError;
+    const TYPE: Type = Type::InterestSignatureInfo;
 
     fn total_size(&self) -> usize {
         self.info.total_size() + self.value.total_size()

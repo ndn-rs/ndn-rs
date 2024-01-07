@@ -14,6 +14,18 @@ impl Data {
         self.name.to_string()
     }
 
+    pub fn metainfo(&self) -> Option<&MetaInfo> {
+        self.metainfo.as_ref()
+    }
+
+    pub fn content_type(&self) -> Option<ContentType> {
+        self.metainfo.as_ref()?.content_type
+    }
+
+    pub fn signature(&self) -> &DataSignature {
+        &self.data_signature
+    }
+
     pub fn check_name(self, name: impl AsRef<str>) -> Result<Self, DecodeError> {
         let expected_name = name.as_ref();
         let name = self.name();
@@ -106,13 +118,13 @@ impl Data {
     }
 }
 
-impl TryFrom<Generic> for Data {
-    type Error = DecodeError;
+// impl TryFrom<Generic> for Data {
+//     type Error = DecodeError;
 
-    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        Self::from_generic(generic)
-    }
-}
+//     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
+//         Self::from_generic(generic)
+//     }
+// }
 
 impl fmt::Display for Data {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

@@ -6,10 +6,11 @@ macro_rules! utf8_string {
 
         impl $crate::Tlv for $name {
             type Error = $crate::DecodeError;
+            const TYPE: $crate::Type = $tlv;
 
-            fn r#type(&self) -> $crate::Type {
-                $tlv
-            }
+            // fn r#type(&self) -> $crate::Type {
+            //     $tlv
+            // }
 
             fn length(&self) -> usize {
                 self.0.len()

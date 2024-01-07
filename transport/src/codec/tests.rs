@@ -1,3 +1,4 @@
+use tlv::Tlv;
 use tokio_util::codec::Decoder;
 
 use super::*;
@@ -20,13 +21,35 @@ const P1: &[u8] = &[
 
 #[test]
 fn decode() {
+    use tlv::TlvCodec;
+    let mut src = BytesMut::from(P1);
+    let data = tlv::Data::decode(&mut src).unwrap();
+    assert!(src.is_empty());
+    assert_eq!(
+        data.name(),
+        "/localhost/nfd/status/general/v=1701934166024/seg=0"
+    );
+    assert!(data.metainfo.is_some());
+    assert!(data.content.is_some());
+}
+
+#[test]
+fn decode_value() {
     let mut src = P1.iter().collect();
     let mut codec = TlvCodec::new();
     let packet = codec.decode(&mut src).unwrap().unwrap();
     println!("{packet:?}");
+    let tlv::Generic {
+        r#type,
+        length,
+        mut value,
+    } = packet;
+    let length = length.to_usize();
     assert!(src.is_empty());
-    assert_eq!(packet.r#type, tlv::Type::Data);
-    let data = tlv::Data::try_from(packet).unwrap();
+    assert_eq!(r#type, tlv::Type::Data);
+    assert_eq!(length, 283);
+    let data = tlv::Data::decode_value(r#type, length, &mut value).unwrap();
+    // let data = tlv::Data::try_from(packet).unwrap();
     assert_eq!(
         data.name(),
         "/localhost/nfd/status/general/v=1701934166024/seg=0"

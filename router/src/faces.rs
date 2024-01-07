@@ -22,8 +22,8 @@ pub struct Face {
 
 slotmap::new_key_type! { struct FaceKey; }
 
-impl From<&face::FaceId> for FaceKey {
-    fn from(face: &face::FaceId) -> Self {
+impl From<face::FaceId> for FaceKey {
+    fn from(face: face::FaceId) -> Self {
         let value = face.to_u64();
         KeyData::from_ffi(value).into()
     }
@@ -51,11 +51,11 @@ impl FaceManegement {
         }
     }
 
-    pub async fn send_item(&self, face: &face::FaceId, packet: impl tlv::Tlv) -> io::Result<()> {
-        self.get_face_mut(face).await?.send_item(packet).await
+    pub async fn send_item(&self, face: face::FaceId, item: impl tlv::Tlv) -> io::Result<()> {
+        self.get_face_mut(face).await?.send_item(item).await
     }
 
-    pub async fn recv_item(&self, face: &face::FaceId) -> io::Result<tlv::Generic> {
+    pub async fn recv_item(&self, face: face::FaceId) -> io::Result<tlv::Generic> {
         self.get_face_mut(face)
             .await?
             .recv_item()
@@ -64,15 +64,15 @@ impl FaceManegement {
             .unwrap()
     }
 
-    #[tracing::instrument]
-    pub async fn send(&self, face: &face::FaceId, data: Bytes) -> io::Result<()> {
-        self.get_face(face).await?.send(data).await
-    }
+    // #[tracing::instrument]
+    // pub async fn send(&self, face: &face::FaceId, data: Bytes) -> io::Result<()> {
+    //     self.get_face(face).await?.send(data).await
+    // }
 
-    #[tracing::instrument]
-    pub async fn recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
-        self.get_face(face).await?.recv().await
-    }
+    // #[tracing::instrument]
+    // pub async fn recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
+    //     self.get_face(face).await?.recv().await
+    // }
 
     pub async fn get_faces(&self) -> Vec<face::FaceId> {
         self.faces
@@ -80,12 +80,11 @@ impl FaceManegement {
             .await
             .values()
             .map(|face| face.face_id())
-            .cloned()
             .collect()
     }
 
     #[tracing::instrument]
-    pub async fn get_face(&self, face: &face::FaceId) -> io::Result<RwLockReadGuard<'_, Face>> {
+    pub async fn get_face(&self, face: face::FaceId) -> io::Result<RwLockReadGuard<'_, Face>> {
         let key = face.into();
         let faces = self.faces.read().await;
         RwLockReadGuard::try_map(faces, |faces| faces.get(key))
@@ -95,7 +94,7 @@ impl FaceManegement {
     #[tracing::instrument]
     pub async fn get_face_mut(
         &self,
-        face: &face::FaceId,
+        face: face::FaceId,
     ) -> io::Result<RwLockMappedWriteGuard<'_, Face>> {
         let key = face.into();
         let faces = self.faces.write().await;
@@ -162,8 +161,8 @@ impl Face {
         Ok(())
     }
 
-    pub fn face_id(&self) -> &face::FaceId {
-        &self.face_id
+    pub fn face_id(&self) -> face::FaceId {
+        self.face_id
     }
 
     pub fn update_face_id(self, face_id: face::FaceId) -> Self {
@@ -182,8 +181,8 @@ impl Face {
         self.persistency
     }
 
-    pub fn mtu(&self) -> &face::Mtu {
-        &self.mtu
+    pub fn mtu(&self) -> face::Mtu {
+        self.mtu
     }
 
     #[tracing::instrument(skip_all)]
@@ -200,23 +199,23 @@ impl Face {
         })
     }
 
-    pub(crate) async fn send(&self, bytes: Bytes) -> io::Result<()> {
-        self.transport.send(bytes).await
-    }
+    // pub(crate) async fn send(&self, bytes: Bytes) -> io::Result<()> {
+    //     self.transport.send(bytes).await
+    // }
 
-    pub(crate) async fn recv(&self) -> io::Result<Bytes> {
-        let bytes: BytesMut = BytesMut::with_capacity(self.mtu.to_usize());
-        self.transport.recv(bytes).await
-    }
+    // pub(crate) async fn recv(&self) -> io::Result<Bytes> {
+    //     let bytes: BytesMut = BytesMut::with_capacity(self.mtu.to_usize());
+    //     self.transport.recv(bytes).await
+    // }
 
     pub fn to_face_status(&self) -> face::FaceStatus {
-        let face_id = self.face_id.clone();
+        let face_id = self.face_id;
         let uri = self.uri.clone();
         let local_uri = self.local_uri.clone();
         let expiration_period = None;
         let face_scope = face::FaceScope::NonLocal;
         let face_persistency = self.persistency;
-        let mtu = Some(self.mtu.clone());
+        let mtu = Some(self.mtu);
 
         face::FaceStatus {
             face_id,

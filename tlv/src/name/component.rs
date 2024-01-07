@@ -156,6 +156,7 @@ impl fmt::Display for NameComponent {
 
 impl Tlv for NameComponent {
     type Error = DecodeError;
+    const TYPE: Type = Type::Unassigned;
 
     fn r#type(&self) -> Type {
         match self {

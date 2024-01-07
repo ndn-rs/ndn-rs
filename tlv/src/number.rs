@@ -48,6 +48,7 @@ impl NonNegativeNumber {
 
 impl TlvCodec for NonNegativeNumber {
     type Error = io::Error;
+    const TYPE: Type = Type::Unassigned;
 
     fn total_size(&self) -> usize {
         if self.0 <= u8::MAX as u64 {
@@ -176,15 +177,15 @@ macro_rules! non_negative_number {
 #[macro_export]
 macro_rules! non_negative_number_impl {
     ($name: ident => $tlv: expr) => {
-        #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $name($crate::NonNegativeNumber);
 
         impl $name {
-            pub fn to_u64(&self) -> u64 {
+            pub fn to_u64(self) -> u64 {
                 self.0.to_u64()
             }
 
-            pub fn to_usize(&self) -> usize {
+            pub fn to_usize(self) -> usize {
                 self.0.to_u64() as usize
             }
         }
@@ -207,10 +208,11 @@ macro_rules! non_negative_number_impl {
 
         impl $crate::Tlv for $name {
             type Error = $crate::DecodeError;
+            const TYPE: $crate::Type = $tlv;
 
-            fn r#type(&self) -> $crate::Type {
-                $tlv
-            }
+            // fn r#type(&self) -> $crate::Type {
+            //     $tlv
+            // }
 
             fn length(&self) -> usize {
                 self.0.len()

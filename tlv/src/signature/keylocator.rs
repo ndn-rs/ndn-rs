@@ -7,6 +7,9 @@ mod keydigest;
 #[derive(
     Clone,
     Debug,
+    PartialEq,
+    Eq,
+    Hash,
     //  Tlv
 )]
 // #[tlv(r#type = Type::KeyLocator, error = DecodeError)]
@@ -17,10 +20,7 @@ pub enum KeyLocator {
 
 impl Tlv for KeyLocator {
     type Error = DecodeError;
-
-    fn r#type(&self) -> Type {
-        Type::KeyLocator
-    }
+    const TYPE: Type = Type::KeyLocator;
 
     fn length(&self) -> usize {
         match self {

@@ -43,10 +43,11 @@ impl TryFrom<u8> for FacePersistency {
 
 impl tlv::Tlv for FacePersistency {
     type Error = tlv::DecodeError;
+    const TYPE: tlv::Type = tlv::Type::FacePersistency;
 
-    fn r#type(&self) -> tlv::Type {
-        tlv::Type::FacePersistency
-    }
+    // fn r#type(&self) -> tlv::Type {
+    //     tlv::Type::FacePersistency
+    // }
 
     fn length(&self) -> usize {
         1

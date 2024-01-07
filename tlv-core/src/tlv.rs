@@ -2,9 +2,12 @@ use super::*;
 
 pub trait Tlv: fmt::Debug + Sized {
     type Error: From<io::Error> + Into<io::Error> + StdError + Send + Sync;
+    const TYPE: Type;
 
     /// Report this TLV-TYPE as `Type`
-    fn r#type(&self) -> Type;
+    fn r#type(&self) -> Type {
+        Self::TYPE
+    }
 
     /// Report TLV-LENGTH as usize
     fn length(&self) -> usize;
@@ -55,6 +58,7 @@ where
     T: Tlv,
 {
     type Error = <T as Tlv>::Error;
+    const TYPE: Type = T::TYPE;
 
     fn total_size(&self) -> usize {
         self.size()

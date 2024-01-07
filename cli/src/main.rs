@@ -69,8 +69,8 @@ impl Command {
             .must_be_fresh()
             .can_be_prefix();
         println!("{ping}");
-        router.send_item(&face, ping).await?;
-        let generic = router.recv_item(&face).await?;
+        router.send_item(face, ping).await?;
+        let generic = router.recv_item(face).await?;
 
         let data = tlv::Data::from_generic(generic).expect("Should be valid data packet");
         println!("GOT PACKET\n{data:#}");

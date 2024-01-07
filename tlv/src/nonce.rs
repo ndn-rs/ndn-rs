@@ -26,10 +26,11 @@ impl Nonce {
 
 impl Tlv for Nonce {
     type Error = DecodeError;
+    const TYPE: Type = Type::Nonce;
 
-    fn r#type(&self) -> Type {
-        Type::Nonce
-    }
+    // fn r#type(&self) -> Type {
+    //     Type::Nonce
+    // }
 
     fn length(&self) -> usize {
         self.octets.len()
