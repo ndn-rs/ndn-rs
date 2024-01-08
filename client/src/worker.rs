@@ -15,11 +15,12 @@ impl ClientInternal {
 
     pub(super) async fn run(self) {
         tracing::trace!("Entering ClientInternal loop");
+        time::sleep(time::Duration::from_secs(1)).await;
         loop {
             match self.next_item().await {
                 Ok(generic) => {
                     tracing::trace!(?generic, "Received next_item");
-                    let data = match tlv::Data::from_generic(generic) {
+                    let data = match tlv::Data::decode_from_generic(generic) {
                         Ok(data) => data,
                         Err(err) => {
                             tracing::warn!(%err, "Dropping");
@@ -64,7 +65,7 @@ impl ClientInternal {
 
     async fn _next_data_item(&self) -> io::Result<tlv::Data> {
         let generic = self.next_item().await?;
-        tlv::Data::from_generic(generic)
+        tlv::Data::decode_from_generic(generic)
             .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))
     }
 }

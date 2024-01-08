@@ -12,7 +12,7 @@ impl Client {
         Ok(Self { face })
     }
 
-    pub async fn get<T>(&mut self, name: impl AsRef<str>) -> io::Result<T>
+    pub async fn get<T>(&mut self, name: impl AsRef<str>) -> Result<T, T::Error>
     where
         T: tlv::TlvCodec,
     {
@@ -20,13 +20,7 @@ impl Client {
         // tracing::trace!(name = interest.name(), "About to send interest");
         self.face.send_item(interest).await?;
         // tracing::trace!("Interest sent");
-        let content = self
-            .next_data_item()
-            .await?
-            .into_content()
-            .unwrap_or_default();
-        let mut content = BytesMut::from(content.as_ref());
-        <T as tlv::TlvCodec>::decode(&mut content).map_err(Into::into)
+        self.next_data_item().await?.into_tlvcodec::<T>()
     }
 
     async fn next_item(&mut self) -> io::Result<tlv::Generic> {
@@ -42,7 +36,7 @@ impl Client {
 
     async fn next_data_item(&mut self) -> io::Result<tlv::Data> {
         let generic = self.next_item().await?;
-        tlv::Data::from_generic(generic)
+        tlv::Data::decode_from_generic(generic)
             .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))
     }
 }

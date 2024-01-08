@@ -65,7 +65,7 @@ where
         let mut items = vec![];
         while !src.is_empty() {
             let item = T::decode(src)?;
-            items.push(dbg!(item));
+            items.push(item);
         }
         Ok(items)
     }
@@ -92,29 +92,6 @@ impl TlvCodec for u8 {
         }
     }
 }
-
-// impl TlvCodec for [u8; 4] {
-//     type Error = io::Error;
-
-//     fn total_size(&self) -> usize {
-//         self.len()
-//     }
-
-//     fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
-//         dst.put_slice(self);
-//         Ok(())
-//     }
-
-//     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
-//         let mut octets = [0; 4];
-//         if src.len() == octets.len() {
-//             src.copy_to_slice(&mut octets);
-//             Ok(octets)
-//         } else {
-//             Err(io::Error::other("Must have exactly four bytes"))
-//         }
-//     }
-// }
 
 impl<const N: usize> TlvCodec for [u8; N] {
     type Error = io::Error;

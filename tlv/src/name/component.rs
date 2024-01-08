@@ -115,27 +115,6 @@ impl From<OtherTypeComponent> for NameComponent {
     }
 }
 
-impl TryFrom<Generic> for NameComponent {
-    type Error = DecodeError;
-
-    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        let component = match generic.r#type {
-            Type::ImplicitSha256DigestComponent => {
-                ImplicitSha256DigestComponent::try_from(generic)?.into()
-            }
-            Type::ParametersSha256DigestComponent => {
-                ParametersSha256DigestComponent::try_from(generic)?.into()
-            }
-            Type::GenericNameComponent => GenericNameComponent::try_from(generic)?.into(),
-            Type::KeywordNameComponent => KeywordNameComponent::try_from(generic)?.into(),
-            Type::SegmentNameComponent => SegmentNameComponent::try_from(generic)?.into(),
-            Type::VersionNameComponent => VersionNameComponent::try_from(generic)?.into(),
-            other => todo!("Type {other} unimplemented"),
-        };
-        Ok(component)
-    }
-}
-
 impl fmt::Display for NameComponent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let component = match self {

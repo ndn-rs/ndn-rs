@@ -2,11 +2,12 @@ use std::io;
 use std::marker::PhantomData;
 use std::sync::Arc;
 
-use bytes::BytesMut;
+// use bytes::BytesMut;
 use hashbrown::HashMap;
 use tokio::sync::oneshot;
 use tokio::sync::Mutex;
 use tokio::task;
+use tokio::time;
 
 use ndn_face as face;
 use ndn_router as router;
@@ -55,7 +56,9 @@ impl Client {
         };
 
         tracing::trace!(name = interest.name(), "About to send interest");
-        self.write.lock().await.send_item(interest.clone()).await?;
+        let mut write = self.write.lock().await;
+        tracing::trace!("Got write stream");
+        write.send_item(interest.clone()).await?;
         tracing::trace!("Interest sent");
 
         self.pending
@@ -93,11 +96,11 @@ where
     T: tlv::TlvCodec,
     <T as tlv::TlvCodec>::Error: Into<io::Error>,
 {
-    pub async fn data(self) -> io::Result<T> {
-        let data = self.recv_item().await?;
-        let content = data.into_content().unwrap_or_default();
-        let mut content = BytesMut::from(content.as_ref());
-        <T as tlv::TlvCodec>::decode(&mut content).map_err(Into::into)
+    pub async fn data(self) -> Result<T, T::Error> {
+        self.recv_item().await?.into_tlvcodec()
+        // let content = data.into_content().unwrap_or_default();
+        // let mut content = BytesMut::from(content.as_ref());
+        // <T as tlv::TlvCodec>::decode(&mut content).map_err(Into::into)
     }
 
     pub fn interest(&self) -> &tlv::Interest {

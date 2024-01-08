@@ -51,27 +51,6 @@ impl Tlv for KeyLocator {
     }
 }
 
-impl TryFrom<Generic> for KeyLocator {
-    type Error = DecodeError;
-
-    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        let _length = generic.length();
-        let mut bytes = generic
-            .check_type(Type::KeyLocator)?
-            // .self_check_length()?
-            .value;
-        let generic = Generic::from_bytes_mut(&mut bytes)
-            .ok_or_else(|| DecodeError::other("KeyLocator no items"))?;
-        match generic.r#type() {
-            Type::Name => Name::try_from(generic).map(Self::Name),
-            Type::KeyDigest => KeyDigest::try_from(generic).map(Self::Digest),
-            other => Err(DecodeError::other(format!(
-                "Invalid embedded KeyLocator element {other}"
-            ))),
-        }
-    }
-}
-
 impl fmt::Display for KeyLocator {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         format_args!(

@@ -30,23 +30,6 @@ impl Name {
         let components = vec![digest.into()];
         Self { components }
     }
-
-    pub fn from_generic(generic: Generic) -> Result<Self, DecodeError> {
-        let components = generic
-            .check_type(Type::Name)?
-            .map(NameComponent::try_from)
-            .inspect(|component| tracing::trace!(?component, "Name: decoded"))
-            .collect::<Result<Vec<_>, _>>()?;
-        Ok(Self { components })
-    }
-}
-
-impl TryFrom<Generic> for Name {
-    type Error = DecodeError;
-
-    fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-        Self::from_generic(generic)
-    }
 }
 
 impl str::FromStr for Name {

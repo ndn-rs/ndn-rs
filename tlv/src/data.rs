@@ -47,84 +47,29 @@ impl Data {
         })
     }
 
-    pub fn from_generic(generic: Generic) -> Result<Self, DecodeError> {
-        let mut generic = generic.check_type(Type::Data)?;
-        let name = generic
-            .next()
-            .ok_or_else(|| DecodeError::other("Data packet must have Name as first element"))?;
-
-        let name = Name::from_generic(name)?;
-        tracing::trace!(%name, "Data: decoded name");
-
-        let mut metainfo: Option<MetaInfo> = None;
-        let mut content: Option<Content> = None;
-        let mut signature_info: Option<SignatureInfo> = None;
-        let mut signature_value: Option<SignatureValue> = None;
-
-        for item in generic {
-            match item.r#type() {
-                Type::MetaInfo => {
-                    if metainfo.is_none() {
-                        metainfo = MetaInfo::try_from(item)
-                            .inspect(|metainfo| tracing::trace!(%metainfo, "Data: decoded"))
-                            .map(Some)?;
-                    } else {
-                        Err(DecodeError::other("Multiple MetaInfio"))?
-                    }
-                }
-                Type::Content => {
-                    if content.is_none() {
-                        content = Content::try_from(item)
-                            .inspect(|content| tracing::trace!(%content, "Data: decoded"))
-                            .map(Some)?;
-                    } else {
-                        Err(DecodeError::other("Multiple Content"))?
-                    }
-                }
-                Type::SignatureInfo => {
-                    if signature_info.is_none() {
-                        signature_info = SignatureInfo::try_from(item)
-                            .inspect(|info| tracing::trace!(%info, "Data: decoded"))
-                            .map(Some)?;
-                    } else {
-                        Err(DecodeError::other("Multiple SignatureInfo"))?
-                    }
-                }
-                Type::SignatureValue => {
-                    if signature_value.is_none() {
-                        signature_value = SignatureValue::try_from(item)
-                            .inspect(|value| tracing::trace!(%value, "Data: decoded"))
-                            .map(Some)?;
-                    } else {
-                        Err(DecodeError::other("Multiple SignatureValue"))?
-                    }
-                }
-                other => tracing::warn!(%other, "Data: skip"),
-            }
-        }
-
-        let data_signature = (signature_info, signature_value).try_into()?;
-
-        Ok(Self {
-            name,
-            metainfo,
-            content,
-            data_signature,
-        })
+    pub fn decode_from_generic(generic: Generic) -> Result<Self, DecodeError> {
+        let Generic {
+            r#type,
+            length,
+            mut value,
+        } = generic.check_type(Type::Data)?;
+        let length = length.to_usize();
+        Self::decode_value(r#type, length, &mut value)
     }
 
     pub fn into_content(self) -> Option<Bytes> {
         self.content.map(|content| content.0)
     }
+
+    pub fn into_tlvcodec<T>(self) -> Result<T, T::Error>
+    where
+        T: TlvCodec,
+    {
+        let content = self.into_content().unwrap_or_default();
+        let mut content = BytesMut::from(content.as_ref());
+        <T as TlvCodec>::decode(&mut content)
+    }
 }
-
-// impl TryFrom<Generic> for Data {
-//     type Error = DecodeError;
-
-//     fn try_from(generic: Generic) -> Result<Self, Self::Error> {
-//         Self::from_generic(generic)
-//     }
-// }
 
 impl fmt::Display for Data {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
