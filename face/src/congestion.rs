@@ -9,3 +9,9 @@ tlv::non_negative_number!(BaseCongestionMarkingInterval => tlv::Type::BaseConges
 // if the face does not support retrieving the send queue capacity.
 // The value of this attribute is the default congestion threshold in bytes.
 tlv::non_negative_number!(DefaultCongestionThreshold => tlv::Type::DefaultCongestionThreshold);
+
+impl BaseCongestionMarkingInterval {
+    pub fn to_std_duration(&self) -> tokio::time::Duration {
+        tokio::time::Duration::from_nanos(self.to_u64())
+    }
+}

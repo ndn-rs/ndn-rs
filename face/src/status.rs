@@ -26,14 +26,34 @@ pub struct FaceStatus {
 
 impl FaceStatus {
     pub const NAME: &'static str = "/localhost/nfd/faces/list";
+
+    fn congestion(&self) -> Option<(&BaseCongestionMarkingInterval, &DefaultCongestionThreshold)> {
+        self.base_congestion_marking_interval
+            .as_ref()
+            .zip(self.default_congestion_threshold.as_ref())
+    }
 }
 
 impl fmt::Display for FaceStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} {} {}", self.face_id, self.uri, self.local_uri)?;
+
+        if let Some(expiration_period) = self.expiration_period {
+            write!(f, "{expiration_period:?}")?;
+        }
+
         if let Some(mtu) = self.mtu {
             write!(f, " {}", mtu)?;
         }
+
+        if let Some((bcmi, dct)) = self.congestion() {
+            let bcmi = bcmi.to_std_duration();
+            write!(
+                f,
+                " congestion=[base-marking-interval={bcmi:?} default-threshold={dct:#}]",
+            )?;
+        }
+
         write!(
             f,
             " counters=[in=[{:#}i {:#}d {:#}n {:#}B] out=[{:#}i {:#}d {:#}n {:#}B]]",
@@ -46,9 +66,13 @@ impl fmt::Display for FaceStatus {
             self.n_out_nacks,
             self.n_out_bytes,
         )?;
-        write!(f, " {:#}", self.link_type)?;
-        write!(f, " {:#}", self.face_scope)?;
-        write!(f, " {}", self.face_persistency)?;
+        write!(
+            f,
+            " {:#} {:#} {}",
+            self.link_type, self.face_scope, self.face_persistency
+        )?;
+
+        write!(f, "{}", self.flags)?;
         Ok(())
     }
 }
