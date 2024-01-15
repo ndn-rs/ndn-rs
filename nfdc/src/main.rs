@@ -27,9 +27,16 @@ struct Cli {
 #[derive(Debug, Subcommand)]
 enum Command {
     #[command(subcommand)]
+    Channel(Channel),
+    #[command(subcommand)]
     Face(Face),
     General,
     Router,
+}
+
+#[derive(Debug, Subcommand)]
+enum Channel {
+    List,
 }
 
 #[derive(Debug, Subcommand)]
@@ -40,6 +47,7 @@ enum Face {
 impl Command {
     async fn execute(self, client: client::Client) -> anyhow::Result<()> {
         match self {
+            Self::Channel(channel) => channel.execute(client).await,
             Self::Face(face) => face.execute(client).await,
             Self::General => self.general(client).await,
             Self::Router => self.router().await,
@@ -80,6 +88,21 @@ impl Command {
         println!("Start:   {}", status.start_timestamp.to_local_datetime());
         println!("Current: {}", status.current_timestamp.to_local_datetime());
 
+        Ok(())
+    }
+}
+
+impl Channel {
+    async fn execute(&self, mut client: client::Client) -> anyhow::Result<()> {
+        match self {
+            Self::List => {
+                client
+                    .get::<Vec<mgmt::ChannelStatus>>(mgmt::ChannelStatus::NAME)
+                    .await?
+                    .into_iter()
+                    .for_each(|status| println!("{status:#}"));
+            }
+        }
         Ok(())
     }
 }

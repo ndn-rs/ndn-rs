@@ -1,5 +1,9 @@
 use super::*;
 
+pub use channels::ChannelStatus;
+
+mod channels;
+
 /// NfdVersion: NFD version; this is usually the same as the output of nfd --version, but the forwarder MAY hide its version and return an empty string
 /// StartTimestamp: timestamp (milliseconds since UNIX epoch) when the forwarder started
 /// CurrentTimestamp: timestamp (milliseconds since UNIX epoch) of current time

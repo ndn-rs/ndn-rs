@@ -9,6 +9,7 @@ pub use capacity::Capacity;
 pub use control::ControlParameters;
 pub use cost::Cost;
 pub use count::Count;
+pub use nfd::ChannelStatus;
 pub use nfd::GeneralStatus;
 pub use origin::Origin;
 pub use response::ControlResponse;
