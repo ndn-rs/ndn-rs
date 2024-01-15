@@ -46,7 +46,7 @@ impl Command {
     }
 
     async fn ping(&self) -> anyhow::Result<()> {
-        let client = client::Client::new("tcp4://localhost:6363").await?;
+        let client = client::concurrent::Client::new("tcp4://localhost:6363").await?;
         let status = client
             .express_interest::<mgmt::GeneralStatus>("/localhost/nfd/status/general")
             .await?
