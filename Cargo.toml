@@ -1,12 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
-    "cli",
     "client",
     "face",
     "lpv2",
     "management",
     "ndn",
+    "nfdc",
     "packet",
     "router",
     "tlv",

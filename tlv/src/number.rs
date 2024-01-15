@@ -6,7 +6,7 @@ use bytes::BufMut;
 use super::*;
 
 #[allow(clippy::len_without_is_empty)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct NonNegativeNumber(pub u64);
 
 impl NonNegativeNumber {
@@ -144,12 +144,23 @@ impl fmt::Display for NonNegativeNumber {
 
 #[macro_export]
 macro_rules! non_negative_number {
-    ($name: ident => $tlv: expr; skip_display) => {
-        $crate::non_negative_number_impl!($name => $tlv);
+    ($name: ident => $tlv: expr; display_as_str) => {
+        $crate::non_negative_number!($name => $tlv; skip_display);
+
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                use tlv::Tlv;
+                if f.alternate() {
+                    self.as_str().fmt(f)
+                } else {
+                    format_args!("{}={}", Self::TYPE, self.as_str()).fmt(f)
+                }
+            }
+        }
     };
 
     ($name: ident => $tlv: expr; prefix => $prefix: literal) => {
-        $crate::non_negative_number_impl!($name => $tlv);
+        $crate::non_negative_number!($name => $tlv; skip_display);
 
         impl $name {
             pub const PREFIX: &'static str = $prefix;
@@ -157,26 +168,31 @@ macro_rules! non_negative_number {
 
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                format_args!("{}={}", Self::PREFIX, self.0).fmt(f)
+                if f.alternate() {
+                    format_args!("{}", self.0).fmt(f)
+                } else {
+                    format_args!("{}={}", Self::PREFIX, self.0).fmt(f)
+                }
             }
         }
     };
 
     ($name: ident => $tlv: expr) => {
-        $crate::non_negative_number_impl!($name => $tlv);
+        $crate::non_negative_number!($name => $tlv; skip_display);
 
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 use $crate::Tlv;
-                format_args!("{}={}", self.r#type(), self.0).fmt(f)
+                if f.alternate() {
+                    format_args!("{}", self.0).fmt(f)
+                } else {
+                    format_args!("{}={}", self.r#type(), self.0).fmt(f)
+                }
             }
         }
     };
-}
 
-#[macro_export]
-macro_rules! non_negative_number_impl {
-    ($name: ident => $tlv: expr) => {
+    ($name: ident => $tlv: expr; skip_display) => {
         #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $name($crate::NonNegativeNumber);
 
@@ -190,29 +206,9 @@ macro_rules! non_negative_number_impl {
             }
         }
 
-        // impl $crate::TlvCodec for $name {
-        //     type Error = <$crate::NonNegativeNumber as $crate::TlvCodec>::Error;
-
-        //     fn total_size(&self) -> usize {
-        //         self.0.total_size()
-        //     }
-
-        //     fn encode(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
-        //         self.0.encode(dst)
-        //     }
-
-        //     fn decode(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {
-        //         $crate::NonNegativeNumber::decode(src).map($name)
-        //     }
-        // }
-
         impl $crate::Tlv for $name {
             type Error = $crate::DecodeError;
             const TYPE: $crate::Type = $tlv;
-
-            // fn r#type(&self) -> $crate::Type {
-            //     $tlv
-            // }
 
             fn length(&self) -> usize {
                 self.0.len()

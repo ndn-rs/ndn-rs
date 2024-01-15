@@ -42,14 +42,13 @@ impl FaceManegement {
     pub(super) async fn create_impl(&self, create: CreateRequest) -> io::Result<CreateResponse> {
         tracing::debug!(?create);
         let persistency = create.face_persistency.unwrap_or_default();
-        let face = Face::new(create.uri, create.local_uri, persistency, create.mtu).await?;
+        let face = Face::new(create.uri, create.local_uri, persistency, create.mtu)
+            .await?
+            .update_congestion(
+                create.base_congestion_marking_interval,
+                create.default_congestion_threshold,
+            );
         tracing::info!(?face, "CREATED");
-
-        face.update_congestion(
-            create.base_congestion_marking_interval,
-            create.default_congestion_threshold,
-        )
-        .await?;
 
         face.update_flags(create.flags_and_mask).await?;
 

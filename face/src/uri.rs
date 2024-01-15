@@ -10,8 +10,8 @@ mod addr;
 
 pub const URI_DELIMITER: &str = "://";
 
-tlv::utf8_string!(Uri => tlv::Type::Uri);
-tlv::utf8_string!(LocalUri => tlv::Type::LocalUri);
+tlv::utf8_string!(Uri => tlv::Type::Uri; prefix => "remote");
+tlv::utf8_string!(LocalUri => tlv::Type::LocalUri; prefix => "local");
 
 impl Uri {
     pub async fn to_addr(&self) -> io::Result<Addr> {

@@ -27,12 +27,12 @@ pub struct GeneralStatus {
     pub n_pit_entries: NPitEntries,
     pub n_measurements_entries: NMeasurementsEntries,
     pub n_cs_entries: NCsEntries,
-    pub n_in_interests: NInInterests,
-    pub n_in_data: NInData,
-    pub n_in_nacks: NInNacks,
-    pub n_out_interests: NOutInterests,
-    pub n_out_data: NOutData,
-    pub n_out_nacks: NOutNacks,
+    pub n_in_interests: face::NInInterests,
+    pub n_in_data: face::NInData,
+    pub n_in_nacks: face::NInNacks,
+    pub n_out_interests: face::NOutInterests,
+    pub n_out_data: face::NOutData,
+    pub n_out_nacks: face::NOutNacks,
     pub n_satisfied_interests: NSatisfiedInterests,
     pub n_unsatisfied_interests: NUnsatisfiedInterests,
 }
@@ -119,11 +119,5 @@ tlv::non_negative_number!(NFibEntries => tlv::Type::NFibEntries); // number of F
 tlv::non_negative_number!(NPitEntries => tlv::Type::NPitEntries); // number of PIT entries
 tlv::non_negative_number!(NMeasurementsEntries => tlv::Type::NMeasurementsEntries); // number of Measurements entries
 tlv::non_negative_number!(NCsEntries => tlv::Type::NCsEntries); // number of CS entries
-tlv::non_negative_number!(NInInterests => tlv::Type::NInInterests); // number of incoming Interest packets processed since the forwarder started
-tlv::non_negative_number!(NInData => tlv::Type::NInData); // number of incoming Data packets processed since the forwarder started
-tlv::non_negative_number!(NInNacks => tlv::Type::NInNacks); // number of incoming Nack packets processed since the forwarder started
-tlv::non_negative_number!(NOutInterests => tlv::Type::NOutInterests); // number of outgoing Interest packets processed since the forwarder started
-tlv::non_negative_number!(NOutData => tlv::Type::NOutData); // number of outgoing Data packets processed since the forwarder started
-tlv::non_negative_number!(NOutNacks => tlv::Type::NOutNacks); // number of outgoing Nack packets processed since the forwarder started
 tlv::non_negative_number!(NSatisfiedInterests => tlv::Type::NSatisfiedInterests); // number of satisfied Interests, incremented when a PIT entry that has been satisfied is being removed
 tlv::non_negative_number!(NUnsatisfiedInterests => tlv::Type::NUnsatisfiedInterests); // number of unsatisfied Interests, incremented when a PIT entry that has not been satisfied is being removed

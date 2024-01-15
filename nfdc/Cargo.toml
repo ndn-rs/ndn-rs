@@ -1,5 +1,5 @@
 [package]
-name = "ndn-cli"
+name = "ndn-nfdc"
 description = "Named Data Network - CLI tool"
 
 version.workspace = true

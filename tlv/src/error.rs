@@ -8,7 +8,7 @@ pub enum DecodeError {
     #[error("Length mismatch: expected {expected}, found {found}")]
     LengthMismatch { expected: usize, found: usize },
 
-    #[error("Invalid (corrupted?) Data")]
+    #[error("Invalid (corrupted?) Data: ({0})")]
     InvalidData(String),
 
     #[error("IO Error: {0}")]

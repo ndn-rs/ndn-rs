@@ -1,16 +1,45 @@
 #[macro_export]
 macro_rules! utf8_string {
     ($name: ident => $tlv: expr) => {
+        $crate::utf8_string!($name => $tlv; skip_display);
+
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                use $crate::Tlv;
+                if f.alternate() {
+                    format_args!("{}", self.0).fmt(f)
+                } else {
+                    format_args!("{}={}", self.r#type(), self.0).fmt(f)
+                }
+            }
+        }
+    };
+
+    ($name: ident => $tlv: expr; prefix => $prefix: literal) => {
+        $crate::utf8_string!($name => $tlv; skip_display);
+
+        impl $name {
+            pub const PREFIX: &'static str = $prefix;
+        }
+
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                if f.alternate() {
+                    format_args!("{}", self.0).fmt(f)
+                } else {
+                    format_args!("{}={}", Self::PREFIX, self.0).fmt(f)
+                }
+            }
+        }
+    };
+
+    ($name: ident => $tlv: expr; skip_display) => {
         #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $name(pub String);
 
         impl $crate::Tlv for $name {
             type Error = $crate::DecodeError;
             const TYPE: $crate::Type = $tlv;
-
-            // fn r#type(&self) -> $crate::Type {
-            //     $tlv
-            // }
 
             fn length(&self) -> usize {
                 self.0.len()
@@ -71,13 +100,6 @@ macro_rules! utf8_string {
                 String::from_utf8(bytes)
                     .map(Self)
                     .map_err(|err| $crate::DecodeError::invalid(err.to_string()))
-            }
-        }
-
-        impl std::fmt::Display for $name {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                use $crate::Tlv;
-                format_args!("{}={}", self.r#type(), self.0).fmt(f)
             }
         }
 

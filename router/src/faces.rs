@@ -17,6 +17,18 @@ pub struct Face {
     local_uri: face::LocalUri,
     mtu: face::Mtu,
     persistency: face::FacePersistency,
+    base_congestion_marking_interval: Option<face::BaseCongestionMarkingInterval>,
+    default_congestion_threshold: Option<face::DefaultCongestionThreshold>,
+    flags: face::Flags,
+    mask: face::Mask,
+    n_in_interests: u64,
+    n_in_data: u64,
+    n_in_nacks: u64,
+    n_out_interests: u64,
+    n_out_data: u64,
+    n_out_nacks: u64,
+    n_in_bytes: u64,
+    n_out_bytes: u64,
     transport: transport::Transport,
 }
 
@@ -63,16 +75,6 @@ impl FaceManegement {
             .transpose()
             .unwrap()
     }
-
-    // #[tracing::instrument]
-    // pub async fn send(&self, face: &face::FaceId, data: Bytes) -> io::Result<()> {
-    //     self.get_face(face).await?.send(data).await
-    // }
-
-    // #[tracing::instrument]
-    // pub async fn recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
-    //     self.get_face(face).await?.recv().await
-    // }
 
     pub async fn get_faces(&self) -> Vec<face::FaceId> {
         self.faces
@@ -132,24 +134,42 @@ impl Face {
         let transport = transport::Transport::new(local, remote).await?;
         let local_uri = transport.local_uri()?;
         let mtu = transport.mtu();
+        let flags = face::Flags::empty();
+        let mask = face::Mask::empty();
+
         Ok(Self {
             face_id,
             uri,
             local_uri,
             mtu,
             persistency,
+            base_congestion_marking_interval: None,
+            default_congestion_threshold: None,
+            flags,
+            mask,
+            n_in_interests: 0,
+            n_in_data: 0,
+            n_in_nacks: 0,
+            n_out_interests: 0,
+            n_out_data: 0,
+            n_out_nacks: 0,
+            n_in_bytes: 0,
+            n_out_bytes: 0,
             transport,
         })
     }
 
     #[tracing::instrument]
-    pub async fn update_congestion(
-        &self,
+    pub fn update_congestion(
+        self,
         base_congestion_marking_interval: Option<face::BaseCongestionMarkingInterval>,
         default_congestion_threshold: Option<face::DefaultCongestionThreshold>,
-    ) -> io::Result<()> {
-        tracing::warn!("Not implemented yet");
-        Ok(())
+    ) -> Self {
+        Self {
+            base_congestion_marking_interval,
+            default_congestion_threshold,
+            ..self
+        }
     }
 
     #[tracing::instrument]
@@ -185,6 +205,10 @@ impl Face {
         self.mtu
     }
 
+    pub fn flags(&self) -> face::Flags {
+        (*self.flags & *face::Flags::all_fields() & *self.mask).into()
+    }
+
     #[tracing::instrument(skip_all)]
     pub async fn send_item(&mut self, item: impl tlv::Tlv) -> io::Result<()> {
         tracing::trace!(r#type = %item.r#type(), "Outgoing item");
@@ -216,6 +240,7 @@ impl Face {
         let face_scope = face::FaceScope::NonLocal;
         let face_persistency = self.persistency;
         let mtu = Some(self.mtu);
+        let link_type = face::LinkType::POINT_TO_POINT;
 
         face::FaceStatus {
             face_id,
@@ -225,6 +250,18 @@ impl Face {
             face_scope,
             face_persistency,
             mtu,
+            link_type,
+            base_congestion_marking_interval: self.base_congestion_marking_interval,
+            default_congestion_threshold: self.default_congestion_threshold,
+            n_in_interests: self.n_in_interests.into(),
+            n_in_data: self.n_in_data.into(),
+            n_in_nacks: self.n_in_nacks.into(),
+            n_out_interests: self.n_out_interests.into(),
+            n_out_data: self.n_out_data.into(),
+            n_out_nacks: self.n_out_nacks.into(),
+            n_in_bytes: self.n_in_bytes.into(),
+            n_out_bytes: self.n_out_bytes.into(),
+            flags: self.flags,
         }
     }
 }

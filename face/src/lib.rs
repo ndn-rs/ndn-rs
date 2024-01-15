@@ -17,6 +17,16 @@ pub use flags::Flags;
 pub use flags::Mask;
 pub use mtu::Mtu;
 pub use persistency::FacePersistency;
+pub use properties::FaceScope;
+pub use properties::LinkType;
+pub use properties::NInBytes;
+pub use properties::NInData;
+pub use properties::NInInterests;
+pub use properties::NInNacks;
+pub use properties::NOutBytes;
+pub use properties::NOutData;
+pub use properties::NOutInterests;
+pub use properties::NOutNacks;
 pub use status::FaceStatus;
 pub use uri::Addr;
 pub use uri::Internal;
@@ -33,14 +43,15 @@ mod faceid;
 mod flags;
 mod mtu;
 mod persistency;
+mod properties;
 mod status;
 mod uri;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum FaceScope {
-    NonLocal = 0,
-    Local = 1,
-}
+// #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+// pub enum FaceScope {
+//     NonLocal = 0,
+//     Local = 1,
+// }
 
 // impl Face {
 //     pub fn from_boxed(local: Box<dyn FaceUri>, remote: Box<dyn FaceUri>) -> Self {

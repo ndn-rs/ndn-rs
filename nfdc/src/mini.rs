@@ -51,19 +51,6 @@ impl Router {
         self.faces.recv_item(face).await
     }
 
-    // pub(crate) async fn _send(
-    //     &self,
-    //     face: &face::FaceId,
-    //     packet: impl tlv::TlvCodec,
-    // ) -> io::Result<()> {
-    //     let data = packet.bytes().unwrap();
-    //     self.faces.send(face, data).await
-    // }
-
-    // pub(crate) async fn _recv(&self, face: &face::FaceId) -> io::Result<Bytes> {
-    //     self.faces.recv(face).await
-    // }
-
     pub(crate) fn info(&self) {
         println!("{:#?}", self.faces);
     }

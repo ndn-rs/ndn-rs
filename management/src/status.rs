@@ -3,6 +3,7 @@ use super::*;
 tlv::non_negative_number!(StatusCode => tlv::Type::StatusCode);
 tlv::utf8_string!(StatusText => tlv::Type::StatusText);
 
+// TODO: Convert these to consts
 impl StatusCode {
     pub fn ok() -> Self {
         200.into()

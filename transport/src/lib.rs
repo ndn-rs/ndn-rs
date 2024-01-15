@@ -66,7 +66,7 @@ impl Transport {
     }
 
     pub fn mtu(&self) -> face::Mtu {
-        face::Mtu::from(8800)
+        face::Mtu::MAX_NDN_PACKET_SIZE
     }
 
     pub async fn send_item(&mut self, item: impl tlv::Tlv) -> io::Result<()> {

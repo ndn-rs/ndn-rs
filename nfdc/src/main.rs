@@ -1,57 +1,56 @@
+use std::io;
+
 // use bytes::Bytes;
 use clap::{Parser, Subcommand};
 use tracing_subscriber::{fmt, EnvFilter};
 
-use ndn::client;
 use ndn::face;
 use ndn::management as mgmt;
 use ndn::router;
 use ndn::tlv;
 
+mod client;
 mod mini;
 
 #[derive(Debug, Parser)]
 struct Cli {
+    /// Use simple client by default
+    #[arg(long, short)]
+    simple: bool,
+    /// RemoteUri
+    #[arg(long, short, default_value = "tcp4://localhost:6363")]
+    remote: face::Uri,
     #[command(subcommand)]
     command: Command,
 }
 
 #[derive(Debug, Subcommand)]
 enum Command {
-    Ping,
+    #[command(subcommand)]
+    Face(Face),
+    General,
     Router,
-    Simple,
+}
+
+#[derive(Debug, Subcommand)]
+enum Face {
+    List,
 }
 
 impl Command {
-    async fn execute(self) -> anyhow::Result<()> {
+    async fn execute(self, client: client::Client) -> anyhow::Result<()> {
         match self {
-            Self::Ping => self.ping().await,
+            Self::Face(face) => face.execute(client).await,
+            Self::General => self.general(client).await,
             Self::Router => self.router().await,
-            Self::Simple => self.simple().await,
         }
     }
 
-    async fn simple(&self) -> anyhow::Result<()> {
-        let mut client = client::simple::Client::new("tcp4://localhost:6363").await?;
+    async fn general(&self, mut client: client::Client) -> anyhow::Result<()> {
         let status = client
-            .get::<mgmt::GeneralStatus>("/localhost/nfd/status/general")
+            .get::<mgmt::GeneralStatus>(mgmt::GeneralStatus::NAME)
             .await?;
 
-        println!("STATUS\n{status:?}");
-        println!("Start:   {}", status.start_timestamp.to_local_datetime());
-        println!("Current: {}", status.current_timestamp.to_local_datetime());
-
-        Ok(())
-    }
-
-    async fn ping(&self) -> anyhow::Result<()> {
-        let client = client::concurrent::Client::new("tcp4://localhost:6363").await?;
-        let status = client
-            .express_interest::<mgmt::GeneralStatus>("/localhost/nfd/status/general")
-            .await?
-            .data()
-            .await?;
         println!("STATUS\n{status:?}");
         println!("Start:   {}", status.start_timestamp.to_local_datetime());
         println!("Current: {}", status.current_timestamp.to_local_datetime());
@@ -84,9 +83,30 @@ impl Command {
         Ok(())
     }
 }
+
+impl Face {
+    async fn execute(&self, mut client: client::Client) -> anyhow::Result<()> {
+        match self {
+            Self::List => {
+                client
+                    .get::<Vec<face::FaceStatus>>(face::FaceStatus::NAME)
+                    .await?
+                    .into_iter()
+                    .for_each(|status| println!("{status}"));
+            }
+        }
+        Ok(())
+    }
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     fmt().with_env_filter(EnvFilter::from_default_env()).init();
     let cli = Cli::parse();
-    cli.command.execute().await
+    let client = if cli.simple {
+        client::Client::simple(cli.remote).await?
+    } else {
+        client::Client::multi(cli.remote).await?
+    };
+    cli.command.execute(client).await
 }

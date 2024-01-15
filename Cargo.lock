@@ -464,19 +464,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ndn-cli"
-version = "0.0.3-alpha.3"
-dependencies = [
- "anyhow",
- "bytes",
- "clap",
- "ndn",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "ndn-client"
 version = "0.0.3-alpha.3"
 dependencies = [
@@ -518,6 +505,19 @@ dependencies = [
  "ndn-face",
  "ndn-tlv",
  "ndn-varnumber",
+]
+
+[[package]]
+name = "ndn-nfdc"
+version = "0.0.3-alpha.3"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "clap",
+ "ndn",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
