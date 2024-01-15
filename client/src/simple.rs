@@ -23,19 +23,17 @@ impl Client {
         self.next_data_item().await?.into_tlvcodec::<T>()
     }
 
-    async fn next_item(&mut self) -> io::Result<tlv::Generic> {
-        // tracing::trace!("Waiting for next item");
+    async fn next_generic_item(&mut self) -> io::Result<tlv::Generic> {
         loop {
-            let Some(item) = self.face.recv_item().await.transpose() else {
-                // tracing::trace!("Empty recv_item()");
-                continue;
-            };
-            break item;
+            match self.face.recv_item().await.transpose() {
+                Some(item) => break item,
+                None => continue,
+            }
         }
     }
 
     async fn next_data_item(&mut self) -> io::Result<tlv::Data> {
-        let generic = self.next_item().await?;
+        let generic = self.next_generic_item().await?;
         tlv::Data::decode_from_generic(generic)
             .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))
     }
