@@ -101,7 +101,7 @@ impl Generic {
         T: generic_array::ArrayLength,
     {
         GenericArray::try_from_slice(&self.value)
-            .map(|array| array.clone())
+            .cloned()
             .map_err(|_| DecodeError::length_mismatch(T::to_usize(), self.value.len()))
     }
 
