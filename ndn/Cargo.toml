@@ -15,7 +15,6 @@ ndn-client.workspace = true
 ndn-face.workspace = true
 ndn-lpv2.workspace = true
 ndn-management.workspace = true
-ndn-packet.workspace = true
 ndn-router.workspace = true
 ndn-tlv.workspace = true
 ndn-transport.workspace = true

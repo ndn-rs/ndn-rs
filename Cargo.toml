@@ -7,7 +7,6 @@ members = [
     "management",
     "ndn",
     "nfdc",
-    "packet",
     "router",
     "tlv",
     "tlv-core",
@@ -51,7 +50,6 @@ ndn-client = { path = "./client" }
 ndn-face = { path = "./face" }
 ndn-lpv2 = { path = "./lpv2" }
 ndn-management = { path = "./management" }
-ndn-packet = { path = "./packet" }
 ndn-router = { path = "./router" }
 ndn-tlv = { path = "./tlv" }
 ndn-tlv-core = { path = "./tlv-core" }

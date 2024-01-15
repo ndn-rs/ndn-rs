@@ -456,7 +456,6 @@ dependencies = [
  "ndn-face",
  "ndn-lpv2",
  "ndn-management",
- "ndn-packet",
  "ndn-router",
  "ndn-tlv",
  "ndn-transport",
@@ -482,7 +481,6 @@ name = "ndn-face"
 version = "0.0.3-alpha.3"
 dependencies = [
  "bytes",
- "ndn-packet",
  "ndn-tlv",
  "ndn-varnumber",
  "thiserror",
@@ -518,15 +516,6 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
-]
-
-[[package]]
-name = "ndn-packet"
-version = "0.0.3-alpha.3"
-dependencies = [
- "bytes",
- "ndn-tlv",
- "ndn-varnumber",
 ]
 
 [[package]]
@@ -586,7 +575,6 @@ dependencies = [
  "bytes",
  "futures",
  "ndn-face",
- "ndn-packet",
  "ndn-tlv",
  "tokio",
  "tokio-util",
