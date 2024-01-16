@@ -159,7 +159,7 @@ impl From<CreateResponse> for mgmt::ControlResponse {
         }
         body.push(tlv::Generic::from_tlv(flags).unwrap());
 
-        let status_code = mgmt::StatusCode::ok();
+        let status_code = mgmt::StatusCode::OK;
         let status_text = mgmt::StatusText::from("CREATED");
 
         Self {

@@ -1,39 +1,20 @@
+use tlv::NonNegativeNumber;
+
 use super::*;
 
 tlv::non_negative_number!(StatusCode => tlv::Type::StatusCode);
 tlv::utf8_string!(StatusText => tlv::Type::StatusText);
 
-// TODO: Convert these to consts
 impl StatusCode {
-    pub fn ok() -> Self {
-        200.into()
-    }
+    pub const OK: Self = Self(NonNegativeNumber(200));
+    pub const INCORRECT_CONTROL_PARAMETERS: Self = Self(NonNegativeNumber(400));
+    pub const NOT_AUTHORIZED: Self = Self(NonNegativeNumber(403));
+    pub const NOT_FOUND: Self = Self(NonNegativeNumber(404));
+    pub const NOT_SUPPORTED: Self = Self(NonNegativeNumber(501));
+    pub const SERVICE_UNAVAILABLE: Self = Self(NonNegativeNumber(503));
+    pub const SOCKET_ERROR: Self = Self(NonNegativeNumber(504));
 
-    pub fn incorrect_control_parameters() -> Self {
-        400.into()
-    }
-
-    pub fn not_authorized() -> Self {
-        403.into()
-    }
-
-    pub fn not_found() -> Self {
-        404.into()
-    }
-
-    pub fn not_supported() -> Self {
-        501.into()
-    }
-
-    pub fn service_not_available() -> Self {
-        503.into()
-    }
-
-    pub fn socket_error() -> Self {
-        504.into()
-    }
-
-    pub fn is_ok(&self) -> bool {
-        self.0.to_u64() == 200
+    pub fn is_ok(self) -> bool {
+        self == Self::OK
     }
 }
