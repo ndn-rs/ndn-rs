@@ -112,7 +112,7 @@ impl Face {
         match self {
             Self::List => {
                 client
-                    .get::<Vec<face::FaceStatus>>(face::FaceStatus::NAME)
+                    .get::<Vec<mgmt::FaceStatus>>(mgmt::FaceStatus::NAME)
                     .await?
                     .into_iter()
                     .for_each(|status| println!("{status}"));
