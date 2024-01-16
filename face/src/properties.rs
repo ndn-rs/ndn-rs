@@ -26,16 +26,17 @@ impl FaceScope {
 // ad-hoc(=2), communication over a wireless ad hoc network
 tlv::non_negative_number!(LinkType => tlv::Type::LinkType; skip_display);
 
+#[allow(non_upper_case_globals)]
 impl LinkType {
-    pub const POINT_TO_POINT: Self = Self(tlv::NonNegativeNumber(0));
-    pub const MULTI_ACCESS: Self = Self(tlv::NonNegativeNumber(1));
-    pub const AD_HOC: Self = Self(tlv::NonNegativeNumber(2));
+    pub const PointToPoint: Self = Self(tlv::NonNegativeNumber(0));
+    pub const MultiAccess: Self = Self(tlv::NonNegativeNumber(1));
+    pub const AdHoc: Self = Self(tlv::NonNegativeNumber(2));
 
     pub fn as_str(&self) -> &'static str {
         match *self {
-            Self::POINT_TO_POINT => "point-to-point",
-            Self::MULTI_ACCESS => "multi-access",
-            Self::AD_HOC => "as-hoc",
+            Self::PointToPoint => "point-to-point",
+            Self::MultiAccess => "multi-access",
+            Self::AdHoc => "as-hoc",
             _ => "unknown",
         }
     }

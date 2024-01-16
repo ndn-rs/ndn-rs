@@ -240,7 +240,7 @@ impl Face {
         let face_scope = face::FaceScope::NonLocal;
         let face_persistency = self.persistency;
         let mtu = Some(self.mtu);
-        let link_type = face::LinkType::POINT_TO_POINT;
+        let link_type = face::LinkType::PointToPoint;
 
         face::FaceStatus {
             face_id,
