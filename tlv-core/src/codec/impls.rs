@@ -17,13 +17,10 @@ where
         }
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
-        if let Some(ref item) = self {
+    fn encode(&self, dst: &mut BytesMut) {
+        if let Some(item) = self.as_ref() {
             item.encode(dst)
-        } else {
-            Ok(())
         }
-        // self.as_ref().map_or(Ok(()), |item| item.encode(dst))
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
@@ -54,11 +51,10 @@ where
         self.iter().map(|item| item.total_size()).sum()
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         for item in self {
-            item.encode(dst)?;
+            item.encode(dst);
         }
-        Ok(())
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
@@ -79,9 +75,8 @@ impl TlvCodec for u8 {
         1
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         dst.put_u8(*self);
-        Ok(())
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
@@ -101,9 +96,8 @@ impl<const N: usize> TlvCodec for [u8; N] {
         self.len()
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         dst.put_slice(self);
-        Ok(())
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
@@ -128,10 +122,9 @@ where
         Self::len()
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         dst.reserve(self.len());
         dst.extend(self);
-        Ok(())
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
@@ -148,10 +141,9 @@ impl TlvCodec for String {
         self.len()
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         dst.reserve(self.len());
         dst.extend(self.as_bytes());
-        Ok(())
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
@@ -168,10 +160,9 @@ impl TlvCodec for Bytes {
         self.len()
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         dst.reserve(self.len());
         dst.extend(self);
-        Ok(())
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
@@ -187,10 +178,9 @@ impl TlvCodec for BytesMut {
         self.len()
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         dst.reserve(self.len());
         dst.extend(self);
-        Ok(())
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {

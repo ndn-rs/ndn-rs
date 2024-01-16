@@ -44,7 +44,7 @@ impl TlvCodec for MilliSeconds {
         self.0.total_size()
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         self.0.encode(dst)
     }
 
@@ -137,9 +137,9 @@ macro_rules! milliseconds_impl {
                 self.0.len()
             }
 
-            fn encode_value(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
+            fn encode_value(&self, dst: &mut bytes::BytesMut) {
                 use $crate::TlvCodec;
-                self.0.encode(dst).map_err(Self::Error::from)
+                self.0.encode(dst)
             }
 
             fn decode_value(

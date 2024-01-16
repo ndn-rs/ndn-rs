@@ -45,9 +45,9 @@ macro_rules! utf8_string {
                 self.0.len()
             }
 
-            fn encode_value(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
+            fn encode_value(&self, dst: &mut bytes::BytesMut) {
                 use $crate::TlvCodec;
-                self.0.encode(dst).map_err(Self::Error::from)
+                self.0.encode(dst)
             }
 
             fn decode_value(

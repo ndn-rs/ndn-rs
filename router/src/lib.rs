@@ -61,8 +61,11 @@ impl Router {
         self.faces.create(params).await
     }
 
-    pub async fn handle_face_status(&self, face: face::FaceId) -> face::FaceStatus {
-        self.faces.get_face(face).await.unwrap().to_face_status()
+    pub async fn handle_face_status(&self, face: face::FaceId) -> io::Result<face::FaceStatus> {
+        self.faces
+            .get_face(face)
+            .await
+            .map(|face| face.to_face_status())
     }
 
     pub async fn handle_interest(

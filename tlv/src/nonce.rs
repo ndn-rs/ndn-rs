@@ -36,9 +36,8 @@ impl Tlv for Nonce {
         self.octets.len()
     }
 
-    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode_value(&self, dst: &mut BytesMut) {
         dst.put_slice(&self.octets);
-        Ok(())
     }
 
     fn decode_value(r#type: Type, length: usize, src: &mut BytesMut) -> Result<Self, Self::Error> {

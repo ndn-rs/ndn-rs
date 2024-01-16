@@ -79,12 +79,13 @@ impl FaceManegement {
     }
 
     pub async fn recv_item(&self, face: face::FaceId) -> io::Result<tlv::Generic> {
-        self.get_face_mut(face)
-            .await?
-            .recv_item()
-            .await
-            .transpose()
-            .unwrap()
+        loop {
+            if let Some(item) = self.get_face_mut(face).await?.recv_item().await.transpose() {
+                break item;
+            } else {
+                continue;
+            }
+        }
     }
 
     pub async fn get_faces(&self) -> Vec<face::FaceId> {
@@ -238,15 +239,6 @@ impl Face {
                 .inspect(|item| tracing::trace!(r#type = %item.r#type(), "Incoming item"));
         })
     }
-
-    // pub(crate) async fn send(&self, bytes: Bytes) -> io::Result<()> {
-    //     self.transport.send(bytes).await
-    // }
-
-    // pub(crate) async fn recv(&self) -> io::Result<Bytes> {
-    //     let bytes: BytesMut = BytesMut::with_capacity(self.mtu.to_usize());
-    //     self.transport.recv(bytes).await
-    // }
 
     pub fn to_face_status(&self) -> face::FaceStatus {
         let face_id = self.face_id;

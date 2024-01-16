@@ -29,7 +29,7 @@ impl Tlv for KeyLocator {
         }
     }
 
-    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode_value(&self, dst: &mut BytesMut) {
         match self {
             Self::Name(payload) => payload.encode(dst),
             Self::Digest(payload) => payload.encode(dst),

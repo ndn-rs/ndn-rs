@@ -36,7 +36,11 @@ impl Router {
     }
 
     pub(crate) async fn get_default_face(&self) -> face::FaceId {
-        self.faces.get_faces().await.pop().unwrap()
+        self.faces
+            .get_faces()
+            .await
+            .pop()
+            .expect("Need at least one configured face")
     }
 
     pub(crate) async fn send_item(

@@ -23,7 +23,7 @@ pub trait Tlv: fmt::Debug + Sized {
     }
 
     /// Encode the value into the supplied buffer
-    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error>;
+    fn encode_value(&self, dst: &mut BytesMut);
 
     // /// Decode TLV-TYPE
     // fn decode_type(src: &mut BytesMut) -> Result<Type, Self::Error>;
@@ -39,7 +39,7 @@ pub trait Tlv: fmt::Debug + Sized {
         let length = self.length();
         if length > 0 {
             let mut dst = BytesMut::with_capacity(length);
-            self.encode_value(&mut dst).ok()?;
+            self.encode_value(&mut dst);
             Some(dst.freeze())
         } else {
             None
@@ -64,7 +64,7 @@ where
         self.size()
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         // let r#type = self.r#type().to_varnumber();
         // let length = self.length();
         // let var_number_length = VarNumber::from(length);
@@ -75,7 +75,7 @@ where
         // var_number_length.encode(dst);
         self.encode_type(dst);
         self.encode_length(dst);
-        self.encode_value(dst)
+        self.encode_value(dst);
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {

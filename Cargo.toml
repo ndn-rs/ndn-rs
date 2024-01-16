@@ -62,6 +62,7 @@ ndn-varnumber = { path = "./varnumber" }
 use_self = "warn"
 map_flatten = "warn"
 map_unwrap_or = "warn"
+unwrap_used = "warn"
 
 
 [workspace.lints.rust]

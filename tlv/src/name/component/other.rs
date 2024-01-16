@@ -31,8 +31,8 @@ impl Tlv for OtherTypeComponent {
         self.octets.len()
     }
 
-    fn encode_value(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
-        self.octets.encode(dst).map_err(Self::Error::from)
+    fn encode_value(&self, dst: &mut bytes::BytesMut) {
+        self.octets.encode(dst)
     }
 
     fn decode_value(

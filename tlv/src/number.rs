@@ -62,7 +62,7 @@ impl TlvCodec for NonNegativeNumber {
         }
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&self, dst: &mut BytesMut) {
         if let Ok(n) = u8::try_from(self.0) {
             dst.put_u8(n);
         } else if let Ok(n) = u16::try_from(self.0) {
@@ -72,8 +72,6 @@ impl TlvCodec for NonNegativeNumber {
         } else {
             dst.put_u64(self.0);
         }
-
-        Ok(())
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {
@@ -214,9 +212,9 @@ macro_rules! non_negative_number {
                 self.0.len()
             }
 
-            fn encode_value(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
+            fn encode_value(&self, dst: &mut bytes::BytesMut) {
                 use $crate::TlvCodec;
-                self.0.encode(dst).map_err(Self::Error::from)
+                self.0.encode(dst)
             }
 
             fn decode_value(

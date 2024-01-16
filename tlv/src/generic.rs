@@ -112,9 +112,7 @@ impl Generic {
         let r#type = t.r#type();
         let length = t.length();
         let mut value = BytesMut::with_capacity(length);
-        t.encode_value(&mut value)
-            // This should never fail
-            .unwrap();
+        t.encode_value(&mut value);
         let length = length.into();
         Self {
             r#type,
@@ -154,9 +152,8 @@ impl Tlv for Generic {
         self.length.to_usize()
     }
 
-    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode_value(&self, dst: &mut BytesMut) {
         dst.put_slice(&self.value);
-        Ok(())
     }
 
     fn decode_value(r#type: Type, length: usize, src: &mut BytesMut) -> Result<Self, Self::Error> {

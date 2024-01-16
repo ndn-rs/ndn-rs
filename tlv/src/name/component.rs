@@ -169,7 +169,7 @@ impl Tlv for NameComponent {
     }
 
     /// Encode the value into the supplied buffer
-    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode_value(&self, dst: &mut BytesMut) {
         match self {
             Self::GenericName(c) => c.encode_value(dst),
             Self::ImplicitSha256Digest(c) => c.encode_value(dst),

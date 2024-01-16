@@ -42,9 +42,9 @@ impl TlvCodec for DataSignature {
         self.info.total_size() + self.value.total_size()
     }
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
-        self.info.encode(dst)?;
-        self.value.encode(dst)
+    fn encode(&self, dst: &mut BytesMut) {
+        self.info.encode(dst);
+        self.value.encode(dst);
     }
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error> {

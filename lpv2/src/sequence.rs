@@ -18,9 +18,8 @@ impl tlv::Tlv for Sequence {
         self.sequence.len()
     }
 
-    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode_value(&self, dst: &mut BytesMut) {
         dst.put_slice(&self.sequence);
-        Ok(())
     }
 
     fn decode_value(

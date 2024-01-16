@@ -73,24 +73,23 @@ impl tlv::core::TlvCodec for GeneralStatus {
         .sum()
     }
 
-    fn encode(&self, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
-        self.version.encode(dst)?;
-        self.start_timestamp.encode(dst)?;
-        self.current_timestamp.encode(dst)?;
-        self.n_name_tree_entries.encode(dst)?;
-        self.n_fib_entries.encode(dst)?;
-        self.n_pit_entries.encode(dst)?;
-        self.n_measurements_entries.encode(dst)?;
-        self.n_cs_entries.encode(dst)?;
-        self.n_in_interests.encode(dst)?;
-        self.n_in_data.encode(dst)?;
-        self.n_in_nacks.encode(dst)?;
-        self.n_out_interests.encode(dst)?;
-        self.n_out_data.encode(dst)?;
-        self.n_out_nacks.encode(dst)?;
-        self.n_satisfied_interests.encode(dst)?;
-        self.n_unsatisfied_interests.encode(dst)?;
-        Ok(())
+    fn encode(&self, dst: &mut bytes::BytesMut) {
+        self.version.encode(dst);
+        self.start_timestamp.encode(dst);
+        self.current_timestamp.encode(dst);
+        self.n_name_tree_entries.encode(dst);
+        self.n_fib_entries.encode(dst);
+        self.n_pit_entries.encode(dst);
+        self.n_measurements_entries.encode(dst);
+        self.n_cs_entries.encode(dst);
+        self.n_in_interests.encode(dst);
+        self.n_in_data.encode(dst);
+        self.n_in_nacks.encode(dst);
+        self.n_out_interests.encode(dst);
+        self.n_out_data.encode(dst);
+        self.n_out_nacks.encode(dst);
+        self.n_satisfied_interests.encode(dst);
+        self.n_unsatisfied_interests.encode(dst);
     }
 
     fn decode(src: &mut bytes::BytesMut) -> Result<Self, Self::Error> {

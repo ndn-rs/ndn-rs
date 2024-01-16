@@ -13,8 +13,8 @@ pub struct Unix {
 impl Unix {
     pub(super) async fn new(remote: impl AsRef<Path>) -> io::Result<Self> {
         let socket = net::UnixStream::connect(remote).await?;
-        println!("Local: {:?}", socket.local_addr().unwrap());
-        println!("Peer: {:?}", socket.peer_addr().unwrap());
+        println!("Local: {:?}", socket.local_addr());
+        println!("Peer: {:?}", socket.peer_addr());
         Ok(Self { socket })
     }
 

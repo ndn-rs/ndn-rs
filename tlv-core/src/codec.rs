@@ -8,13 +8,13 @@ pub trait TlvCodec: Sized {
 
     fn total_size(&self) -> usize;
 
-    fn encode(&self, dst: &mut BytesMut) -> Result<(), Self::Error>;
+    fn encode(&self, dst: &mut BytesMut);
 
     fn decode(src: &mut BytesMut) -> Result<Self, Self::Error>;
 
-    fn bytes(&self) -> Result<Bytes, Self::Error> {
+    fn bytes(&self) -> Bytes {
         let mut dst = BytesMut::with_capacity(self.total_size());
-        self.encode(&mut dst)?;
-        Ok(dst.freeze())
+        self.encode(&mut dst);
+        dst.freeze()
     }
 }

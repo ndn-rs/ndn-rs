@@ -110,7 +110,7 @@ impl quote::ToTokens for TlvDerive {
                     #length
                 }
 
-                fn encode_value(&self, dst: &mut #bytes::BytesMut) -> Result<(), Self::Error> {
+                fn encode_value(&self, dst: &mut #bytes::BytesMut) {
                     use #tlv::TlvCodec;
                     #encode
                 }
@@ -199,10 +199,9 @@ fn tuple_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
         .iter()
         .enumerate()
         .map(|(n, _)| syn::Index::from(n))
-        .map(|idx| quote::quote!( self.#idx.encode(dst)? ));
+        .map(|idx| quote::quote!( self.#idx.encode(dst); ));
     quote::quote!(
             #(#fields;)*
-            Ok(())
     )
 }
 
@@ -244,10 +243,9 @@ fn struct_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     let fields = fields
         .iter()
         .map(|field| &field.ident)
-        .map(|field| quote::quote!( self.#field.encode(dst)? ));
+        .map(|field| quote::quote!( self.#field.encode(dst); ));
     quote::quote!(
         #(#fields;)*
-        Ok(())
     )
 }
 
@@ -282,7 +280,7 @@ fn unit_length(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
 
 fn unit_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     assert!(fields.is_empty());
-    quote::quote!(Ok(()))
+    quote::quote!()
 }
 
 fn unit_decode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {

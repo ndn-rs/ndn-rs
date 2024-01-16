@@ -53,9 +53,8 @@ impl tlv::Tlv for FacePersistency {
         1
     }
 
-    fn encode_value(&self, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode_value(&self, dst: &mut BytesMut) {
         dst.put_u8(*self as u8);
-        Ok(())
     }
 
     fn decode_value(
