@@ -4,7 +4,7 @@ use super::*;
 #[tlv(r#type = tlv::Type::ControlParameters, error = tlv::DecodeError, crates(tlv_core = "tlv::core"))]
 pub struct ControlParameters {
     // pub name: Option<tlv::Name>,
-    // pub face_id: Option<face::FaceId>,
+    pub face_id: Option<face::FaceId>,
     pub uri: Option<face::Uri>,
     pub local_uri: Option<face::LocalUri>,
     // pub origin: Option<Origin>,
@@ -36,7 +36,16 @@ impl ControlParameters {
     pub fn create_face(uri: impl Into<face::Uri>) -> Self {
         Self {
             uri: Some(uri.into()),
-            ..Self::default()
+            ..default()
+        }
+    }
+
+    // DESTROY ControlParameters fields:
+    //  FaceId (required)
+    pub fn destroy_face(face: face::FaceId) -> Self {
+        Self {
+            face_id: Some(face),
+            ..default()
         }
     }
 

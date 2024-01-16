@@ -32,6 +32,18 @@ impl ControlResponse {
         }
     }
 
+    pub fn face_destroyed(face_id: face::FaceId) -> Self {
+        let face_id = tlv::Generic::from_tlv(face_id).unwrap();
+        let status_code = StatusCode::OK;
+        let status_text = StatusText::from("DESTROYED");
+        let body = vec![face_id];
+        Self {
+            status_code,
+            status_text,
+            body,
+        }
+    }
+
     pub fn into_result(self) -> io::Result<Self> {
         if self.status_code.is_ok() {
             Ok(self)

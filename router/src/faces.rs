@@ -9,6 +9,7 @@ use tokio::sync::RwLockWriteGuard;
 use super::*;
 
 mod create;
+mod destroy;
 
 #[derive(Debug)]
 pub struct Face {
@@ -63,6 +64,16 @@ impl FaceManegement {
         }
     }
 
+    pub async fn destroy(&self, params: mgmt::ControlParameters) -> mgmt::ControlResponse {
+        match params.try_into() {
+            Ok(destroy) => self.destroy_impl(destroy).await.map_or_else(
+                mgmt::ControlResponse::socket_error,
+                mgmt::ControlResponse::from,
+            ),
+            Err(reason) => mgmt::ControlResponse::incorrect_control_parameters(reason),
+        }
+    }
+
     pub async fn send_item(&self, face: face::FaceId, item: impl tlv::Tlv) -> io::Result<()> {
         self.get_face_mut(face).await?.send_item(item).await
     }
@@ -112,6 +123,11 @@ impl FaceManegement {
         });
         let id = key.data().as_ffi();
         face::FaceId::from(id)
+    }
+
+    async fn remove(&self, face: face::FaceId) -> Option<Face> {
+        let key = face.into();
+        self.faces.write().await.remove(key)
     }
 }
 

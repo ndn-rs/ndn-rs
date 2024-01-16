@@ -29,3 +29,7 @@ mod origin;
 mod response;
 mod status;
 mod strategy;
+
+fn default<T: Default>() -> T {
+    T::default()
+}
