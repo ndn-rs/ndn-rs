@@ -105,20 +105,22 @@ impl Generic {
             .map_err(|_| DecodeError::length_mismatch(T::to_usize(), self.value.len()))
     }
 
-    pub fn from_tlv<T>(t: T) -> Result<Self, <T as Tlv>::Error>
+    pub fn from_tlv<T>(t: T) -> Self
     where
         T: Tlv,
     {
         let r#type = t.r#type();
         let length = t.length();
         let mut value = BytesMut::with_capacity(length);
-        t.encode_value(&mut value)?;
+        t.encode_value(&mut value)
+            // This should never fail
+            .unwrap();
         let length = length.into();
-        Ok(Self {
+        Self {
             r#type,
             length,
             value,
-        })
+        }
     }
 }
 

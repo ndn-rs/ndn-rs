@@ -144,20 +144,20 @@ impl From<CreateResponse> for mgmt::ControlResponse {
         } = response;
 
         let mut body = Vec::with_capacity(8);
-        body.push(tlv::Generic::from_tlv(face_id).unwrap());
-        body.push(tlv::Generic::from_tlv(uri).unwrap());
-        body.push(tlv::Generic::from_tlv(local_uri).unwrap());
-        body.push(tlv::Generic::from_tlv(face_persistency).unwrap());
+        body.push(tlv::Generic::from_tlv(face_id));
+        body.push(tlv::Generic::from_tlv(uri));
+        body.push(tlv::Generic::from_tlv(local_uri));
+        body.push(tlv::Generic::from_tlv(face_persistency));
         if let Some(base_congestion_marking_interval) = base_congestion_marking_interval {
-            body.push(tlv::Generic::from_tlv(base_congestion_marking_interval).unwrap());
+            body.push(tlv::Generic::from_tlv(base_congestion_marking_interval));
         }
         if let Some(default_congestion_threshold) = default_congestion_threshold {
-            body.push(tlv::Generic::from_tlv(default_congestion_threshold).unwrap());
+            body.push(tlv::Generic::from_tlv(default_congestion_threshold));
         }
         if let Some(mtu) = mtu {
-            body.push(tlv::Generic::from_tlv(mtu).unwrap());
+            body.push(tlv::Generic::from_tlv(mtu));
         }
-        body.push(tlv::Generic::from_tlv(flags).unwrap());
+        body.push(tlv::Generic::from_tlv(flags));
 
         let status_code = mgmt::StatusCode::OK;
         let status_text = mgmt::StatusText::from("CREATED");

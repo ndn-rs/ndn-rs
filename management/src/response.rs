@@ -33,7 +33,7 @@ impl ControlResponse {
     }
 
     pub fn face_destroyed(face_id: face::FaceId) -> Self {
-        let face_id = tlv::Generic::from_tlv(face_id).unwrap();
+        let face_id = tlv::Generic::from_tlv(face_id);
         let status_code = StatusCode::OK;
         let status_text = StatusText::from("DESTROYED");
         let body = vec![face_id];
