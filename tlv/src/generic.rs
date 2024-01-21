@@ -157,8 +157,15 @@ impl Tlv for Generic {
     }
 
     fn decode_value(r#type: Type, length: usize, src: &mut BytesMut) -> Result<Self, Self::Error> {
-        let _ = (r#type, length, src);
-        todo!("This probably should never be implemented")
+        // let _ = (r#type, length, src);
+        let value = src.split_to(length);
+        let length = length.into();
+
+        Ok(Self {
+            r#type,
+            length,
+            value,
+        })
     }
 }
 

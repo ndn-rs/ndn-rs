@@ -3,7 +3,7 @@ use std::io;
 use std::net;
 use std::str;
 
-use bytes::{Buf, BufMut, BytesMut};
+use bytes::BytesMut;
 
 use ndn_tlv as tlv;
 // use ndn_varnumber::VarNumber;

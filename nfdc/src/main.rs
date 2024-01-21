@@ -17,9 +17,11 @@ struct Cli {
     /// Use simple client by default
     #[arg(long, short)]
     simple: bool,
+
     /// RemoteUri
     #[arg(long, short, default_value = "tcp4://localhost:6363")]
     remote: face::Uri,
+
     #[command(subcommand)]
     command: Command,
 }
@@ -31,6 +33,9 @@ enum Command {
     #[command(subcommand)]
     Face(Face),
     General,
+    Interest {
+        name: String,
+    },
     Router,
 }
 
@@ -50,6 +55,7 @@ impl Command {
             Self::Channel(channel) => channel.execute(client).await,
             Self::Face(face) => face.execute(client).await,
             Self::General => self.general(client).await,
+            Self::Interest { ref name } => self.interest(client, name).await,
             Self::Router => self.router().await,
         }
     }
@@ -62,6 +68,15 @@ impl Command {
         println!("STATUS\n{status:?}");
         println!("Start:   {}", status.start_timestamp.to_local_datetime());
         println!("Current: {}", status.current_timestamp.to_local_datetime());
+
+        Ok(())
+    }
+
+    async fn interest(&self, mut client: client::Client, name: &str) -> anyhow::Result<()> {
+        let data = client.get::<Vec<tlv::Generic>>(name).await?;
+        for item in data {
+            println!("{item:?}");
+        }
 
         Ok(())
     }

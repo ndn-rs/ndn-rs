@@ -1,5 +1,5 @@
 use darling::ast;
-// use darling::util;
+use darling::util;
 use darling::Error;
 use darling::FromDeriveInput;
 use darling::FromField;
@@ -7,6 +7,8 @@ use darling::FromMeta;
 use darling::FromVariant;
 
 use darling::export::syn;
+
+mod r#enum;
 
 #[proc_macro_derive(Tlv, attributes(tlv))]
 pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -28,9 +30,14 @@ fn derive2(input: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
 }
 
 #[derive(Debug, FromDeriveInput)]
-#[darling(attributes(tlv))]
+#[darling(
+    attributes(tlv),
+    forward_attrs(repr),
+    supports(struct_any, enum_newtype, enum_unit)
+)]
 struct TlvDerive {
     ident: syn::Ident,
+    attrs: Vec<syn::Attribute>,
     data: ast::Data<PayloadVariant, PayloadItem>,
     r#type: syn::Path,
     error: syn::Path,
@@ -41,6 +48,7 @@ struct TlvDerive {
 #[derive(Debug, FromVariant)]
 struct PayloadVariant {
     ident: syn::Ident,
+    // discriminant: Option<syn::Expr>,
     fields: ast::Fields<PayloadItem>,
 }
 
@@ -81,6 +89,7 @@ impl quote::ToTokens for TlvDerive {
     fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
         let Self {
             ident: name,
+            attrs,
             data,
             r#type,
             error,
@@ -91,8 +100,8 @@ impl quote::ToTokens for TlvDerive {
         } = self;
 
         let (length, encode, decode) = match data {
-            ast::Data::Enum(r#enum) => handle_enum(tlv, r#enum),
-            ast::Data::Struct(r#struct) => handle_struct(tlv, r#struct),
+            ast::Data::Enum(variants) => r#enum::handle_deprecated(attrs, tlv, variants),
+            ast::Data::Struct(fields) => handle_struct(tlv, fields),
         };
 
         let quoted = quote::quote!(
@@ -122,35 +131,6 @@ impl quote::ToTokens for TlvDerive {
             }
         );
         tokens.extend(quoted)
-    }
-}
-
-fn handle_enum(
-    tlv: &syn::Path,
-    variants: &[PayloadVariant],
-) -> (
-    proc_macro2::TokenStream,
-    proc_macro2::TokenStream,
-    proc_macro2::TokenStream,
-) {
-    println!("{tlv:?}");
-    println!("{variants:?}");
-    for variant in variants {
-        println!("{}: {:?}", variant.ident, variant.fields);
-    }
-    let newtype_only = variants.iter().all(|variant| variant.fields.is_newtype());
-    if newtype_only {
-        (
-            enum_length(variants),
-            enum_encode(variants),
-            enum_decode(tlv, variants),
-        )
-    } else {
-        (
-            Error::custom("Only newtype enum are supported at this time").write_errors(),
-            Error::custom("Only newtype enum are supported at this time").write_errors(),
-            Error::custom("Only newtype enum are supported at this time").write_errors(),
-        )
     }
 }
 
@@ -286,57 +266,4 @@ fn unit_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
 fn unit_decode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     assert!(fields.is_empty());
     quote::quote!(Ok(Self))
-}
-
-fn enum_length(variants: &[PayloadVariant]) -> proc_macro2::TokenStream {
-    let variants = variants.iter().map(variant_length);
-    quote::quote!(
-            match self {
-                #(#variants,)*
-            }
-    )
-}
-
-fn enum_encode(variants: &[PayloadVariant]) -> proc_macro2::TokenStream {
-    let variants = variants.iter().map(variant_encode);
-    quote::quote!(
-            match self {
-                #(#variants,)*
-            }
-    )
-}
-
-fn enum_decode(tlv: &syn::Path, variants: &[PayloadVariant]) -> proc_macro2::TokenStream {
-    let variants = variants.iter().map(|variant| variant_decode(tlv, variant));
-    quote::quote!(
-            let r#type = #tlv::VarNumber::peek(src)
-                .ok_or_else(|| #tlv::DecodeError::invalid("Insufficient bytes to determine TLV-TYPE"))?;
-            match r#type {
-                #(#variants,)*
-            }
-    )
-}
-
-fn variant_length(variant: &PayloadVariant) -> proc_macro2::TokenStream {
-    let ident = &variant.ident;
-    quote::quote!(Self::#ident(payload) => payload.total_size())
-}
-
-fn variant_encode(variant: &PayloadVariant) -> proc_macro2::TokenStream {
-    let ident = &variant.ident;
-    quote::quote!(Self::#ident(payload) => payload.encode(dst))
-}
-
-fn variant_decode(tlv: &syn::Path, variant: &PayloadVariant) -> proc_macro2::TokenStream {
-    let ident = &variant.ident;
-    let (_style, items) = variant.fields.as_ref().split();
-    // let item = items[0];
-    let ty = &items[0].ty;
-    quote::quote!(
-        #ty::r#type() => {
-            #tlv::TlvCodec::decode(src).map(Self::#ident)
-        }
-    )
-    //     if variant.f  #name: #tlv::TlvCodec::decode(src)? );
-    // quote::quote!(Self::#ident(payload) => #name: #tlv::TlvCodec::decode(src)?)
 }
