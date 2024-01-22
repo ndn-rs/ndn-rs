@@ -147,7 +147,7 @@ macro_rules! non_negative_number {
 
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                use tlv::Tlv;
+                use $crate::Tlv;
                 if f.alternate() {
                     self.as_str().fmt(f)
                 } else {

@@ -2,29 +2,18 @@
 
 use super::*;
 
-// FaceScope indicates whether the face is local for scope control purposes.
-tlv::non_negative_number!(FaceScope => tlv::Type::FaceScope; display_as_str);
+pub use persistency::FacePersistency;
+pub use scope::FaceScope;
 
-#[allow(non_upper_case_globals)]
-impl FaceScope {
-    pub const NonLocal: Self = Self(tlv::NonNegativeNumber(0));
-    pub const Local: Self = Self(tlv::NonNegativeNumber(1));
-
-    pub fn as_str(&self) -> &'static str {
-        match *self {
-            Self::NonLocal => "non-local",
-            Self::Local => "local",
-            _ => "unknown",
-        }
-    }
-}
+mod persistency;
+mod scope;
 
 // LinkType indicates the type of communication link.
 
 // point-to-point(=0), communication with one peer
 // multi-access(=1), communication with a multicast group
 // ad-hoc(=2), communication over a wireless ad hoc network
-tlv::non_negative_number!(LinkType => tlv::Type::LinkType; skip_display);
+tlv::non_negative_number!(LinkType => tlv::Type::LinkType; display_as_str);
 
 #[allow(non_upper_case_globals)]
 impl LinkType {
@@ -42,16 +31,16 @@ impl LinkType {
     }
 }
 
-impl fmt::Display for LinkType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use tlv::Tlv;
-        if f.alternate() {
-            self.as_str().fmt(f)
-        } else {
-            format_args!("{}={}", Self::TYPE, self.as_str()).fmt(f)
-        }
-    }
-}
+// impl fmt::Display for LinkType {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         use tlv::Tlv;
+//         if f.alternate() {
+//             self.as_str().fmt(f)
+//         } else {
+//             format_args!("{}={}", Self::TYPE, self.as_str()).fmt(f)
+//         }
+//     }
+// }
 
 tlv::non_negative_number!(NInInterests => tlv::Type::NInInterests); // number of incoming Interest packets processed since the forwarder started
 tlv::non_negative_number!(NInData => tlv::Type::NInData); // number of incoming Data packets processed since the forwarder started
