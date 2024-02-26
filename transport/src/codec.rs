@@ -1,5 +1,3 @@
-use std::io;
-
 use tokio_util::codec;
 
 use super::*;

@@ -1,5 +1,6 @@
 use std::fmt;
 use std::io;
+use std::ops;
 use std::str;
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
