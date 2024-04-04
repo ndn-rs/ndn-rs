@@ -16,6 +16,12 @@ mod impls;
 mod tlv;
 mod types;
 
+#[doc(hidden)]
+pub mod export {
+    pub use bytes::BytesMut;
+    pub use core::result::Result::{self, Err, Ok};
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Type(u64);
 

@@ -41,7 +41,7 @@ struct TlvDerive {
     data: ast::Data<PayloadVariant, PayloadItem>,
     r#type: syn::Path,
     error: syn::Path,
-    #[darling(default)]
+    #[darling(default = "Crates::default_crates")]
     crates: Crates,
 }
 
@@ -62,26 +62,42 @@ struct PayloadItem {
 struct Crates {
     #[darling(default = "Self::default_tlv_core")]
     tlv_core: syn::Path,
-    #[darling(default = "Self::default_bytes")]
-    bytes: syn::Path,
 }
 
 impl Default for Crates {
     fn default() -> Self {
-        Self {
-            tlv_core: Self::default_tlv_core(),
-            bytes: Self::default_bytes(),
-        }
+        Self::default_crates()
     }
 }
 
 impl Crates {
+    fn default_crates() -> Self {
+        Self {
+            tlv_core: Self::default_tlv_core(),
+        }
+    }
+
     fn default_tlv_core() -> syn::Path {
         syn::parse_quote!(::ndn_tlv_core)
     }
 
-    fn default_bytes() -> syn::Path {
-        syn::parse_quote!(::bytes)
+    fn tlv_core(&self) -> &syn::Path {
+        &self.tlv_core
+    }
+
+    fn bytes_mut(&self) -> syn::Path {
+        let tlv = self.tlv_core();
+        syn::parse_quote!(#tlv::export::BytesMut)
+    }
+
+    fn result(&self) -> syn::Path {
+        let tlv = self.tlv_core();
+        syn::parse_quote!(#tlv::export::Result)
+    }
+
+    fn ok(&self) -> syn::Path {
+        let tlv = self.tlv_core();
+        syn::parse_quote!(#tlv::export::Ok)
     }
 }
 
@@ -93,15 +109,16 @@ impl quote::ToTokens for TlvDerive {
             data,
             r#type,
             error,
-            crates: Crates {
-                tlv_core: tlv,
-                bytes,
-            },
+            crates,
         } = self;
+
+        let tlv = crates.tlv_core();
+        let bytes_mut = crates.bytes_mut();
+        let result = crates.result();
 
         let (length, encode, decode) = match data {
             ast::Data::Enum(variants) => r#enum::handle_deprecated(attrs, tlv, variants),
-            ast::Data::Struct(fields) => handle_struct(tlv, fields),
+            ast::Data::Struct(fields) => handle_struct(crates, fields),
         };
 
         let quoted = quote::quote!(
@@ -119,12 +136,12 @@ impl quote::ToTokens for TlvDerive {
                     #length
                 }
 
-                fn encode_value(&self, dst: &mut #bytes::BytesMut) {
+                fn encode_value(&self, dst: &mut #bytes_mut) {
                     use #tlv::TlvCodec;
                     #encode
                 }
 
-                fn decode_value(r#type: #tlv::Type, length: usize, src: &mut #bytes::BytesMut) -> Result<Self, Self::Error> {
+                fn decode_value(r#type: #tlv::Type, length: usize, src: &mut #bytes_mut) -> #result<Self, Self::Error> {
                     use #tlv::TlvCodec;
                     #decode
                 }
@@ -135,7 +152,7 @@ impl quote::ToTokens for TlvDerive {
 }
 
 fn handle_struct(
-    tlv: &syn::Path,
+    crates: &Crates,
     fields: &ast::Fields<PayloadItem>,
 ) -> (
     proc_macro2::TokenStream,
@@ -144,14 +161,14 @@ fn handle_struct(
 ) {
     let (style, fields) = fields.as_ref().split();
     match style {
-        ast::Style::Tuple => handle_tuple_struct(tlv, fields),
-        ast::Style::Struct => handle_regular_struct(tlv, fields),
-        ast::Style::Unit => handle_unit_struct(fields),
+        ast::Style::Tuple => handle_tuple_struct(crates, fields),
+        ast::Style::Struct => handle_regular_struct(crates, fields),
+        ast::Style::Unit => handle_unit_struct(crates, fields),
     }
 }
 
 fn handle_tuple_struct(
-    tlv: &syn::Path,
+    crates: &Crates,
     fields: Vec<&PayloadItem>,
 ) -> (
     proc_macro2::TokenStream,
@@ -161,7 +178,7 @@ fn handle_tuple_struct(
     (
         tuple_length(&fields),
         tuple_encode(&fields),
-        tuple_decode(tlv, &fields),
+        tuple_decode(crates, &fields),
     )
 }
 
@@ -185,19 +202,21 @@ fn tuple_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     )
 }
 
-fn tuple_decode(tlv: &syn::Path, fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
+fn tuple_decode(crates: &Crates, fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
+    let tlv = crates.tlv_core();
+    let ok = crates.ok();
     let fields = fields
         .iter()
         .enumerate()
         .map(|(n, item)| (syn::Index::from(n), &item.ty))
         .map(|(_idx, _ty)| quote::quote!( #tlv::TlvCodec::decode(src)? ));
     quote::quote!(
-        Ok(Self(#(#fields,)*))
+        #ok(Self(#(#fields,)*))
     )
 }
 
 fn handle_regular_struct(
-    tlv: &syn::Path,
+    crates: &Crates,
     fields: Vec<&PayloadItem>,
 ) -> (
     proc_macro2::TokenStream,
@@ -207,7 +226,7 @@ fn handle_regular_struct(
     (
         struct_length(&fields),
         struct_encode(&fields),
-        struct_decode(tlv, &fields),
+        struct_decode(crates, &fields),
     )
 }
 
@@ -229,17 +248,20 @@ fn struct_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     )
 }
 
-fn struct_decode(tlv: &syn::Path, fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
+fn struct_decode(crates: &Crates, fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
+    let tlv = crates.tlv_core();
+    let ok = crates.ok();
     let fields = fields
         .iter()
         .map(|field| (&field.ident, &field.ty))
         .map(|(name, _ty)| quote::quote!( #name: #tlv::TlvCodec::decode(src)? ));
     quote::quote!(
-        Ok(Self { #(#fields,)* })
+        #ok(Self { #(#fields,)* })
     )
 }
 
 fn handle_unit_struct(
+    crates: &Crates,
     fields: Vec<&PayloadItem>,
 ) -> (
     proc_macro2::TokenStream,
@@ -249,7 +271,7 @@ fn handle_unit_struct(
     (
         unit_length(&fields),
         unit_encode(&fields),
-        unit_decode(&fields),
+        unit_decode(crates, &fields),
     )
 }
 
@@ -263,7 +285,8 @@ fn unit_encode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     quote::quote!()
 }
 
-fn unit_decode(fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
+fn unit_decode(crates: &Crates, fields: &[&PayloadItem]) -> proc_macro2::TokenStream {
     assert!(fields.is_empty());
-    quote::quote!(Ok(Self))
+    let ok = crates.ok();
+    quote::quote!(#ok(Self))
 }
