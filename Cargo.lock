@@ -447,7 +447,7 @@ dependencies = [
 
 [[package]]
 name = "ndn"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "ndn-client",
  "ndn-face",
@@ -461,7 +461,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-client"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
  "hashbrown",
@@ -475,7 +475,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-face"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
  "ndn-tlv",
@@ -486,7 +486,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-lpv2"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
  "ndn-tlv",
@@ -494,7 +494,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-management"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
  "ndn-face",
@@ -504,7 +504,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-nfdc"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "anyhow",
  "bytes",
@@ -517,7 +517,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-router"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
  "ndn-face",
@@ -532,7 +532,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-tlv"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
  "generic-array",
@@ -546,7 +546,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-tlv-core"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
  "generic-array",
@@ -558,7 +558,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-tlv-derive"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -567,7 +567,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-transport"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
  "futures",
@@ -580,7 +580,7 @@ dependencies = [
 
 [[package]]
 name = "ndn-varnumber"
-version = "0.0.3-alpha.3"
+version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
 ]
