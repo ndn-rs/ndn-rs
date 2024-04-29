@@ -11,7 +11,6 @@ readme.workspace = true
 
 
 [dependencies]
-bytes.workspace = true
 hashbrown.workspace = true
 tokio.workspace = true
 tracing.workspace = true

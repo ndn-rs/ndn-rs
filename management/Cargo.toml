@@ -14,7 +14,7 @@ readme.workspace = true
 bytes.workspace = true
 ndn-face.workspace = true
 ndn-tlv.workspace = true
-ndn-varnumber.workspace = true
+# ndn-varnumber.workspace = true
 
 
 [lints]

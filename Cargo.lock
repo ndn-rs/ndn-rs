@@ -463,7 +463,6 @@ dependencies = [
 name = "ndn-client"
 version = "0.0.3-alpha.4"
 dependencies = [
- "bytes",
  "hashbrown",
  "ndn-face",
  "ndn-router",
@@ -479,8 +478,6 @@ version = "0.0.3-alpha.4"
 dependencies = [
  "bytes",
  "ndn-tlv",
- "ndn-varnumber",
- "thiserror",
  "tokio",
 ]
 
@@ -499,7 +496,6 @@ dependencies = [
  "bytes",
  "ndn-face",
  "ndn-tlv",
- "ndn-varnumber",
 ]
 
 [[package]]
@@ -507,11 +503,9 @@ name = "ndn-nfdc"
 version = "0.0.3-alpha.4"
 dependencies = [
  "anyhow",
- "bytes",
  "clap",
  "ndn",
  "tokio",
- "tracing",
  "tracing-subscriber",
 ]
 
@@ -519,7 +513,6 @@ dependencies = [
 name = "ndn-router"
 version = "0.0.3-alpha.4"
 dependencies = [
- "bytes",
  "ndn-face",
  "ndn-management",
  "ndn-tlv",
@@ -541,7 +534,6 @@ dependencies = [
  "rand",
  "thiserror",
  "time",
- "tracing",
 ]
 
 [[package]]
@@ -552,7 +544,6 @@ dependencies = [
  "generic-array",
  "ndn-tlv-derive",
  "ndn-varnumber",
- "tokio-util",
  "tracing",
 ]
 

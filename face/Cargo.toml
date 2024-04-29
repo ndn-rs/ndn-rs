@@ -12,11 +12,10 @@ readme.workspace = true
 
 [dependencies]
 bytes.workspace = true
-thiserror.workspace = true
 tokio.workspace = true
 
 ndn-tlv.workspace = true
-ndn-varnumber.workspace = true
+# ndn-varnumber.workspace = true
 
 
 [lints]
