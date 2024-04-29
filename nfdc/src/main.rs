@@ -1,6 +1,5 @@
 use std::io;
 
-// use bytes::Bytes;
 use clap::{Parser, Subcommand};
 use tracing_subscriber::{fmt, EnvFilter};
 

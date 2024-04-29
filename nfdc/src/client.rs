@@ -30,8 +30,8 @@ impl Client {
 
 #[derive(Debug)]
 enum Inner {
-    Simple(client::simple::Client),
-    Multi(client::concurrent::Client),
+    Simple(simple::Client),
+    Multi(concurrent::Client),
 }
 
 impl Inner {

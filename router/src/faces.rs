@@ -70,7 +70,7 @@ impl FaceManegement {
         }
     }
 
-    pub async fn send_item(&self, face: face::FaceId, item: impl tlv::Tlv) -> io::Result<()> {
+    pub async fn send_item(&self, face: face::FaceId, item: impl Tlv) -> io::Result<()> {
         self.get_face_mut(face).await?.send_item(item).await
     }
 
@@ -223,7 +223,7 @@ impl Face {
     }
 
     #[tracing::instrument(skip_all)]
-    pub async fn send_item(&mut self, item: impl tlv::Tlv) -> io::Result<()> {
+    pub async fn send_item(&mut self, item: impl Tlv) -> io::Result<()> {
         tracing::trace!(r#type = %item.r#type(), "Outgoing item");
         self.transport.send_item(item).await
     }

@@ -1,4 +1,4 @@
-use std::cmp;
+use std::cmp::Ordering;
 use std::fmt;
 use std::hash;
 use std::ops;
@@ -196,13 +196,13 @@ impl From<VarNumber> for Bytes {
     }
 }
 
-impl cmp::PartialEq for VarNumber {
+impl PartialEq for VarNumber {
     fn eq(&self, other: &Self) -> bool {
         self.value == other.value
     }
 }
 
-impl cmp::PartialEq<u64> for VarNumber {
+impl PartialEq<u64> for VarNumber {
     fn eq(&self, other: &u64) -> bool {
         self.value == *other
     }
@@ -214,22 +214,22 @@ impl cmp::PartialEq<u64> for VarNumber {
 //     }
 // }
 
-impl cmp::Eq for VarNumber {}
+impl Eq for VarNumber {}
 
-impl cmp::PartialOrd for VarNumber {
-    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
+impl PartialOrd for VarNumber {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl cmp::PartialOrd<u64> for VarNumber {
-    fn partial_cmp(&self, other: &u64) -> Option<cmp::Ordering> {
+impl PartialOrd<u64> for VarNumber {
+    fn partial_cmp(&self, other: &u64) -> Option<Ordering> {
         self.value.partial_cmp(other)
     }
 }
 
-impl cmp::Ord for VarNumber {
-    fn cmp(&self, other: &Self) -> cmp::Ordering {
+impl Ord for VarNumber {
+    fn cmp(&self, other: &Self) -> Ordering {
         self.value.cmp(&other.value)
     }
 }

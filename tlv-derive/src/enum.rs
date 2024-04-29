@@ -40,14 +40,14 @@ pub(crate) fn handle_deprecated(
     if all_newtype {
         (
             length(variants),
-            r#enum::newtype_encode(variants),
-            r#enum::newtype_decode(tlv, variants),
+            newtype_encode(variants),
+            newtype_decode(tlv, variants),
         )
     } else if all_unit {
         (
             length(variants),
-            r#enum::unit_encode(variants),
-            r#enum::unit_decode(tlv, variants),
+            unit_encode(variants),
+            unit_decode(tlv, variants),
         )
     } else {
         (

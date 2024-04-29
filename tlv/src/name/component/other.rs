@@ -31,15 +31,11 @@ impl Tlv for OtherTypeComponent {
         self.octets.len()
     }
 
-    fn encode_value(&self, dst: &mut bytes::BytesMut) {
+    fn encode_value(&self, dst: &mut BytesMut) {
         self.octets.encode(dst)
     }
 
-    fn decode_value(
-        r#type: Type,
-        length: usize,
-        src: &mut bytes::BytesMut,
-    ) -> Result<Self, Self::Error> {
+    fn decode_value(r#type: Type, length: usize, src: &mut BytesMut) -> Result<Self, Self::Error> {
         if length <= src.len() {
             let octets = src.copy_to_bytes(length);
             Ok(Self { r#type, octets })
